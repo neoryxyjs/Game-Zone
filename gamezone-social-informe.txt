@@ -1,0 +1,38 @@
+INFORME DE CAMBIOS Y MEJORAS - GAMEZONE SOCIAL
+==============================================
+
+Fecha: [07.07-2025]
+
+1. **Base de datos y backend**
+   - Creación de la base de datos `gamezone_social` y la tabla `users` en PostgreSQL.
+   - Configuración de la conexión a PostgreSQL en el backend (Node/Express).
+   - Implementación de endpoint `/register` para registrar usuarios y guardar contraseñas hasheadas con bcrypt.
+   - Implementación de endpoint `/login` para autenticar usuarios usando bcrypt y la base de datos.
+
+2. **Frontend (React + Tailwind)**
+   - Ajuste del formulario de registro para enviar datos al backend y guardar usuarios en la base de datos.
+   - Ajuste del formulario de login para autenticar contra el backend y no contra localStorage.
+   - Corrección de imports y errores relacionados con el sistema de notificaciones.
+
+3. **Sistema de notificaciones**
+   - Implementación de un sistema de notificaciones tipo toast, minimalista y animado, usando solo React y Tailwind.
+   - Notificaciones aparecen en la esquina inferior derecha, con cierre automático o manual y colores según tipo (éxito, error, info).
+   - Integración global del `NotificationProvider` en la app.
+
+4. **Mejoras generales**
+   - Limpieza de código y eliminación de alertas nativas.
+   - Mejoras en la experiencia de usuario y feedback visual.
+
+---
+
+**Estado actual:**
+- El registro y login de usuarios funciona completamente con la base de datos.
+- Las notificaciones son modernas, animadas y minimalistas.
+- El código está listo para continuar con nuevas funcionalidades o mejoras.
+
+**Siguiente paso sugerido:**
+- Probar la app y, si todo está correcto, realizar un respaldo del proyecto.
+
+---
+
+Fin del informe. 
