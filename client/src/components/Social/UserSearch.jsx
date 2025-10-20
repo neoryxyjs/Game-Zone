@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../config/api';
 
 export default function UserSearch({ currentUserId }) {
@@ -86,17 +87,20 @@ export default function UserSearch({ currentUserId }) {
           <div className="space-y-3">
             {users.map(user => (
               <div key={user.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                <div className="flex items-center space-x-3">
+                <Link to={`/user/${user.id}`} className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
                   <img 
                     src={user.avatar || '/default-avatar.png'} 
                     alt={user.username}
-                    className="w-12 h-12 rounded-full"
+                    className="w-12 h-12 rounded-full object-cover"
+                    onError={(e) => {
+                      e.target.src = '/default-avatar.png';
+                    }}
                   />
                   <div>
-                    <h3 className="font-semibold text-gray-900">{user.username}</h3>
+                    <h3 className="font-semibold text-gray-900 hover:text-blue-600">{user.username}</h3>
                     <p className="text-sm text-gray-600">{user.game} - {user.rank}</p>
                   </div>
-                </div>
+                </Link>
                 <button
                   onClick={() => handleFollow(user.id)}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"

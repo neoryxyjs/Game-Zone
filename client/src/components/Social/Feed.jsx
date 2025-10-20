@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../config/api';
 
 export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
@@ -231,22 +232,27 @@ function PostCard({ post, currentUserId, onLike, onCommentAdded }) {
     <div className="bg-white rounded-lg shadow-md p-6">
       {/* Header del post */}
       <div className="flex items-center space-x-3 mb-4">
-        <img 
-          src={post.avatar || '/default-avatar.png'} 
-          alt={post.username}
-          className="w-10 h-10 rounded-full"
-        />
-        <div>
-          <h3 className="font-semibold text-gray-900">{post.username}</h3>
-          <p className="text-sm text-gray-500">
-            {new Date(post.created_at).toLocaleDateString('es-ES', {
-              day: 'numeric',
-              month: 'long',
-              hour: '2-digit',
-              minute: '2-digit'
-            })}
-          </p>
-        </div>
+        <Link to={`/user/${post.user_id}`} className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+          <img 
+            src={post.avatar || '/default-avatar.png'} 
+            alt={post.username}
+            className="w-10 h-10 rounded-full object-cover"
+            onError={(e) => {
+              e.target.src = '/default-avatar.png';
+            }}
+          />
+          <div>
+            <h3 className="font-semibold text-gray-900 hover:text-blue-600">{post.username}</h3>
+            <p className="text-sm text-gray-500">
+              {new Date(post.created_at).toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'long',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </p>
+          </div>
+        </Link>
         {post.game_tag && (
           <span className="ml-auto bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
             {post.game_tag}
@@ -343,19 +349,24 @@ function PostCard({ post, currentUserId, onLike, onCommentAdded }) {
                   
                   return (
                     <div key={comment.id} className="flex space-x-3">
-                      <img 
-                        src={comment.user?.avatar || '/default-avatar.png'} 
-                        alt={comment.user?.username || 'Usuario'}
-                        className="w-8 h-8 rounded-full object-cover"
-                        onError={(e) => {
-                          e.target.src = '/default-avatar.png';
-                        }}
-                      />
+                      <Link to={`/user/${comment.user?.id}`} className="flex-shrink-0">
+                        <img 
+                          src={comment.user?.avatar || '/default-avatar.png'} 
+                          alt={comment.user?.username || 'Usuario'}
+                          className="w-8 h-8 rounded-full object-cover hover:opacity-80 transition-opacity"
+                          onError={(e) => {
+                            e.target.src = '/default-avatar.png';
+                          }}
+                        />
+                      </Link>
                       <div className="flex-1">
                         <div className="bg-gray-100 rounded-lg px-3 py-2">
-                          <p className="font-semibold text-sm">
+                          <Link 
+                            to={`/user/${comment.user?.id}`}
+                            className="font-semibold text-sm hover:text-blue-600 transition-colors"
+                          >
                             {comment.user?.username || 'Usuario'}
-                          </p>
+                          </Link>
                           <p className="text-gray-800">
                             {comment.content || 'Comentario sin contenido'}
                           </p>
