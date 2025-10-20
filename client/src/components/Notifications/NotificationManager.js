@@ -8,4 +8,4 @@ export function useNotifications() {
     showError: (msg) => show('error', msg),
     showInfo: (msg) => show('info', msg), // Notificación informativa
   };
-} 
+}

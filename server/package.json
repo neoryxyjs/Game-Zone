@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node index.js",
-    "migrate": "node scripts/migrate.js"
+    "migrate": "node scripts/migrate.js",
+    "export-data": "node scripts/export-data.js"
   },
   "dependencies": {
     "axios": "^1.6.7",
