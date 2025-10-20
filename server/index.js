@@ -133,6 +133,85 @@ app.post('/api/add-avatar-column', async (req, res) => {
   }
 });
 
+// Endpoint temporal para crear tablas de perfiles
+app.post('/api/create-profiles-table', async (req, res) => {
+  try {
+    const pool = require('./db');
+    
+    // Crear tabla user_profiles
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS user_profiles (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        bio TEXT,
+        location VARCHAR(100),
+        website VARCHAR(255),
+        birth_date DATE,
+        gender VARCHAR(20),
+        favorite_games TEXT[],
+        gaming_style VARCHAR(50),
+        availability VARCHAR(50),
+        looking_for_team BOOLEAN DEFAULT false,
+        streaming_platform VARCHAR(50),
+        streaming_url VARCHAR(255),
+        social_links JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id)
+      )
+    `);
+    
+    // Crear tabla user_settings
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS user_settings (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        theme VARCHAR(20) DEFAULT 'dark',
+        language VARCHAR(10) DEFAULT 'es',
+        notifications_enabled BOOLEAN DEFAULT true,
+        email_notifications BOOLEAN DEFAULT true,
+        push_notifications BOOLEAN DEFAULT true,
+        privacy_level VARCHAR(20) DEFAULT 'public',
+        show_online_status BOOLEAN DEFAULT true,
+        show_activity BOOLEAN DEFAULT true,
+        allow_friend_requests BOOLEAN DEFAULT true,
+        allow_messages BOOLEAN DEFAULT true,
+        auto_save BOOLEAN DEFAULT true,
+        performance_mode BOOLEAN DEFAULT false,
+        low_latency_mode BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id)
+      )
+    `);
+    
+    // Crear tabla user_stats
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS user_stats (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        posts_count INTEGER DEFAULT 0,
+        followers_count INTEGER DEFAULT 0,
+        following_count INTEGER DEFAULT 0,
+        likes_received INTEGER DEFAULT 0,
+        comments_made INTEGER DEFAULT 0,
+        games_played INTEGER DEFAULT 0,
+        hours_played INTEGER DEFAULT 0,
+        achievements_count INTEGER DEFAULT 0,
+        last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id)
+      )
+    `);
+    
+    res.json({ success: true, message: 'Tablas de perfiles creadas correctamente' });
+  } catch (error) {
+    console.error('Error creando tablas de perfiles:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Endpoint de prueba para comentarios
 app.get('/api/test-comments/:postId', async (req, res) => {
   try {
