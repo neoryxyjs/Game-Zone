@@ -13,13 +13,25 @@ const SettingsPage = () => {
     privacy_level: 'public',
     language: 'es'
   });
+  const [profile, setProfile] = useState({
+    bio: '',
+    location: '',
+    website: '',
+    gaming_style: 'casual',
+    favorite_games: []
+  });
+  const [username, setUsername] = useState('');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
 
   useEffect(() => {
     if (isAuthenticated && user) {
       loadUserStats(user.id);
       loadUserSettings(user.id);
+      loadUserProfile(user.id);
+      setUsername(user.username || '');
     }
     setLoading(false);
   }, [isAuthenticated, user]);
@@ -64,6 +76,19 @@ const SettingsPage = () => {
     }
   };
 
+  const loadUserProfile = async (userId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/profiles/${userId}`);
+      const data = await response.json();
+      
+      if (data.success && data.profile && data.profile.profile) {
+        setProfile(data.profile.profile);
+      }
+    } catch (error) {
+      console.error('Error cargando perfil:', error);
+    }
+  };
+
   const saveSettings = async () => {
     try {
       setSaving(true);
@@ -94,6 +119,90 @@ const SettingsPage = () => {
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleProfileChange = (field, value) => {
+    setProfile(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleAvatarChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAvatarPreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const saveProfile = async () => {
+    try {
+      setSaving(true);
+      
+      // Actualizar username si cambió
+      if (username !== user.username) {
+        const usernameResponse = await fetch(`${API_BASE_URL}/api/auth/update-username`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            userId: user.id, 
+            username: username 
+          })
+        });
+        
+        if (!usernameResponse.ok) {
+          throw new Error('Error actualizando username');
+        }
+      }
+      
+      // Subir avatar si hay uno nuevo
+      if (avatarFile) {
+        const formData = new FormData();
+        formData.append('avatar', avatarFile);
+        
+        const avatarResponse = await fetch(`${API_BASE_URL}/api/profiles/${user.id}/avatar`, {
+          method: 'PUT',
+          body: formData
+        });
+        
+        if (!avatarResponse.ok) {
+          throw new Error('Error subiendo avatar');
+        }
+      }
+      
+      // Actualizar perfil
+      const response = await fetch(`${API_BASE_URL}/api/profiles/${user.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profile)
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setMessage('Perfil actualizado correctamente');
+        setTimeout(() => setMessage(''), 3000);
+        setAvatarFile(null);
+        setAvatarPreview(null);
+        // Actualizar el contexto del usuario
+        if (username !== user.username) {
+          // Aquí podrías actualizar el contexto del usuario
+          window.location.reload(); // Recarga simple para actualizar el username
+        }
+      } else {
+        setMessage('Error actualizando perfil');
+      }
+    } catch (error) {
+      console.error('Error actualizando perfil:', error);
+      setMessage('Error de conexión');
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
@@ -199,6 +308,165 @@ const SettingsPage = () => {
 
           {/* Configuraciones principales */}
           <div className="lg:col-span-2">
+            {/* Personalización del Perfil */}
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <h2 className="text-2xl font-bold mb-6">Personalizar Perfil</h2>
+              
+              {message && (
+                <div className={`mb-4 p-3 rounded-lg ${
+                  message.includes('correctamente') 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {message}
+                </div>
+              )}
+
+              <div className="space-y-6">
+                {/* Apodo/Username */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Apodo/Username
+                  </label>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Tu apodo en GameZone"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Este será tu nombre visible en la red social
+                  </p>
+                </div>
+
+                {/* Avatar */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Foto de Perfil
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <img 
+                        src={avatarPreview || user.avatar || '/default-avatar.png'} 
+                        alt="Avatar" 
+                        className="w-20 h-20 rounded-full object-cover"
+                      />
+                      {avatarPreview && (
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">✓</span>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                        className="hidden"
+                        id="avatar-upload"
+                      />
+                      <label
+                        htmlFor="avatar-upload"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
+                      >
+                        Cambiar Foto
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">
+                        JPG, PNG, GIF (máx. 5MB)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bio */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Biografía
+                  </label>
+                  <textarea
+                    value={profile.bio}
+                    onChange={(e) => handleProfileChange('bio', e.target.value)}
+                    placeholder="Cuéntanos sobre ti..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={3}
+                  />
+                </div>
+
+                {/* Ubicación */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ubicación
+                  </label>
+                  <input
+                    type="text"
+                    value={profile.location}
+                    onChange={(e) => handleProfileChange('location', e.target.value)}
+                    placeholder="Ciudad, País"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Sitio Web */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Sitio Web
+                  </label>
+                  <input
+                    type="url"
+                    value={profile.website}
+                    onChange={(e) => handleProfileChange('website', e.target.value)}
+                    placeholder="https://tu-sitio.com"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Estilo de Gaming */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Estilo de Gaming
+                  </label>
+                  <select
+                    value={profile.gaming_style}
+                    onChange={(e) => handleProfileChange('gaming_style', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="casual">Casual</option>
+                    <option value="competitive">Competitivo</option>
+                    <option value="professional">Profesional</option>
+                    <option value="streamer">Streamer</option>
+                  </select>
+                </div>
+
+                {/* Juegos Favoritos */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Juegos Favoritos
+                  </label>
+                  <input
+                    type="text"
+                    value={profile.favorite_games.join(', ')}
+                    onChange={(e) => handleProfileChange('favorite_games', e.target.value.split(', ').filter(game => game.trim()))}
+                    placeholder="League of Legends, Valorant, CS2..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Separa los juegos con comas
+                  </p>
+                </div>
+
+                {/* Botón Guardar Perfil */}
+                <button
+                  onClick={saveProfile}
+                  disabled={saving}
+                  className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50"
+                >
+                  {saving ? 'Guardando...' : 'Guardar Perfil'}
+                </button>
+              </div>
+            </div>
+
+            {/* Configuraciones */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-2xl font-bold mb-6">Configuraciones</h2>
               

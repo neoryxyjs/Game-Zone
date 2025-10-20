@@ -60,4 +60,40 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Actualizar username
+router.put('/update-username', async (req, res) => {
+  try {
+    const { userId, username } = req.body;
+    
+    if (!userId || !username) {
+      return res.status(400).json({ success: false, message: 'Faltan datos requeridos' });
+    }
+    
+    // Verificar si el username ya existe
+    const existingUser = await pool.query(
+      'SELECT id FROM users WHERE username = $1 AND id != $2',
+      [username, userId]
+    );
+    
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ success: false, message: 'El username ya está en uso' });
+    }
+    
+    // Actualizar username
+    const result = await pool.query(
+      'UPDATE users SET username = $1 WHERE id = $2 RETURNING id, username, email',
+      [username, userId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    }
+    
+    res.json({ success: true, user: result.rows[0] });
+  } catch (error) {
+    console.error('Error actualizando username:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 module.exports = router; 
