@@ -115,10 +115,14 @@ function PostCard({ post, currentUserId, onLike }) {
       const data = await response.json();
       
       if (data.success) {
-        setComments(data.comments);
+        setComments(data.comments || []);
+      } else {
+        console.error('Error cargando comentarios:', data.error);
+        setComments([]);
       }
     } catch (error) {
       console.error('Error cargando comentarios:', error);
+      setComments([]);
     } finally {
       setLoadingComments(false);
     }
@@ -214,6 +218,15 @@ function PostCard({ post, currentUserId, onLike }) {
       {/* Comentarios */}
       {showComments && (
         <div className="mt-4 border-t pt-4">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="font-semibold text-gray-800">Comentarios</h4>
+            <button
+              onClick={() => setShowComments(false)}
+              className="text-gray-500 hover:text-gray-700 text-sm"
+            >
+              ✕ Cerrar
+            </button>
+          </div>
           <form onSubmit={handleComment} className="mb-4">
             <div className="flex space-x-2">
               <input
@@ -239,13 +252,13 @@ function PostCard({ post, currentUserId, onLike }) {
               {comments.map(comment => (
                 <div key={comment.id} className="flex space-x-3">
                   <img 
-                    src={comment.user.avatar || '/default-avatar.png'} 
-                    alt={comment.user.username}
+                    src={comment.user?.avatar || '/default-avatar.png'} 
+                    alt={comment.user?.username || 'Usuario'}
                     className="w-8 h-8 rounded-full"
                   />
                   <div className="flex-1">
                     <div className="bg-gray-100 rounded-lg px-3 py-2">
-                      <p className="font-semibold text-sm">{comment.user.username}</p>
+                      <p className="font-semibold text-sm">{comment.user?.username || 'Usuario'}</p>
                       <p className="text-gray-800">{comment.content}</p>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
