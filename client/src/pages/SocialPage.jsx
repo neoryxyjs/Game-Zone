@@ -5,13 +5,12 @@ import Feed from '../components/Social/Feed';
 import UserSearch from '../components/Social/UserSearch';
 import FollowingList from '../components/Social/FollowingList';
 import OnlineUsers from '../components/Social/OnlineUsers';
-import NotificationCenter from '../components/Notifications/NotificationCenter';
+import RealTimeNotifications from '../components/Notifications/RealTimeNotifications';
 
 export default function SocialPage() {
   const { user } = useUser();
   const [activeTab, setActiveTab] = useState('feed');
   const [newPost, setNewPost] = useState(null);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [error, setError] = useState(null);
 
   const handlePostCreated = (post) => {
@@ -55,13 +54,7 @@ export default function SocialPage() {
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setShowNotifications(true)}
-                className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full"
-              >
-                🔔
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              </button>
+              <RealTimeNotifications />
             </div>
           </div>
         </div>
@@ -188,13 +181,6 @@ export default function SocialPage() {
         </div>
       </div>
       
-      {/* Centro de notificaciones */}
-      {showNotifications && (
-        <NotificationCenter 
-          userId={user.id} 
-          onClose={() => setShowNotifications(false)} 
-        />
-      )}
     </div>
   );
 }

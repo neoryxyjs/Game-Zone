@@ -48,6 +48,24 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Crear notificación simple (para compatibilidad)
+router.post('/create', async (req, res) => {
+  try {
+    const { user_id, type, message, is_read = false } = req.body;
+    
+    const result = await pool.query(`
+      INSERT INTO notifications (user_id, type, message, is_read)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+    `, [user_id, type, message, is_read]);
+    
+    res.json({ success: true, notification: result.rows[0] });
+  } catch (error) {
+    console.error('Error creando notificación simple:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Marcar notificación como leída
 router.put('/:notificationId/read', async (req, res) => {
   try {
