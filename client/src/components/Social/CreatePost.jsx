@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { API_BASE_URL } from '../../config/api';
+import ImageUpload from './ImageUpload';
 
 export default function CreatePost({ userId, onPostCreated }) {
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [gameTag, setGameTag] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,7 +21,7 @@ export default function CreatePost({ userId, onPostCreated }) {
         body: JSON.stringify({
           user_id: userId,
           content: content.trim(),
-          image_url: imageUrl || null,
+          image_url: uploadedImage ? uploadedImage.url : (imageUrl || null),
           game_tag: gameTag || null
         })
       });
@@ -30,6 +32,7 @@ export default function CreatePost({ userId, onPostCreated }) {
         setContent('');
         setImageUrl('');
         setGameTag('');
+        setUploadedImage(null);
         if (onPostCreated) {
           onPostCreated(data.post);
         }
@@ -60,6 +63,13 @@ export default function CreatePost({ userId, onPostCreated }) {
             {content.length}/500
           </div>
         </div>
+
+        {/* Componente de carga de imágenes */}
+        <ImageUpload 
+          onImageUploaded={setUploadedImage}
+          userId={userId}
+          postId={null}
+        />
 
         <div className="flex space-x-4">
           <input
