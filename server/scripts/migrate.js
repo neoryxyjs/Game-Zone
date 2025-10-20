@@ -13,6 +13,7 @@ const pool = new Pool({
 async function runMigrations() {
   try {
     console.log('🔄 Running database migrations...');
+    console.log('🔍 DATABASE_URL:', process.env.DATABASE_URL ? '✅ Configurada' : '❌ No configurada');
     
     // Read and execute migration files
     const migrationsDir = path.join(__dirname, '..', 'migrations');
