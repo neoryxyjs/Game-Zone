@@ -66,6 +66,53 @@ app.post('/api/migrate', async (req, res) => {
   }
 });
 
+// Endpoint simplificado para crear tabla posts
+app.post('/api/create-posts-table', async (req, res) => {
+  try {
+    const pool = require('./db');
+    
+    // Crear tabla posts si no existe
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS posts (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        content TEXT NOT NULL,
+        image_url VARCHAR(500),
+        game_tag VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    // Crear tabla post_likes si no existe
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS post_likes (
+        id SERIAL PRIMARY KEY,
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(post_id, user_id)
+      )
+    `);
+    
+    // Crear tabla post_comments si no existe
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS post_comments (
+        id SERIAL PRIMARY KEY,
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        content TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    res.json({ success: true, message: 'Tabla posts creada exitosamente' });
+  } catch (error) {
+    console.error('❌ Error creando tabla posts:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`✅ Servidor backend escuchando en puerto ${PORT}`);
   console.log(`✅ Healthcheck disponible en http://localhost:${PORT}/`);
