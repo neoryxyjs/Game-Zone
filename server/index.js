@@ -17,8 +17,9 @@ console.log('🔧 Backend simplificado - Solo autenticación básica');
 const authRoutes = require('./routes/auth');
 const postsRoutes = require('./routes/posts');
 const socialRoutes = require('./routes/social');
-const imagesRoutes = require('./routes/images');
-const settingsRoutes = require('./routes/settings');
+// Temporalmente deshabilitado para debug
+// const imagesRoutes = require('./routes/images');
+// const settingsRoutes = require('./routes/settings');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -36,8 +37,9 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/social', socialRoutes);
-app.use('/api/images', imagesRoutes);
-app.use('/api/settings', settingsRoutes);
+// Temporalmente deshabilitado para debug
+// app.use('/api/images', imagesRoutes);
+// app.use('/api/settings', settingsRoutes);
 
 app.get('/', (req, res) => {
   res.send('API de GameZone Social funcionando');
