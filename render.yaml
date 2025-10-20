@@ -7,13 +7,7 @@ services:
     envVars:
       - key: REACT_APP_API_URL
         value: https://game-zone-production-6354.up.railway.app
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: DENY
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-      - path: /*
-        name: X-XSS-Protection
-        value: 1; mode=block
+      - key: CI
+        value: false
+      - key: GENERATE_SOURCEMAP
+        value: false
