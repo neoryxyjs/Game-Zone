@@ -1,13 +1,14 @@
 [build]
   base = "client"
   publish = "build"
-  command = "npm run build:netlify"
+  command = "chmod +x netlify-build.sh && ./netlify-build.sh"
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "9"
   CI = "false"
   GENERATE_SOURCEMAP = "false"
+  NODE_OPTIONS = "--max_old_space_size=4096"
 
 [[redirects]]
   from = "/*"
