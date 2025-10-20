@@ -21,8 +21,6 @@ const imagesRoutes = require('./routes/images');
 const profilesRoutes = require('./routes/profiles');
 const onlineRoutes = require('./routes/online');
 const notificationsRoutes = require('./routes/notifications');
-// Temporalmente deshabilitado para debug
-// const settingsRoutes = require('./routes/settings');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -44,8 +42,6 @@ app.use('/api/images', imagesRoutes);
 app.use('/api/profiles', profilesRoutes);
 app.use('/api/online', onlineRoutes);
 app.use('/api/notifications', notificationsRoutes);
-// Temporalmente deshabilitado para debug
-// app.use('/api/settings', settingsRoutes);
 
 app.get('/', (req, res) => {
   res.send('API de GameZone Social funcionando');
