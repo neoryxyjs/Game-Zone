@@ -25,6 +25,7 @@ app.use(cors({
     'http://localhost:3000',
     'http://localhost:3001', 
     'https://game-zone-9nf6g9r64-neoryxyjs-projects.vercel.app',
+    'https://game-zone-zeta-eight.vercel.app',
     'https://gamezone-social.vercel.app'
   ],
   credentials: true,
