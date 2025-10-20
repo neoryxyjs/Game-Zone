@@ -216,6 +216,63 @@ app.post('/api/create-profiles-table', async (req, res) => {
   }
 });
 
+// Endpoint temporal para crear tablas de notificaciones
+app.post('/api/create-notifications-table', async (req, res) => {
+  try {
+    const pool = require('./db');
+    
+    // Crear tabla de notificaciones
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        from_user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        type VARCHAR(50) NOT NULL,
+        message TEXT NOT NULL,
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        is_read BOOLEAN DEFAULT false,
+        read_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    // Agregar columna last_seen a users si no existe
+    await pool.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    `);
+    
+    // Crear índices para mejor rendimiento
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)
+    `);
+    
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_notifications_from_user_id ON notifications(from_user_id)
+    `);
+    
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_notifications_type ON notifications(type)
+    `);
+    
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON notifications(is_read)
+    `);
+    
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at)
+    `);
+    
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_users_last_seen ON users(last_seen)
+    `);
+    
+    res.json({ success: true, message: 'Tablas de notificaciones creadas correctamente' });
+  } catch (error) {
+    console.error('Error creando tablas de notificaciones:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Endpoint de prueba para comentarios
 app.get('/api/test-comments/:postId', async (req, res) => {
   try {
