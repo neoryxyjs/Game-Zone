@@ -15,41 +15,27 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Obtener configuraciones del localStorage
-  const getInitialSettings = () => {
-    const savedSettings = localStorage.getItem('gamezone_settings');
-    return savedSettings ? JSON.parse(savedSettings) : {
-      emailNotifications: true,
-      publicProfile: true,
-      darkMode: false,
-      language: 'es',
-      autoSave: true,
-      pushNotifications: true,
-      showDetailedStats: true,
-      gameAlerts: true,
-      teamInvites: true,
-      tournamentNotifications: false,
-      streamNotifications: true,
-      performanceMode: false,
-      lowLatencyMode: true
-    };
-  };
+  // Configuraciones por defecto
+  const [userSettings, setUserSettings] = useState({
+    emailNotifications: true,
+    publicProfile: true,
+    darkMode: false,
+    language: 'es',
+    autoSave: true,
+    pushNotifications: true,
+    showDetailedStats: true,
+    gameAlerts: true,
+    teamInvites: true,
+    tournamentNotifications: false,
+    streamNotifications: true,
+    performanceMode: false,
+    lowLatencyMode: true
+  });
 
-  const [userSettings, setUserSettings] = useState(getInitialSettings);
-
-  // Efecto para manejar la inicialización de manera segura
+  // Efecto para manejar la inicialización
   useEffect(() => {
-    try {
-      const savedUser = localStorage.getItem('gamezone_user');
-      if (savedUser) {
-        const parsedUser = JSON.parse(savedUser);
-        setUser(parsedUser);
-        setIsAuthenticated(true);
-      }
-    } catch (error) {
-      console.error('Error al cargar usuario del localStorage:', error);
-      localStorage.removeItem('gamezone_user');
-    }
+    // El usuario se maneja a través de la autenticación del backend
+    // No necesitamos localStorage
   }, []);
 
   const [notifications, setNotifications] = useState([
@@ -106,33 +92,16 @@ export const UserProvider = ({ children }) => {
   const updateUser = (updates) => {
     const updatedUser = { ...user, ...updates };
     setUser(updatedUser);
-    localStorage.setItem('gamezone_user', JSON.stringify(updatedUser));
-    
-    // También actualizar en la lista de usuarios para persistencia
-    const existingUsers = JSON.parse(localStorage.getItem('gamezone_users') || '[]');
-    const updatedUsers = existingUsers.map(u => 
-      u.id === user.id ? { ...u, ...updates } : u
-    );
-    localStorage.setItem('gamezone_users', JSON.stringify(updatedUsers));
   };
 
   const updateAvatar = (newAvatar) => {
     const updatedUser = { ...user, avatar: newAvatar };
     setUser(updatedUser);
-    localStorage.setItem('gamezone_user', JSON.stringify(updatedUser));
-    
-    // También actualizar en la lista de usuarios para persistencia
-    const existingUsers = JSON.parse(localStorage.getItem('gamezone_users') || '[]');
-    const updatedUsers = existingUsers.map(u => 
-      u.id === user.id ? { ...u, avatar: newAvatar } : u
-    );
-    localStorage.setItem('gamezone_users', JSON.stringify(updatedUsers));
   };
 
   const updateSettings = (newSettings) => {
     const updatedSettings = { ...userSettings, ...newSettings };
     setUserSettings(updatedSettings);
-    localStorage.setItem('gamezone_settings', JSON.stringify(updatedSettings));
   };
 
   const toggleSetting = (settingKey) => {
@@ -141,7 +110,6 @@ export const UserProvider = ({ children }) => {
       [settingKey]: !userSettings[settingKey] 
     };
     setUserSettings(updatedSettings);
-    localStorage.setItem('gamezone_settings', JSON.stringify(updatedSettings));
   };
 
   const markNotificationAsRead = (notificationId) => {
@@ -173,12 +141,6 @@ export const UserProvider = ({ children }) => {
     try {
       const username = user?.username || 'Usuario';
       
-      // Limpiar localStorage primero
-      localStorage.removeItem('gamezone_user');
-      localStorage.removeItem('gamezone_notifications');
-      localStorage.removeItem('gamezone_friends');
-      // Note: We keep gamezone_settings so they persist across sessions
-      
       // Limpiar estados de forma segura
       setNotifications([]);
       setFriends([]);
@@ -189,8 +151,6 @@ export const UserProvider = ({ children }) => {
       if (window.showNotification) {
         window.showNotification('info', `¡Hasta pronto, ${username}! Vuelve pronto.`);
       }
-      
-      // No resetear userSettings para mantener las preferencias del usuario
     } catch (error) {
       console.error('Error durante logout:', error);
       // Forzar limpieza de estados en caso de error
@@ -214,16 +174,12 @@ export const UserProvider = ({ children }) => {
         bio: userData.bio || '¡Nuevo jugador en GameZone!'
       };
       
-      // Guardar en localStorage primero
-      localStorage.setItem('gamezone_user', JSON.stringify(userWithDefaults));
-      
       // Actualizar estados de forma segura
       setIsAuthenticated(true);
       setUser(userWithDefaults);
 
       // Simular notificaciones de bienvenida
       setTimeout(() => {
-        // Esta función será llamada desde el componente que use el contexto
         if (window.showNotification) {
           window.showNotification('success', `¡Bienvenido de vuelta, ${userWithDefaults.username}!`);
         }
@@ -243,15 +199,7 @@ export const UserProvider = ({ children }) => {
   };
 
   const register = (userData) => {
-    // Verificar si el usuario ya existe
-    const existingUsers = JSON.parse(localStorage.getItem('gamezone_users') || '[]');
-    const userExists = existingUsers.find(u => u.email === userData.email || u.username === userData.username);
-    
-    if (userExists) {
-      throw new Error('El usuario ya existe');
-    }
-
-    // Agregar nuevo usuario a la lista
+    // Crear nuevo usuario
     const newUser = {
       ...userData,
       id: Date.now(),
@@ -264,10 +212,6 @@ export const UserProvider = ({ children }) => {
       avatar: userData.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
       bio: userData.bio || '¡Nuevo jugador en GameZone!'
     };
-
-    // Guardar en localStorage primero
-    existingUsers.push(newUser);
-    localStorage.setItem('gamezone_users', JSON.stringify(existingUsers));
     
     // Iniciar sesión automáticamente
     login(newUser);

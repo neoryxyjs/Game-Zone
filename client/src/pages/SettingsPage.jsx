@@ -15,21 +15,6 @@ const SettingsPage = () => {
     setLoading(false);
   }, [isAuthenticated, user]);
 
-  const loadUserData = async () => {
-    try {
-      // Obtener usuario del localStorage
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
-        loadUserStats(userData.id);
-      }
-    } catch (error) {
-      console.error('Error cargando datos del usuario:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const loadUserStats = async (userId) => {
     try {
