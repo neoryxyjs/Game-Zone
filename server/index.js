@@ -15,6 +15,8 @@ const { runMigrations } = require('./scripts/migrate');
 console.log('🔧 Backend simplificado - Solo autenticación básica');
 
 const authRoutes = require('./routes/auth');
+const postsRoutes = require('./routes/posts');
+const socialRoutes = require('./routes/social');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -30,6 +32,8 @@ app.use(express.json());
 
 // Rutas
 app.use('/api/auth', authRoutes);
+app.use('/api/posts', postsRoutes);
+app.use('/api/social', socialRoutes);
 
 app.get('/', (req, res) => {
   res.send('API de GameZone Social funcionando');

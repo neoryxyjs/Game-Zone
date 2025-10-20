@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import AuthPage from './pages/AuthPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
+import SocialPage from './pages/SocialPage';
 import { UserProvider, useUser } from './context/UserContext';
 import { useNotifications } from './components/Notifications/NotificationManager';
 import { NotificationProvider } from './components/Notifications/NotificationProvider';
@@ -72,6 +73,7 @@ const AppContent = () => {
           <Route path="/about" element={<div className="p-8 text-center"><h1 className="text-2xl font-bold">Sobre Nosotros</h1><p className="mt-4">Página en construcción</p></div>} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/social" element={<SocialPage />} />
           <Route path="*" element={<div className="p-8 text-center"><h1 className="text-2xl font-bold">404 - Página no encontrada</h1><p className="mt-4">La página que buscas no existe</p></div>} />
         </Routes>
       </Layout>
