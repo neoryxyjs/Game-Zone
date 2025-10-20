@@ -4,11 +4,14 @@ import CreatePost from '../components/Social/CreatePost';
 import Feed from '../components/Social/Feed';
 import UserSearch from '../components/Social/UserSearch';
 import FollowingList from '../components/Social/FollowingList';
+import OnlineUsers from '../components/Social/OnlineUsers';
+import NotificationCenter from '../components/Notifications/NotificationCenter';
 
 export default function SocialPage() {
   const { user } = useUser();
   const [activeTab, setActiveTab] = useState('feed');
   const [newPost, setNewPost] = useState(null);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const handlePostCreated = (post) => {
     setNewPost(post);
@@ -36,12 +39,25 @@ export default function SocialPage() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Red Social GameZone
-          </h1>
-          <p className="text-gray-600">
-            Conecta con otros gamers y comparte tu experiencia
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Red Social GameZone
+              </h1>
+              <p className="text-gray-600">
+                Conecta con otros gamers y comparte tu experiencia
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowNotifications(true)}
+                className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full"
+              >
+                🔔
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Tabs de navegación */}
@@ -119,6 +135,9 @@ export default function SocialPage() {
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
+            {/* Usuarios en línea */}
+            <OnlineUsers currentUserId={user.id} />
+            
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Estadísticas
@@ -155,6 +174,14 @@ export default function SocialPage() {
           </div>
         </div>
       </div>
+      
+      {/* Centro de notificaciones */}
+      {showNotifications && (
+        <NotificationCenter 
+          userId={user.id} 
+          onClose={() => setShowNotifications(false)} 
+        />
+      )}
     </div>
   );
 }
