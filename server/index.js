@@ -113,6 +113,24 @@ app.post('/api/create-posts-table', async (req, res) => {
   }
 });
 
+// Endpoint para agregar columna avatar a users
+app.post('/api/add-avatar-column', async (req, res) => {
+  try {
+    const pool = require('./db');
+    
+    // Agregar columna avatar si no existe
+    await pool.query(`
+      ALTER TABLE users 
+      ADD COLUMN IF NOT EXISTS avatar VARCHAR(500) DEFAULT NULL
+    `);
+    
+    res.json({ success: true, message: 'Columna avatar agregada exitosamente' });
+  } catch (error) {
+    console.error('❌ Error agregando columna avatar:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`✅ Servidor backend escuchando en puerto ${PORT}`);
   console.log(`✅ Healthcheck disponible en http://localhost:${PORT}/`);
