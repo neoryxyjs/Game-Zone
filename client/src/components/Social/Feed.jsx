@@ -96,14 +96,22 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
 
   return (
     <div className="space-y-6">
-      {posts.map(post => (
-        <PostCard 
-          key={post.id} 
-          post={post} 
-          currentUserId={userId}
-          onLike={handleLike}
-        />
-      ))}
+        {posts.map(post => (
+          <PostCard 
+            key={post.id} 
+            post={post} 
+            currentUserId={userId}
+            onLike={handleLike}
+            onCommentAdded={() => {
+              // Actualizar el contador de comentarios en el post
+              setPosts(prev => prev.map(p => 
+                p.id === post.id 
+                  ? { ...p, comments_count: (p.comments_count || 0) + 1 }
+                  : p
+              ));
+            }}
+          />
+        ))}
       
       {hasMore && (
         <button
@@ -147,9 +155,22 @@ function PostCard({ post, currentUserId, onLike, onCommentAdded }) {
 
   const handleComment = async (e) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
+    e.stopPropagation(); // Prevenir propagación del evento
+    
+    if (!newComment.trim()) {
+      console.warn('Comentario vacío');
+      return;
+    }
+    
+    if (!currentUserId) {
+      console.error('❌ currentUserId no está definido:', currentUserId);
+      console.warn('No se puede comentar sin usuario autenticado');
+      return;
+    }
 
     try {
+      console.log('Enviando comentario...', { postId: post.id, userId: currentUserId, content: newComment.trim() });
+      
       const response = await fetch(`${API_BASE_URL}/api/posts/${post.id}/comment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -159,11 +180,17 @@ function PostCard({ post, currentUserId, onLike, onCommentAdded }) {
         })
       });
       
+      console.log('Respuesta del servidor:', response.status);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error del servidor:', errorText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
+      console.log('Datos del comentario:', data);
+      
       if (data.success && data.comment) {
         // Agregar el comentario con datos seguros
         const newCommentData = {
@@ -187,14 +214,14 @@ function PostCard({ post, currentUserId, onLike, onCommentAdded }) {
           onCommentAdded(post.id);
         }
         
-        console.log('Comentario agregado exitosamente');
+        console.log('✅ Comentario agregado exitosamente');
       } else {
-        console.error('Error comentando:', data.error || 'Error desconocido');
+        console.error('❌ Error comentando:', data.error || 'Error desconocido');
         // Mostrar error sin alert
         console.warn('No se pudo comentar:', data.error || 'Error desconocido');
       }
     } catch (error) {
-      console.error('Error comentando:', error);
+      console.error('❌ Error comentando:', error);
       // Mostrar error sin alert
       console.warn('Error de conexión al comentar');
     }
@@ -283,10 +310,20 @@ function PostCard({ post, currentUserId, onLike, onCommentAdded }) {
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Escribe un comentario..."
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleComment(e);
+                  }
+                }}
               />
               <button
                 type="submit"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleComment(e);
+                }}
               >
                 Comentar
               </button>
