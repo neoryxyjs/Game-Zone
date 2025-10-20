@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { 
@@ -8,7 +8,6 @@ import {
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
 import RealTimeNotifications from '../Notifications/RealTimeNotifications';
-import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import SummonerSearch from '../Profile/SummonerSearch';
 

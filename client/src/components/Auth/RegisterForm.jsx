@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { API_ENDPOINTS } from '../../config/api';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
-import { useNotifications } from '../Notifications/NotificationManager';
+// import { useNotifications } from '../Notifications/NotificationManager';
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -17,7 +17,7 @@ export default function RegisterForm() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useUser();
-  const { showSuccess, showError } = useNotifications();
+  // const { showSuccess, showError } = useNotifications();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -27,14 +27,14 @@ export default function RegisterForm() {
     // Validar que las contraseñas coincidan
     if (formData.password !== formData.confirmPassword) {
       setError('Las contraseñas no coinciden');
-      showError('Las contraseñas no coinciden');
+      // showError('Las contraseñas no coinciden');
       return;
     }
 
     // Validar longitud de contraseña
     if (formData.password.length < 6) {
       setError('La contraseña debe tener al menos 6 caracteres');
-      showError('La contraseña debe tener al menos 6 caracteres');
+      // showError('La contraseña debe tener al menos 6 caracteres');
       return;
     }
 
@@ -55,15 +55,15 @@ export default function RegisterForm() {
       });
       const data = await response.json();
       if (response.ok) {
-        showSuccess(`¡Bienvenido a GameZone, ${formData.username}!`);
+        // showSuccess(`¡Bienvenido a GameZone, ${formData.username}!`);
         navigate('/');
       } else {
         setError(data.message || 'Error al registrar usuario');
-        showError(data.message || 'Error al registrar usuario');
+        // showError(data.message || 'Error al registrar usuario');
       }
     } catch (err) {
       setError('Error de conexión con el servidor');
-      showError('Error de conexión con el servidor');
+      // showError('Error de conexión con el servidor');
     } finally {
       setIsLoading(false);
     }

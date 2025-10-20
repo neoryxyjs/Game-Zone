@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { API_ENDPOINTS } from '../../config/api';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
-import { useNotifications } from '../Notifications/NotificationManager';
+// import { useNotifications } from '../Notifications/NotificationManager';
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -12,7 +12,7 @@ export default function LoginForm() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { authenticateUser } = useUser();
-  const { showSuccess, showError } = useNotifications();
+  // const { showSuccess, showError } = useNotifications();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,15 +23,15 @@ export default function LoginForm() {
     try {
       const success = await authenticateUser(formData.email, formData.password);
       if (success) {
-        showSuccess('¡Sesión iniciada correctamente!');
+        // showSuccess('¡Sesión iniciada correctamente!');
         navigate('/');
       } else {
         setError('Email o contraseña incorrectos');
-        showError('Credenciales incorrectas');
+        // showError('Credenciales incorrectas');
       }
     } catch (err) {
       setError(err.message);
-      showError(err.message);
+      // showError(err.message);
     } finally {
       setIsLoading(false);
     }

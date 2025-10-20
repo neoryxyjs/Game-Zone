@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import AvatarEditor from '../components/Profile/AvatarEditor';
 import AvatarUpload from '../components/Profile/AvatarUpload';
-import NotificationCenter from '../components/Notifications/NotificationCenter';
+import RealTimeNotifications from '../components/Notifications/RealTimeNotifications';
 import FriendsManager from '../components/Friends/FriendsManager';
 import GamerProfileHeader from '../components/Profile/GamerProfileHeader';
 import SummonerSearch from '../components/Profile/SummonerSearch';
@@ -453,11 +453,31 @@ export default function ProfilePage() {
       )}
 
       {showNotifications && (
-        <NotificationCenter
-          notifications={notifications}
-          onMarkAsRead={markNotificationAsRead}
-          onClose={() => setShowNotifications(false)}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Notificaciones</h3>
+              <button
+                onClick={() => setShowNotifications(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-3">
+              {notifications.length === 0 ? (
+                <p className="text-gray-500 text-center py-4">No tienes notificaciones</p>
+              ) : (
+                notifications.map(notification => (
+                  <div key={notification.id} className="p-3 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-900">{notification.message}</p>
+                    <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

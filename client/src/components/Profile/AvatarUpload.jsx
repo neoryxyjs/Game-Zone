@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useUser } from '../../context/UserContext';
-import { useNotifications } from '../Notifications/NotificationManager';
+// import { useNotifications } from '../Notifications/NotificationManager';
 
 const AvatarUpload = () => {
   const { user, updateAvatar } = useUser();
-  const { showSuccess, showError } = useNotifications();
+  // const { showSuccess, showError } = useNotifications();
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const fileInputRef = useRef(null);
@@ -16,13 +16,13 @@ const AvatarUpload = () => {
 
     // Validar tipo de archivo
     if (!file.type.startsWith('image/')) {
-      showError('Por favor selecciona una imagen válida');
+      // showError('Por favor selecciona una imagen válida');
       return;
     }
 
     // Validar tamaño (máximo 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      showError('La imagen debe ser menor a 5MB');
+      // showError('La imagen debe ser menor a 5MB');
       return;
     }
 
@@ -44,7 +44,7 @@ const AvatarUpload = () => {
       
       // Actualizar avatar
       updateAvatar(previewUrl);
-      showSuccess('Avatar actualizado correctamente');
+      // showSuccess('Avatar actualizado correctamente');
       
       // Limpiar preview
       setPreviewUrl(null);
@@ -52,7 +52,7 @@ const AvatarUpload = () => {
         fileInputRef.current.value = '';
       }
     } catch (error) {
-      showError('Error al actualizar el avatar');
+      // showError('Error al actualizar el avatar');
     } finally {
       setIsUploading(false);
     }
@@ -68,7 +68,7 @@ const AvatarUpload = () => {
   const handleRemoveAvatar = () => {
     const defaultAvatar = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80';
     updateAvatar(defaultAvatar);
-    showSuccess('Avatar restaurado al predeterminado');
+    // showSuccess('Avatar restaurado al predeterminado');
   };
 
   return (

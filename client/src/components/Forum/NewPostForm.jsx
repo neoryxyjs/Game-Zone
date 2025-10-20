@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import { useUser } from '../../context/UserContext';
-import { useNotifications } from '../Notifications/NotificationManager';
+// import { useNotifications } from '../Notifications/NotificationManager';
 
 export default function NewPostForm({ onAddPost }) {
   const [content, setContent] = useState('');
   const { user, isAuthenticated } = useUser();
-  const { showError, showSuccess } = useNotifications();
+  // const { showError, showSuccess } = useNotifications();
   
   // Usar el juego del usuario actual o League of Legends por defecto
   const [game, setGame] = useState(user?.game || 'League of Legends');
