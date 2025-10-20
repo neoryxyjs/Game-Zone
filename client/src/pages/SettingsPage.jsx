@@ -173,6 +173,12 @@ const SettingsPage = () => {
         if (!avatarResponse.ok) {
           throw new Error('Error subiendo avatar');
         }
+        
+        const avatarData = await avatarResponse.json();
+        if (avatarData.success && avatarData.avatar_url) {
+          // Actualizar el avatar en el contexto del usuario
+          updateUser({ avatar: avatarData.avatar_url });
+        }
       }
       
       // Actualizar perfil
@@ -253,11 +259,17 @@ const SettingsPage = () => {
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
               <h3 className="text-lg font-semibold mb-4">Tu Perfil</h3>
               <div className="flex items-center mb-4">
-                <img 
-                  src={user.avatar || '/default-avatar.png'} 
-                  alt={user.username}
-                  className="w-16 h-16 rounded-full mr-4"
-                />
+                {user.avatar ? (
+                  <img 
+                    src={user.avatar} 
+                    alt={user.username}
+                    className="w-16 h-16 rounded-full object-cover mr-4"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center mr-4">
+                    <span className="text-gray-600 font-bold text-xl">{user.username?.[0]?.toUpperCase()}</span>
+                  </div>
+                )}
                 <div>
                   <h4 className="font-medium">{user.username}</h4>
                   <p className="text-sm text-gray-600">{user.email}</p>
@@ -347,11 +359,17 @@ const SettingsPage = () => {
                   </label>
                   <div className="flex items-center space-x-4">
                     <div className="relative">
-                      <img 
-                        src={avatarPreview || user.avatar || '/default-avatar.png'} 
-                        alt="Avatar" 
-                        className="w-20 h-20 rounded-full object-cover"
-                      />
+                      {(avatarPreview || user.avatar) ? (
+                        <img 
+                          src={avatarPreview || user.avatar} 
+                          alt="Avatar" 
+                          className="w-20 h-20 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center">
+                          <span className="text-gray-600 font-bold text-2xl">{user.username?.[0]?.toUpperCase()}</span>
+                        </div>
+                      )}
                       {avatarPreview && (
                         <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                           <span className="text-white text-xs">✓</span>

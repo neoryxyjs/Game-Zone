@@ -88,14 +88,17 @@ export default function UserSearch({ currentUserId }) {
             {users.map(user => (
               <div key={user.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <Link to={`/user/${user.id}`} className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-                  <img 
-                    src={user.avatar || '/default-avatar.png'} 
-                    alt={user.username}
-                    className="w-12 h-12 rounded-full object-cover"
-                    onError={(e) => {
-                      e.target.src = '/default-avatar.png';
-                    }}
-                  />
+                  {user.avatar ? (
+                    <img 
+                      src={user.avatar} 
+                      alt={user.username}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
+                      <span className="text-gray-600 font-bold">{user.username?.[0]?.toUpperCase()}</span>
+                    </div>
+                  )}
                   <div>
                     <h3 className="font-semibold text-gray-900 hover:text-blue-600">{user.username}</h3>
                     <p className="text-sm text-gray-600">{user.game} - {user.rank}</p>

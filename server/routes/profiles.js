@@ -1,6 +1,36 @@
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const router = express.Router();
 const pool = require('../db');
+
+// Configurar multer para subir avatares
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, '../uploads/avatars');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, `avatar-${req.params.userId}-${uniqueSuffix}${path.extname(file.originalname)}`);
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten archivos de imagen'), false);
+    }
+  }
+});
 
 // Obtener perfil completo de un usuario
 router.get('/:userId', async (req, res) => {
@@ -143,24 +173,47 @@ router.get('/:userId/stats', async (req, res) => {
   }
 });
 
-// Actualizar avatar de usuario
-router.put('/:userId/avatar', async (req, res) => {
+// Actualizar avatar de usuario (archivo)
+router.put('/:userId/avatar', upload.single('avatar'), async (req, res) => {
   try {
     const { userId } = req.params;
-    const { avatar_url } = req.body;
+    
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No se proporcionó archivo de avatar' });
+    }
+    
+    // Crear URL del avatar
+    const avatarUrl = `${req.protocol}://${req.get('host')}/api/profiles/avatar/${req.file.filename}`;
     
     const result = await pool.query(
       'UPDATE users SET avatar = $1 WHERE id = $2 RETURNING id, username, avatar',
-      [avatar_url, userId]
+      [avatarUrl, userId]
     );
     
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
     }
     
-    res.json({ success: true, user: result.rows[0] });
+    res.json({ success: true, user: result.rows[0], avatar_url: avatarUrl });
   } catch (error) {
     console.error('Error actualizando avatar:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Servir archivos de avatar
+router.get('/avatar/:filename', (req, res) => {
+  try {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, '../uploads/avatars', filename);
+    
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, message: 'Avatar no encontrado' });
+    }
+    
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Error sirviendo avatar:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

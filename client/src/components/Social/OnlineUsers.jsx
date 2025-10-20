@@ -64,11 +64,17 @@ const OnlineUsers = ({ currentUserId }) => {
         {onlineUsers.map(user => (
           <div key={user.id} className="flex items-center space-x-3">
             <div className="relative">
-              <img 
-                src={user.avatar || '/default-avatar.png'} 
-                alt={user.username}
-                className="w-10 h-10 rounded-full"
-              />
+              {user.avatar ? (
+                <img 
+                  src={user.avatar} 
+                  alt={user.username}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
+                  <span className="text-gray-600 font-bold text-sm">{user.username?.[0]?.toUpperCase()}</span>
+                </div>
+              )}
               <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(user.status)}`}></div>
             </div>
             <div className="flex-1 min-w-0">

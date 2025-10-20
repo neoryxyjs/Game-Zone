@@ -116,14 +116,17 @@ export default function UserProfile() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <img
-                src={profileUser.avatar || '/default-avatar.png'}
-                alt={profileUser.username}
-                className="w-20 h-20 rounded-full object-cover"
-                onError={(e) => {
-                  e.target.src = '/default-avatar.png';
-                }}
-              />
+              {profileUser.avatar ? (
+                <img
+                  src={profileUser.avatar}
+                  alt={profileUser.username}
+                  className="w-20 h-20 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center">
+                  <span className="text-gray-600 font-bold text-3xl">{profileUser.username?.[0]?.toUpperCase()}</span>
+                </div>
+              )}
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">{profileUser.username}</h1>
                 <p className="text-gray-600">{profileUser.bio || 'Sin biografía'}</p>
@@ -183,11 +186,17 @@ export default function UserProfile() {
               {userPosts.map((post) => (
                 <div key={post.id} className="border border-gray-200 rounded-lg p-4">
                   <div className="flex items-center space-x-3 mb-3">
-                    <img
-                      src={post.user?.avatar || '/default-avatar.png'}
-                      alt={post.user?.username}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
+                    {post.user?.avatar ? (
+                      <img
+                        src={post.user.avatar}
+                        alt={post.user.username}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                        <span className="text-gray-600 font-bold text-xs">{post.user?.username?.[0]?.toUpperCase()}</span>
+                      </div>
+                    )}
                     <div>
                       <p className="font-medium text-gray-900">{post.user?.username}</p>
                       <p className="text-sm text-gray-500">{new Date(post.created_at).toLocaleDateString()}</p>

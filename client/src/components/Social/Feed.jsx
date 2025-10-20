@@ -201,7 +201,7 @@ function PostCard({ post, currentUserId, onLike, onCommentAdded }) {
           user: {
             id: currentUserId,
             username: data.comment.user?.username || 'Usuario',
-            avatar: data.comment.user?.avatar || '/default-avatar.png'
+            avatar: data.comment.user?.avatar
           }
         };
         setComments(prev => [...prev, newCommentData]);
@@ -233,14 +233,17 @@ function PostCard({ post, currentUserId, onLike, onCommentAdded }) {
       {/* Header del post */}
       <div className="flex items-center space-x-3 mb-4">
         <Link to={`/user/${post.user_id}`} className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-          <img 
-            src={post.avatar || '/default-avatar.png'} 
-            alt={post.username}
-            className="w-10 h-10 rounded-full object-cover"
-            onError={(e) => {
-              e.target.src = '/default-avatar.png';
-            }}
-          />
+                 {post.avatar ? (
+                   <img 
+                     src={post.avatar} 
+                     alt={post.username}
+                     className="w-10 h-10 rounded-full object-cover"
+                   />
+                 ) : (
+                   <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
+                     <span className="text-gray-600 font-bold text-sm">{post.username?.[0]?.toUpperCase()}</span>
+                   </div>
+                 )}
           <div>
             <h3 className="font-semibold text-gray-900 hover:text-blue-600">{post.username}</h3>
             <p className="text-sm text-gray-500">
@@ -350,14 +353,17 @@ function PostCard({ post, currentUserId, onLike, onCommentAdded }) {
                   return (
                     <div key={comment.id} className="flex space-x-3">
                       <Link to={`/user/${comment.user?.id}`} className="flex-shrink-0">
-                        <img 
-                          src={comment.user?.avatar || '/default-avatar.png'} 
-                          alt={comment.user?.username || 'Usuario'}
-                          className="w-8 h-8 rounded-full object-cover hover:opacity-80 transition-opacity"
-                          onError={(e) => {
-                            e.target.src = '/default-avatar.png';
-                          }}
-                        />
+                        {comment.user?.avatar ? (
+                          <img 
+                            src={comment.user.avatar} 
+                            alt={comment.user.username || 'Usuario'}
+                            className="w-8 h-8 rounded-full object-cover hover:opacity-80 transition-opacity"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                            <span className="text-gray-600 font-bold text-xs">{comment.user?.username?.[0]?.toUpperCase()}</span>
+                          </div>
+                        )}
                       </Link>
                       <div className="flex-1">
                         <div className="bg-gray-100 rounded-lg px-3 py-2">
