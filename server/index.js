@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+// Configurar variables de entorno
+require('./scripts/setup-env');
+
 // Ejecutar migraciones automáticamente (no bloquea el inicio)
 const { runMigrations } = require('./scripts/migrate');
 runMigrations().catch(err => {
@@ -16,7 +19,15 @@ const authRoutes = require('./routes/auth');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://game-zone-9nf6g9r64-neoryxyjs-projects.vercel.app',
+    'https://game-zone-zeta-eight.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:3001'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Rutas
