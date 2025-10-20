@@ -1,11 +1,13 @@
 [build]
   base = "client"
   publish = "build"
-  command = "npm run build"
+  command = "npm run build:netlify"
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "9"
+  CI = "false"
+  GENERATE_SOURCEMAP = "false"
 
 [[redirects]]
   from = "/*"
