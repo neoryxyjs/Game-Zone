@@ -38,56 +38,9 @@ export const UserProvider = ({ children }) => {
     // No necesitamos localStorage
   }, []);
 
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: 'comment',
-      message: 'DragonSlayer99 comentó en tu post',
-      time: '2 min',
-      read: false
-    },
-    {
-      id: 2,
-      type: 'like',
-      message: 'ValorantPro le dio like a tu post',
-      time: '15 min',
-      read: false
-    },
-    {
-      id: 3,
-      type: 'friend',
-      message: 'MidLaneCarry te envió una solicitud de amistad',
-      time: '1 hora',
-      read: true
-    }
-  ]);
+  const [notifications, setNotifications] = useState([]);
 
-  const [friends, setFriends] = useState([
-    {
-      id: 1,
-      username: 'ValorantPro',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      status: 'online',
-      game: 'Valorant',
-      rank: 'Immortal 2'
-    },
-    {
-      id: 2,
-      username: 'MidLaneCarry',
-      avatar: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      status: 'offline',
-      game: 'League of Legends',
-      rank: 'Master'
-    },
-    {
-      id: 3,
-      username: 'SupportMain',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      status: 'in-game',
-      game: 'League of Legends',
-      rank: 'Diamond IV'
-    }
-  ]);
+  const [friends, setFriends] = useState([]);
 
   const updateUser = (updates) => {
     const updatedUser = { ...user, ...updates };

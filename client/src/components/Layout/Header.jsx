@@ -7,7 +7,7 @@ import {
   UserCircleIcon,
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
-import NotificationDropdown from '../Notifications/NotificationDropdown';
+import RealTimeNotifications from '../Notifications/RealTimeNotifications';
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import SummonerSearch from '../Profile/SummonerSearch';
@@ -85,7 +85,7 @@ export default function Header() {
             </div>
 
             {/* Notifications */}
-            {isAuthenticated && <NotificationDropdown />}
+            {isAuthenticated && <RealTimeNotifications />}
 
             {/* User menu */}
             <Menu as="div" className="relative">
