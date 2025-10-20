@@ -1,7 +1,0 @@
-{
-  "buildCommand": "npm run build",
-  "outputDirectory": "build",
-  "env": {
-    "REACT_APP_API_URL": "https://game-zone-production-6354.up.railway.app"
-  }
-}
