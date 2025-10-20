@@ -20,14 +20,31 @@ const UserSettings = ({ userId, onSettingsUpdated }) => {
   const loadSettings = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/settings/${userId}`);
+      const response = await fetch(`${API_BASE_URL}/api/profiles/${userId}`);
       const data = await response.json();
       
-      if (data.success) {
-        setSettings(data.settings);
+      if (data.success && data.profile && data.profile.settings) {
+        setSettings(data.profile.settings);
+      } else {
+        // Usar configuraciones por defecto si no existen
+        setSettings({
+          theme: 'dark',
+          notifications_enabled: true,
+          email_notifications: true,
+          privacy_level: 'public',
+          language: 'es'
+        });
       }
     } catch (error) {
       console.error('Error cargando configuraciones:', error);
+      // Usar configuraciones por defecto si hay error
+      setSettings({
+        theme: 'dark',
+        notifications_enabled: true,
+        email_notifications: true,
+        privacy_level: 'public',
+        language: 'es'
+      });
     } finally {
       setLoading(false);
     }
@@ -36,7 +53,7 @@ const UserSettings = ({ userId, onSettingsUpdated }) => {
   const saveSettings = async () => {
     try {
       setSaving(true);
-      const response = await fetch(`${API_BASE_URL}/api/settings/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/profiles/${userId}/settings`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)

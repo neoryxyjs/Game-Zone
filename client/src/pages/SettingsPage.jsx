@@ -18,7 +18,7 @@ const SettingsPage = () => {
 
   const loadUserStats = async (userId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/settings/${userId}/stats`);
+      const response = await fetch(`${API_BASE_URL}/api/profiles/${userId}/stats`);
       const data = await response.json();
       
       if (data.success) {
@@ -30,7 +30,7 @@ const SettingsPage = () => {
           posts_count: 0,
           followers_count: 0,
           following_count: 0,
-          total_likes: 0
+          likes_received: 0
         });
       }
     } catch (error) {
@@ -40,7 +40,7 @@ const SettingsPage = () => {
         posts_count: 0,
         followers_count: 0,
         following_count: 0,
-        total_likes: 0
+        likes_received: 0
       });
     }
   };
@@ -125,7 +125,7 @@ const SettingsPage = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">Likes recibidos:</span>
-                    <span className="font-medium">{stats.total_likes}</span>
+                    <span className="font-medium">{stats.likes_received}</span>
                   </div>
                 </div>
               )}
