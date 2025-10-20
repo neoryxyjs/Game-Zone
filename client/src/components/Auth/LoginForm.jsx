@@ -118,16 +118,7 @@ export default function LoginForm() {
         >
           {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
         </button>
-        <button
-          type="button"
-          className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-2 px-4 rounded font-medium text-sm transition-all duration-300 shadow hover:shadow-md flex items-center justify-center space-x-2 mt-2"
-          onClick={() => window.location.href = API_ENDPOINTS.RIOT.LOGIN}
-        >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-          </svg>
-          <span>Entrar con Riot Games</span>
-        </button>
+        {/* Riot Games login temporalmente deshabilitado */}
       </form>
   );
 }

@@ -11,9 +11,8 @@ runMigrations().catch(err => {
   console.log('⚠️  Migraciones fallaron, continuando sin ellas:', err.message);
 });
 
-console.log('API Key cargada:', process.env.RIOT_API_KEY);
+console.log('🔧 Backend simplificado - Solo autenticación básica');
 
-const riotRoutes = require('./routes/riot');
 const authRoutes = require('./routes/auth');
 
 const app = express();
@@ -31,7 +30,6 @@ app.use(cors({
 app.use(express.json());
 
 // Rutas
-app.use('/api/riot', riotRoutes);
 app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
@@ -45,5 +43,4 @@ app.listen(PORT, () => {
   console.log(`   - GET  /`);
   console.log(`   - POST /api/auth/register`);
   console.log(`   - POST /api/auth/login`);
-  console.log(`   - POST /api/riot/login`);
 }); 

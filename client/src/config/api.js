@@ -5,11 +5,6 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: `${API_BASE_URL}/api/auth/login`,
     REGISTER: `${API_BASE_URL}/api/auth/register`,
-  },
-  RIOT: {
-    LOGIN: `${API_BASE_URL}/api/riot/login`,
-    RIOT_LOGIN: `${API_BASE_URL}/api/riot/riot-login`,
-    LOL: (summonerName) => `${API_BASE_URL}/api/riot/lol/${encodeURIComponent(summonerName)}`,
   }
 };
 

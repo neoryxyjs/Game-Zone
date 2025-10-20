@@ -201,14 +201,7 @@ export default function RegisterForm() {
       >
         {isLoading ? 'Registrando...' : 'Registrarse'}
       </button>
-      <a
-        href={API_ENDPOINTS.RIOT.LOGIN}
-        className="w-full flex items-center justify-center bg-blue-900 hover:bg-blue-800 text-white py-2 px-4 rounded font-medium text-sm transition duration-200 mt-2"
-        style={{ textDecoration: 'none' }}
-      >
-        <img src="https://static.wikia.nocookie.net/leagueoflegends/images/6/6e/Summoner_Icon_1.png" alt="Riot" className="w-5 h-5 mr-2" />
-        Iniciar sesión con Riot Games
-      </a>
+      {/* Riot Games login temporalmente deshabilitado */}
     </form>
   );
 }
