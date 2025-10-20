@@ -19,29 +19,17 @@ const authRoutes = require('./routes/auth');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Middleware de CORS manual - más agresivo
-app.use((req, res, next) => {
-  console.log('🌐 CORS Request:', req.method, req.url, 'Origin:', req.headers.origin);
-  
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  if (req.method === 'OPTIONS') {
-    console.log('✅ CORS Preflight handled');
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
-
 // Configuración de CORS más permisiva
 app.use(cors({
-  origin: true, // Permitir cualquier origen
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001', 
+    'https://game-zone-9nf6g9r64-neoryxyjs-projects.vercel.app',
+    'https://gamezone-social.vercel.app'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept']
 }));
 app.use(express.json());
 
