@@ -19,13 +19,17 @@ const authRoutes = require('./routes/auth');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Middleware de CORS manual
+// Middleware de CORS manual - más agresivo
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  console.log('🌐 CORS Request:', req.method, req.url, 'Origin:', req.headers.origin);
+  
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
   
   if (req.method === 'OPTIONS') {
+    console.log('✅ CORS Preflight handled');
     res.sendStatus(200);
   } else {
     next();
@@ -46,6 +50,15 @@ app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
   res.send('API de GameZone Social funcionando');
+});
+
+// Endpoint de prueba para CORS
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    message: 'CORS test successful', 
+    origin: req.headers.origin,
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Endpoint para ejecutar migraciones manualmente
