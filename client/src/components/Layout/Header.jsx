@@ -20,7 +20,6 @@ export default function Header() {
 
   const navigation = [
     { name: 'Inicio', href: '/', current: true },
-    { name: 'Red Social', href: '/social', current: false },
     { name: 'LoL', href: '/lol', current: false },
     { name: 'Valorant', href: '/valorant', current: false },
     { name: 'Rankings', href: '/rankings', current: false },
