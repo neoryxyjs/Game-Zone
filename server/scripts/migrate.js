@@ -2,9 +2,10 @@ const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
 
-// Database connection
+// Database connection - usar DATABASE_PUBLIC_URL si DATABASE_URL no está disponible
+const connectionString = process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL;
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: connectionString,
   ssl: {
     rejectUnauthorized: false
   }

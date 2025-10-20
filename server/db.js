@@ -1,10 +1,11 @@
 const { Pool } = require('pg');
 
-// Para producción en Railway, usa DATABASE_URL de las variables de entorno
+// Para producción en Railway, usa DATABASE_URL o DATABASE_PUBLIC_URL
 // Para desarrollo local, usa la configuración manual
-const connectionConfig = process.env.DATABASE_URL 
+const connectionString = process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL;
+const connectionConfig = connectionString
   ? {
-      connectionString: process.env.DATABASE_URL,
+      connectionString: connectionString,
       ssl: {
         rejectUnauthorized: false
       }
