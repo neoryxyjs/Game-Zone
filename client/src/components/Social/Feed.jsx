@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../../config/api';
 
-export default function Feed({ userId, isPersonalFeed = false }) {
+export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -10,6 +10,14 @@ export default function Feed({ userId, isPersonalFeed = false }) {
   useEffect(() => {
     loadPosts();
   }, [userId, isPersonalFeed]);
+
+  // Escuchar nuevos posts
+  useEffect(() => {
+    if (onNewPost) {
+      // Agregar el nuevo post al inicio del feed
+      setPosts(prev => [onNewPost, ...prev]);
+    }
+  }, [onNewPost]);
 
   const loadPosts = async () => {
     try {
@@ -110,11 +118,12 @@ export default function Feed({ userId, isPersonalFeed = false }) {
   );
 }
 
-function PostCard({ post, currentUserId, onLike }) {
+function PostCard({ post, currentUserId, onLike, onCommentAdded }) {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loadingComments, setLoadingComments] = useState(false);
+  const [commentsCount, setCommentsCount] = useState(post.comments_count || 0);
 
   const loadComments = async () => {
     try {
@@ -169,6 +178,16 @@ function PostCard({ post, currentUserId, onLike }) {
         };
         setComments(prev => [...prev, newCommentData]);
         setNewComment('');
+        
+        // Actualizar el contador de comentarios
+        setCommentsCount(prev => prev + 1);
+        
+        // Notificar al componente padre si es necesario
+        if (onCommentAdded) {
+          onCommentAdded(post.id);
+        }
+        
+        console.log('Comentario agregado exitosamente');
       } else {
         console.error('Error comentando:', data.error || 'Error desconocido');
         // Mostrar error sin alert
@@ -240,7 +259,7 @@ function PostCard({ post, currentUserId, onLike }) {
           className="flex items-center space-x-1 hover:text-blue-500"
         >
           <span>💬</span>
-          <span>{post.comments_count}</span>
+          <span>{commentsCount}</span>
         </button>
       </div>
 

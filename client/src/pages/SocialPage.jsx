@@ -17,8 +17,7 @@ export default function SocialPage() {
   const handlePostCreated = (post) => {
     setNewPost(post);
     setError(null);
-    // Refrescar el feed
-    window.location.reload();
+    // No refrescar automáticamente - el feed se actualizará solo
   };
 
   const handleError = (errorMessage) => {
@@ -127,14 +126,14 @@ export default function SocialPage() {
             {activeTab === 'feed' && (
               <>
                 <CreatePost userId={user.id} onPostCreated={handlePostCreated} onError={handleError} />
-                <Feed userId={user.id} isPersonalFeed={false} onError={handleError} />
+                <Feed userId={user.id} isPersonalFeed={false} onNewPost={newPost} onError={handleError} />
               </>
             )}
             
             {activeTab === 'personal' && (
               <>
-                <CreatePost userId={user.id} onPostCreated={handlePostCreated} />
-                <Feed userId={user.id} isPersonalFeed={true} />
+                <CreatePost userId={user.id} onPostCreated={handlePostCreated} onError={handleError} />
+                <Feed userId={user.id} isPersonalFeed={true} onNewPost={newPost} onError={handleError} />
               </>
             )}
             
