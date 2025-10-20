@@ -7,7 +7,7 @@ const GAME_STYLES = {
     glow: 'shadow-[0_0_16px_4px_rgba(59,130,246,0.5)]',
     badgeBg: 'bg-blue-600',
     badgeText: 'text-white',
-    rankIcon: 'https://static.wikia.nocookie.net/leagueoflegends/images/7/7e/Ranked_Emblem_Gold.png',
+    rankIcon: 'https://ddragon.leagueoflegends.com/cdn/13.24.1/img/ui/ranked-emblem/Gold.png',
   },
   'Valorant': {
     banner: 'bg-gradient-to-r from-gray-900 via-red-700 to-pink-900',
@@ -15,7 +15,7 @@ const GAME_STYLES = {
     glow: 'shadow-[0_0_16px_4px_rgba(239,68,68,0.5)]',
     badgeBg: 'bg-red-600',
     badgeText: 'text-white',
-    rankIcon: 'https://static.wikia.nocookie.net/valorant/images/7/7e/Ranked_Emblem_Radiant.png',
+    rankIcon: 'https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-8a57b3546b43/24/smallicon.png',
   },
   'default': {
     banner: 'bg-gradient-to-r from-gray-800 via-gray-700 to-gray-900',
