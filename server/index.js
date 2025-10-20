@@ -173,6 +173,51 @@ app.post('/api/upload-image', async (req, res) => {
   }
 });
 
+// Endpoint temporal para configuraciones
+app.get('/api/settings/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Configuraciones por defecto
+    const defaultSettings = {
+      id: 1,
+      user_id: parseInt(userId),
+      theme: 'dark',
+      notifications_enabled: true,
+      email_notifications: true,
+      privacy_level: 'public',
+      language: 'es',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
+    res.json({ success: true, settings: defaultSettings });
+  } catch (error) {
+    console.error('❌ Error obteniendo configuraciones:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Endpoint temporal para estadísticas
+app.get('/api/settings/:userId/stats', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Estadísticas por defecto
+    const defaultStats = {
+      posts_count: 0,
+      followers_count: 0,
+      following_count: 0,
+      total_likes: 0
+    };
+    
+    res.json({ success: true, stats: defaultStats });
+  } catch (error) {
+    console.error('❌ Error obteniendo estadísticas:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`✅ Servidor backend escuchando en puerto ${PORT}`);
   console.log(`✅ Healthcheck disponible en http://localhost:${PORT}/`);

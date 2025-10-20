@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config/api';
+import { useUser } from '../context/UserContext';
 import UserSettings from '../components/Settings/UserSettings';
 
 const SettingsPage = () => {
-  const [user, setUser] = useState(null);
+  const { user, isAuthenticated } = useUser();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    loadUserData();
-  }, []);
+    if (isAuthenticated && user) {
+      loadUserStats(user.id);
+    }
+    setLoading(false);
+  }, [isAuthenticated, user]);
 
   const loadUserData = async () => {
     try {
@@ -34,9 +38,25 @@ const SettingsPage = () => {
       
       if (data.success) {
         setStats(data.stats);
+      } else {
+        console.error('Error cargando estadísticas:', data.error);
+        // Usar estadísticas por defecto si hay error
+        setStats({
+          posts_count: 0,
+          followers_count: 0,
+          following_count: 0,
+          total_likes: 0
+        });
       }
     } catch (error) {
       console.error('Error cargando estadísticas:', error);
+      // Usar estadísticas por defecto si hay error
+      setStats({
+        posts_count: 0,
+        followers_count: 0,
+        following_count: 0,
+        total_likes: 0
+      });
     }
   };
 
@@ -56,7 +76,7 @@ const SettingsPage = () => {
     );
   }
 
-  if (!user) {
+  if (!isAuthenticated || !user) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
