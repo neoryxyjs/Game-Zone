@@ -15,4 +15,6 @@ export const API_ENDPOINTS = {
   }
 };
 
+// Export both as named and default
+export { API_BASE_URL };
 export default API_BASE_URL;
