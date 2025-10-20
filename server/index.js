@@ -7,9 +7,10 @@ require('./scripts/setup-env');
 
 // Ejecutar migraciones automáticamente (no bloquea el inicio)
 const { runMigrations } = require('./scripts/migrate');
-runMigrations().catch(err => {
-  console.log('⚠️  Migraciones fallaron, continuando sin ellas:', err.message);
-});
+// Temporalmente deshabilitado para debug
+// runMigrations().catch(err => {
+//   console.log('⚠️  Migraciones fallaron, continuando sin ellas:', err.message);
+// });
 
 console.log('🔧 Backend simplificado - Solo autenticación básica');
 
@@ -34,6 +35,18 @@ app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
   res.send('API de GameZone Social funcionando');
+});
+
+// Endpoint para ejecutar migraciones manualmente
+app.post('/api/migrate', async (req, res) => {
+  try {
+    console.log('🔄 Ejecutando migraciones manualmente...');
+    await runMigrations();
+    res.json({ success: true, message: 'Migraciones ejecutadas exitosamente' });
+  } catch (error) {
+    console.error('❌ Error en migraciones:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 app.listen(PORT, () => {
