@@ -21,13 +21,7 @@ const PORT = process.env.PORT || 8080;
 
 // Configuración de CORS más permisiva
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001', 
-    'https://game-zone-9nf6g9r64-neoryxyjs-projects.vercel.app',
-    'https://game-zone-zeta-eight.vercel.app',
-    'https://gamezone-social.vercel.app'
-  ],
+  origin: true, // Permitir cualquier origen temporalmente
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept']
