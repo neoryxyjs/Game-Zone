@@ -12,11 +12,18 @@ export default function SocialPage() {
   const [activeTab, setActiveTab] = useState('feed');
   const [newPost, setNewPost] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [error, setError] = useState(null);
 
   const handlePostCreated = (post) => {
     setNewPost(post);
+    setError(null);
     // Refrescar el feed
     window.location.reload();
+  };
+
+  const handleError = (errorMessage) => {
+    setError(errorMessage);
+    setTimeout(() => setError(null), 5000);
   };
 
   if (!user) {
@@ -106,14 +113,21 @@ export default function SocialPage() {
           </nav>
         </div>
 
+        {/* Mensaje de error global */}
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
+
         {/* Contenido principal */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Columna principal */}
           <div className="lg:col-span-2">
             {activeTab === 'feed' && (
               <>
-                <CreatePost userId={user.id} onPostCreated={handlePostCreated} />
-                <Feed userId={user.id} isPersonalFeed={false} />
+                <CreatePost userId={user.id} onPostCreated={handlePostCreated} onError={handleError} />
+                <Feed userId={user.id} isPersonalFeed={false} onError={handleError} />
               </>
             )}
             

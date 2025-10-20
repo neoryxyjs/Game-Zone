@@ -51,22 +51,30 @@ export default function Feed({ userId, isPersonalFeed = false }) {
         body: JSON.stringify({ user_id: userId })
       });
       
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       if (data.success) {
-        // Actualizar el estado local
-        setPosts(prev => prev.map(post => 
-          post.id === postId 
-            ? { 
-                ...post, 
-                likes_count: data.liked 
-                  ? post.likes_count + 1 
-                  : post.likes_count - 1 
-              }
-            : post
-        ));
+        // Actualizar el estado local de forma segura
+        setPosts(prev => prev.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              likes_count: data.liked 
+                ? (post.likes_count || 0) + 1 
+                : Math.max(0, (post.likes_count || 0) - 1)
+            };
+          }
+          return post;
+        }));
+      } else {
+        console.warn('No se pudo dar like:', data.error || 'Error desconocido');
       }
     } catch (error) {
       console.error('Error dando like:', error);
+      console.warn('Error de conexión al dar like');
     }
   };
 
@@ -138,21 +146,38 @@ function PostCard({ post, currentUserId, onLike }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           user_id: currentUserId, 
-          content: newComment 
+          content: newComment.trim() 
         })
       });
       
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       if (data.success && data.comment) {
-        setComments(prev => [...prev, data.comment]);
+        // Agregar el comentario con datos seguros
+        const newCommentData = {
+          id: data.comment.id || Date.now(),
+          content: data.comment.content,
+          created_at: data.comment.created_at || new Date().toISOString(),
+          user: {
+            id: currentUserId,
+            username: data.comment.user?.username || 'Usuario',
+            avatar: data.comment.user?.avatar || '/default-avatar.png'
+          }
+        };
+        setComments(prev => [...prev, newCommentData]);
         setNewComment('');
       } else {
         console.error('Error comentando:', data.error || 'Error desconocido');
-        alert('Error al comentar: ' + (data.error || 'Error desconocido'));
+        // Mostrar error sin alert
+        console.warn('No se pudo comentar:', data.error || 'Error desconocido');
       }
     } catch (error) {
       console.error('Error comentando:', error);
-      alert('Error de conexión al comentar');
+      // Mostrar error sin alert
+      console.warn('Error de conexión al comentar');
     }
   };
 
@@ -254,24 +279,41 @@ function PostCard({ post, currentUserId, onLike }) {
           ) : (
             <div className="space-y-3">
               {comments && comments.length > 0 ? (
-                comments.map(comment => (
-                  <div key={comment.id} className="flex space-x-3">
-                    <img 
-                      src={comment.user?.avatar || '/default-avatar.png'} 
-                      alt={comment.user?.username || 'Usuario'}
-                      className="w-8 h-8 rounded-full"
-                    />
-                    <div className="flex-1">
-                      <div className="bg-gray-100 rounded-lg px-3 py-2">
-                        <p className="font-semibold text-sm">{comment.user?.username || 'Usuario'}</p>
-                        <p className="text-gray-800">{comment.content}</p>
+                comments.map(comment => {
+                  // Validar que el comentario tenga datos válidos
+                  if (!comment || !comment.id) {
+                    return null;
+                  }
+                  
+                  return (
+                    <div key={comment.id} className="flex space-x-3">
+                      <img 
+                        src={comment.user?.avatar || '/default-avatar.png'} 
+                        alt={comment.user?.username || 'Usuario'}
+                        className="w-8 h-8 rounded-full object-cover"
+                        onError={(e) => {
+                          e.target.src = '/default-avatar.png';
+                        }}
+                      />
+                      <div className="flex-1">
+                        <div className="bg-gray-100 rounded-lg px-3 py-2">
+                          <p className="font-semibold text-sm">
+                            {comment.user?.username || 'Usuario'}
+                          </p>
+                          <p className="text-gray-800">
+                            {comment.content || 'Comentario sin contenido'}
+                          </p>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {comment.created_at 
+                            ? new Date(comment.created_at).toLocaleDateString('es-ES')
+                            : 'Ahora'
+                          }
+                        </p>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {new Date(comment.created_at).toLocaleDateString('es-ES')}
-                      </p>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="text-center py-4 text-gray-500">
                   No hay comentarios aún. ¡Sé el primero en comentar!
