@@ -46,9 +46,13 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
       formData.append('user_id', userId);
       formData.append('post_id', postId);
 
-      const response = await fetch(`${API_BASE_URL}/api/images/upload`, {
+      const response = await fetch(`${API_BASE_URL}/api/upload-image`, {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          post_id: postId
+        })
       });
 
       const data = await response.json();

@@ -143,12 +143,16 @@ function PostCard({ post, currentUserId, onLike }) {
       });
       
       const data = await response.json();
-      if (data.success) {
+      if (data.success && data.comment) {
         setComments(prev => [...prev, data.comment]);
         setNewComment('');
+      } else {
+        console.error('Error comentando:', data.error || 'Error desconocido');
+        alert('Error al comentar: ' + (data.error || 'Error desconocido'));
       }
     } catch (error) {
       console.error('Error comentando:', error);
+      alert('Error de conexión al comentar');
     }
   };
 
@@ -249,24 +253,30 @@ function PostCard({ post, currentUserId, onLike }) {
             <div className="text-center py-2">Cargando comentarios...</div>
           ) : (
             <div className="space-y-3">
-              {comments.map(comment => (
-                <div key={comment.id} className="flex space-x-3">
-                  <img 
-                    src={comment.user?.avatar || '/default-avatar.png'} 
-                    alt={comment.user?.username || 'Usuario'}
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <div className="flex-1">
-                    <div className="bg-gray-100 rounded-lg px-3 py-2">
-                      <p className="font-semibold text-sm">{comment.user?.username || 'Usuario'}</p>
-                      <p className="text-gray-800">{comment.content}</p>
+              {comments && comments.length > 0 ? (
+                comments.map(comment => (
+                  <div key={comment.id} className="flex space-x-3">
+                    <img 
+                      src={comment.user?.avatar || '/default-avatar.png'} 
+                      alt={comment.user?.username || 'Usuario'}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <div className="flex-1">
+                      <div className="bg-gray-100 rounded-lg px-3 py-2">
+                        <p className="font-semibold text-sm">{comment.user?.username || 'Usuario'}</p>
+                        <p className="text-gray-800">{comment.content}</p>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {new Date(comment.created_at).toLocaleDateString('es-ES')}
+                      </p>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(comment.created_at).toLocaleDateString('es-ES')}
-                    </p>
                   </div>
+                ))
+              ) : (
+                <div className="text-center py-4 text-gray-500">
+                  No hay comentarios aún. ¡Sé el primero en comentar!
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>

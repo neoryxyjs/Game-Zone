@@ -131,6 +131,48 @@ app.post('/api/add-avatar-column', async (req, res) => {
   }
 });
 
+// Endpoint de prueba para comentarios
+app.get('/api/test-comments/:postId', async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const pool = require('./db');
+    
+    const result = await pool.query(`
+      SELECT 
+        pc.*,
+        u.username,
+        u.avatar
+      FROM post_comments pc
+      JOIN users u ON pc.user_id = u.id
+      WHERE pc.post_id = $1
+      ORDER BY pc.created_at ASC
+    `, [postId]);
+    
+    res.json({ success: true, comments: result.rows });
+  } catch (error) {
+    console.error('❌ Error obteniendo comentarios:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Endpoint temporal para subir imágenes
+app.post('/api/upload-image', async (req, res) => {
+  try {
+    // Por ahora, devolver un URL de imagen de prueba
+    res.json({ 
+      success: true, 
+      image: {
+        id: Date.now(),
+        url: 'https://via.placeholder.com/400x300/4F46E5/FFFFFF?text=Imagen+de+Prueba',
+        filename: 'test-image.jpg'
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error subiendo imagen:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`✅ Servidor backend escuchando en puerto ${PORT}`);
   console.log(`✅ Healthcheck disponible en http://localhost:${PORT}/`);
