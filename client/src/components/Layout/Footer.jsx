@@ -62,7 +62,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200/50">
+    <footer className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-t border-gray-200/50 dark:border-gray-700/50">
       <div className="mx-auto max-w-7xl overflow-hidden px-6 py-16 sm:py-20 lg:px-8">
         {/* Main footer content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
@@ -72,9 +72,9 @@ export default function Footer() {
               <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xs">G</span>
               </div>
-              <span className="text-lg font-bold text-gray-900">GameZone</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">GameZone</span>
             </div>
-            <p className="text-gray-600 mb-6 max-w-md">
+            <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md">
               La comunidad definitiva para jugadores de League of Legends y Valorant. 
               Conecta, compite y crece con otros gamers apasionados.
             </p>
@@ -94,7 +94,7 @@ export default function Footer() {
 
           {/* Quick links */}
           <div>
-            <h3 className="text-sm font-semibold leading-6 text-gray-900 mb-4">Navegación</h3>
+            <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white mb-4">Navegación</h3>
             <ul className="space-y-3">
               {navigation.main.slice(0, 4).map((item) => (
                 <li key={item.name}>
@@ -111,38 +111,38 @@ export default function Footer() {
 
           {/* Contact info */}
           <div>
-            <h3 className="text-sm font-semibold leading-6 text-gray-900 mb-4">Contacto</h3>
+            <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white mb-4">Contacto</h3>
             <ul className="space-y-3">
               <li className="flex items-center space-x-2">
                 <EnvelopeIcon className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600">info@gamezone.com</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">info@gamezone.com</span>
               </li>
               <li className="flex items-center space-x-2">
                 <PhoneIcon className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600">+1 (555) 123-4567</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">+1 (555) 123-4567</span>
               </li>
               <li className="flex items-center space-x-2">
                 <MapPinIcon className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600">Madrid, España</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Madrid, España</span>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom section */}
-        <div className="border-t border-gray-200 pt-8">
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               © 2024 GameZone. Todos los derechos reservados.
             </p>
-            <div className="flex items-center space-x-6 text-sm text-gray-500">
-              <Link to="/about" className="hover:text-gray-900 transition-colors duration-200">
+            <div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400">
+              <Link to="/about" className="hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                 Sobre Nosotros
               </Link>
-              <Link to="/about" className="hover:text-gray-900 transition-colors duration-200">
+              <Link to="/about" className="hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                 Privacidad
               </Link>
-              <Link to="/about" className="hover:text-gray-900 transition-colors duration-200">
+              <Link to="/about" className="hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                 Términos
               </Link>
             </div>

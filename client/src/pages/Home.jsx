@@ -25,7 +25,7 @@ export default function Home() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center animate-fade-in">
           <div className="mb-8">
             <div className="w-24 h-24 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl animate-bounce-in">
@@ -34,7 +34,7 @@ export default function Home() {
             <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
               Bienvenido a GameZone
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
               Únete a la comunidad gaming más grande. Conecta con jugadores, comparte tus logros y descubre nuevos juegos.
             </p>
           </div>
@@ -59,24 +59,24 @@ export default function Home() {
               <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-xl">🎮</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Juega</h3>
-              <p className="text-gray-600">Conecta con otros jugadores y forma equipos</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Juega</h3>
+              <p className="text-gray-600 dark:text-gray-400">Conecta con otros jugadores y forma equipos</p>
             </div>
             
-            <div className="text-center p-6 bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="text-center p-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-xl">📱</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Comparte</h3>
-              <p className="text-gray-600">Publica tus logros y experiencias gaming</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Comparte</h3>
+              <p className="text-gray-600 dark:text-gray-400">Publica tus logros y experiencias gaming</p>
             </div>
             
-            <div className="text-center p-6 bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="text-center p-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-xl">🏆</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Compite</h3>
-              <p className="text-gray-600">Participa en torneos y rankings</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Compite</h3>
+              <p className="text-gray-600 dark:text-gray-400">Participa en torneos y rankings</p>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Hero Section para usuarios autenticados */}
         <div className="mb-12 animate-slide-up">
@@ -106,27 +106,27 @@ export default function Home() {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   ¡Hola, {user?.username}!
                 </h1>
-                <p className="text-gray-600">Bienvenido de vuelta a GameZone</p>
+                <p className="text-gray-600 dark:text-gray-400">Bienvenido de vuelta a GameZone</p>
               </div>
             </div>
             
             {/* Stats rápidas */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-8">
-              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
                 <div className="text-2xl font-bold text-indigo-600">12</div>
-                <div className="text-sm text-gray-600">Posts</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Posts</div>
               </div>
-              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
                 <div className="text-2xl font-bold text-green-600">45</div>
-                <div className="text-sm text-gray-600">Seguidores</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Seguidores</div>
               </div>
-              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
                 <div className="text-2xl font-bold text-purple-600">23</div>
-                <div className="text-sm text-gray-600">Siguiendo</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Siguiendo</div>
               </div>
-              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
                 <div className="text-2xl font-bold text-orange-600">156</div>
-                <div className="text-sm text-gray-600">Likes</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Likes</div>
               </div>
             </div>
           </div>
@@ -155,13 +155,13 @@ export default function Home() {
 
         {/* Tabs de navegación mejorados */}
         <div className="mb-8">
-          <nav className="flex space-x-1 bg-white/50 backdrop-blur-sm rounded-xl p-1 shadow-lg max-w-2xl mx-auto">
+          <nav className="flex space-x-1 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-1 shadow-lg max-w-2xl mx-auto">
             <button
               onClick={() => setActiveTab('feed')}
               className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'feed'
                   ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700'
               }`}
             >
               🏠 Feed General
@@ -171,7 +171,7 @@ export default function Home() {
               className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'personal'
                   ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700'
               }`}
             >
               📝 Mis Posts
@@ -181,7 +181,7 @@ export default function Home() {
               className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'discover'
                   ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700'
               }`}
             >
               🔍 Descubrir
@@ -191,7 +191,7 @@ export default function Home() {
               className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'following'
                   ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700'
               }`}
             >
               👥 Siguiendo
@@ -219,14 +219,14 @@ export default function Home() {
             
             {activeTab === 'discover' && (
               <div className="card">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Descubrir Jugadores</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Descubrir Jugadores</h2>
                 <UserSearch currentUserId={user.id} />
               </div>
             )}
 
             {activeTab === 'following' && (
               <div className="card">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Siguiendo</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Siguiendo</h2>
                 <FollowingList userId={user.id} />
               </div>
             )}
@@ -242,11 +242,11 @@ export default function Home() {
                     <span className="text-white text-lg">👋</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">¡Bienvenido!</h3>
-                    <p className="text-sm text-gray-500">Comparte tu experiencia</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">¡Bienvenido!</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Comparte tu experiencia</p>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   Únete a la conversación y comparte tus logros gaming con la comunidad.
                 </p>
                 <button className="w-full btn-primary py-2 text-sm">
@@ -259,15 +259,15 @@ export default function Home() {
               
               {/* Widget de juegos populares */}
               <div className="card">
-                <h3 className="font-semibold text-gray-900 mb-4">Juegos Populares</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Juegos Populares</h3>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                       <span className="text-white text-sm">🎮</span>
                     </div>
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">League of Legends</div>
-                      <div className="text-sm text-gray-500">1,234 jugadores activos</div>
+                      <div className="font-medium text-gray-900 dark:text-white">League of Legends</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">1,234 jugadores activos</div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -275,8 +275,8 @@ export default function Home() {
                       <span className="text-white text-sm">🔫</span>
                     </div>
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">Valorant</div>
-                      <div className="text-sm text-gray-500">856 jugadores activos</div>
+                      <div className="font-medium text-gray-900 dark:text-white">Valorant</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">856 jugadores activos</div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -284,8 +284,8 @@ export default function Home() {
                       <span className="text-white text-sm">🏗️</span>
                     </div>
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">Fortnite</div>
-                      <div className="text-sm text-gray-500">567 jugadores activos</div>
+                      <div className="font-medium text-gray-900 dark:text-white">Fortnite</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">567 jugadores activos</div>
                     </div>
                   </div>
                 </div>
@@ -293,17 +293,17 @@ export default function Home() {
 
               {/* Widget de eventos */}
               <div className="card">
-                <h3 className="font-semibold text-gray-900 mb-4">Próximos Eventos</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Próximos Eventos</h3>
                 <div className="space-y-3">
-                  <div className="p-3 bg-indigo-50 rounded-lg">
+                  <div className="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
                     <div className="font-medium text-indigo-900 text-sm">Torneo LoL</div>
                     <div className="text-xs text-indigo-600">Mañana 20:00</div>
                   </div>
-                  <div className="p-3 bg-green-50 rounded-lg">
+                  <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg">
                     <div className="font-medium text-green-900 text-sm">Stream Valorant</div>
                     <div className="text-xs text-green-600">Hoy 18:00</div>
                   </div>
-                  <div className="p-3 bg-purple-50 rounded-lg">
+                  <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
                     <div className="font-medium text-purple-900 text-sm">Q&A Gaming</div>
                     <div className="text-xs text-purple-600">Viernes 19:00</div>
                   </div>

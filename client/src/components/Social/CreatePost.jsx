@@ -59,8 +59,8 @@ export default function CreatePost({ userId, onPostCreated, defaultGame = '' }) 
             {userId ? String(userId).charAt(0) : 'U'}
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">Crear publicación</h3>
-            <p className="text-sm text-gray-500">Comparte tu experiencia gaming</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white">Crear publicación</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Comparte tu experiencia gaming</p>
           </div>
         </div>
 
@@ -69,12 +69,12 @@ export default function CreatePost({ userId, onPostCreated, defaultGame = '' }) 
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="¿Qué estás jugando? Comparte tu experiencia..."
-            className="w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all duration-200 placeholder-gray-400"
+            className="w-full px-4 py-4 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             rows="4"
             maxLength="500"
           />
           <div className="flex justify-between items-center mt-2">
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               {content.length}/500 caracteres
             </div>
             <div className={`text-sm font-medium ${
@@ -99,7 +99,7 @@ export default function CreatePost({ userId, onPostCreated, defaultGame = '' }) 
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               URL de imagen (opcional)
             </label>
             <input
@@ -112,7 +112,7 @@ export default function CreatePost({ userId, onPostCreated, defaultGame = '' }) 
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Juego
             </label>
             <select
@@ -157,8 +157,8 @@ export default function CreatePost({ userId, onPostCreated, defaultGame = '' }) 
           </div>
         )}
 
-        <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-          <div className="text-sm text-gray-500">
+        <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
             {gameTag && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                 {gameTag}

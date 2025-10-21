@@ -92,7 +92,7 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
       <div className="flex justify-center items-center py-12">
         <div className="text-center">
           <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-gray-500">Cargando publicaciones...</p>
+          <p className="text-gray-500 dark:text-gray-400">Cargando publicaciones...</p>
         </div>
       </div>
     );
@@ -101,7 +101,7 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
   return (
     <div className="space-y-6">
       {gameFilter && (
-        <div className="card bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500">
+        <div className="card bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-l-4 border-indigo-500">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,8 +109,8 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
               </svg>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">Filtrando por: {gameFilter}</h3>
-              <p className="text-sm text-gray-600">Mostrando solo publicaciones de {gameFilter}</p>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Filtrando por: {gameFilter}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Mostrando solo publicaciones de {gameFilter}</p>
             </div>
           </div>
         </div>
@@ -148,15 +148,15 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
       
       {posts.length === 0 && !loading && (
         <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             {gameFilter ? `No hay publicaciones de ${gameFilter} aún` : 'No hay publicaciones aún'}
           </h3>
-          <p className="text-gray-500">
+          <p className="text-gray-500 dark:text-gray-400">
             {gameFilter ? `Sé el primero en compartir algo sobre ${gameFilter}` : 'Sé el primero en compartir algo en GameZone'}
           </p>
         </div>
@@ -272,7 +272,7 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2">
-            <Link to={`/user/${post.user_id}`} className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors">
+            <Link to={`/user/${post.user_id}`} className="font-semibold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
               {post.user?.username || 'Usuario'}
             </Link>
             {post.game_tag && (
@@ -281,14 +281,14 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-500">{formatDate(post.created_at)}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(post.created_at)}</p>
         </div>
 
         {/* Botón de eliminar (solo visible para el autor) */}
         {post.user_id === userId && (
           <button
             onClick={handleDelete}
-            className="flex-shrink-0 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors group"
+            className="flex-shrink-0 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition-colors group"
             title="Eliminar post"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,7 +300,7 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
 
       {/* Contenido del post */}
       <div className="mb-4">
-        <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">{post.content}</p>
+        <p className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap leading-relaxed">{post.content}</p>
         
         {post.image_url && (
           <div className="mt-4">
@@ -319,11 +319,11 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
       </div>
 
       {/* Acciones del post */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+      <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-6">
           <button
             onClick={() => onLike(post.id)}
-            className="flex items-center space-x-2 text-gray-500 hover:text-red-500 transition-colors duration-200 group"
+            className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-red-500 transition-colors duration-200 group"
           >
             <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -336,7 +336,7 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
               setShowComments(!showComments);
               if (!showComments) loadComments();
             }}
-            className="flex items-center space-x-2 text-gray-500 hover:text-indigo-500 transition-colors duration-200 group"
+            className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-indigo-500 transition-colors duration-200 group"
           >
             <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -348,7 +348,7 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
 
       {/* Sección de comentarios */}
       {showComments && (
-        <div className="mt-6 pt-6 border-t border-gray-100">
+        <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
           {/* Formulario de comentario */}
           <form onSubmit={handleComment} className="mb-4">
             <div className="flex space-x-3">
@@ -405,18 +405,18 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
                   </Link>
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
-                      <Link to={`/user/${comment.user_id}`} className="font-medium text-gray-900 hover:text-indigo-600 transition-colors text-sm">
+                      <Link to={`/user/${comment.user_id}`} className="font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-sm">
                         {comment.user?.username || 'Usuario'}
                       </Link>
-                      <span className="text-xs text-gray-500">{formatDate(comment.created_at)}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(comment.created_at)}</span>
                     </div>
-                    <p className="text-sm text-gray-700 mt-1">{comment.content}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">{comment.content}</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-500 text-center py-4">No hay comentarios aún</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No hay comentarios aún</p>
           )}
         </div>
       )}

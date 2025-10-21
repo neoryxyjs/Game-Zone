@@ -37,7 +37,7 @@ export default function Header() {
   return (
     <>
       {/* Header principal */}
-      <header className="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/50 fixed top-0 left-0 right-0 z-50">
+      <header className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg border-b border-gray-200/50 dark:border-gray-700/50 fixed top-0 left-0 right-0 z-50">
         <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8" aria-label="Global">
           {/* Logo */}
           <div className="flex lg:flex-1">
@@ -46,7 +46,7 @@ export default function Header() {
                 <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
                   <span className="text-white font-bold text-sm">G</span>
                 </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">GameZone</span>
+                <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">GameZone</span>
               </div>
             </Link>
           </div>
@@ -72,7 +72,7 @@ export default function Header() {
                 className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ease-in-out ${
                   isActive(item.href)
                     ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105' 
-                    : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 hover:scale-102'
+                    : 'text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-800 hover:scale-102'
                 }`}
               >
                 {item.name}
@@ -93,7 +93,7 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="Buscar jugadores, posts..."
-                className="block w-56 pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl leading-5 bg-gray-50/50 backdrop-blur-sm placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm transition-all duration-200 hover:bg-white"
+                className="block w-56 pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl leading-5 bg-gray-50/50 dark:bg-gray-800/50 backdrop-blur-sm placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:text-white transition-all duration-200 hover:bg-white dark:hover:bg-gray-800"
               />
             </div>
 
@@ -114,7 +114,7 @@ export default function Header() {
                     {user?.username?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                 )}
-                <span className="text-sm font-medium">{user?.username || 'Usuario'}</span>
+                <span className="text-sm font-medium dark:text-white">{user?.username || 'Usuario'}</span>
               </Menu.Button>
               <Transition
                 as={Fragment}
@@ -125,7 +125,7 @@ export default function Header() {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-white/95 backdrop-blur-md py-2 shadow-xl ring-1 ring-gray-200/50 focus:outline-none">
+                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-md py-2 shadow-xl ring-1 ring-gray-200/50 dark:ring-gray-700/50 focus:outline-none">
                   {isAuthenticated ? (
                     // Menú para usuarios logueados
                     <>
@@ -134,7 +134,7 @@ export default function Header() {
                           <Link
                             to="/profile"
                             className={`${
-                              active ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'
+                              active ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'
                             } flex items-center px-4 py-2.5 text-sm font-medium rounded-lg mx-2 transition-all duration-200`}
                           >
                             <UserCircleIcon className="w-4 h-4 mr-3" />
@@ -147,7 +147,7 @@ export default function Header() {
                           <Link
                             to="/settings"
                             className={`${
-                              active ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'
+                              active ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'
                             } flex items-center px-4 py-2.5 text-sm font-medium rounded-lg mx-2 transition-all duration-200`}
                           >
                             <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,14 +222,14 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="lg:hidden">
           <div className="fixed inset-0 z-50" />
-          <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:sm:ring-gray-700/50">
             <div className="flex items-center justify-between">
               <Link to="/" className="-m-1.5 p-1.5">
                 <div className="flex items-center space-x-2">
                   <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-xs">G</span>
                   </div>
-                  <span className="text-lg font-bold text-gray-900">GameZone</span>
+                  <span className="text-lg font-bold text-gray-900 dark:text-white">GameZone</span>
                 </div>
               </Link>
               <button
@@ -252,7 +252,7 @@ export default function Header() {
                       className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 transition-all duration-200 ${
                         isActive(item.href) 
                           ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md' 
-                          : 'text-gray-900 hover:bg-indigo-50'
+                          : 'text-gray-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-gray-800'
                       }`}
                     >
                       {item.name}
@@ -280,7 +280,7 @@ export default function Header() {
                             setMobileMenuOpen(false);
                           }
                         }}
-                        className="-mx-3 block w-full text-left rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                            className="-mx-3 block w-full text-left rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                       >
                         Cerrar Sesión
                       </button>
