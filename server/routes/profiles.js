@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const router = express.Router();
 const pool = require('../db');
+const cloudinary = require('../config/cloudinary');
 
 // Configurar multer para subir avatares
 const storage = multer.diskStorage({
