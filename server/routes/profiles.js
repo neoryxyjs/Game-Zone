@@ -446,7 +446,7 @@ router.post('/upload-post-image', authMiddleware, upload.single('image'), async 
         user_id,
         cloudinaryResult.public_id,
         req.file.originalname,
-        imageUrl,
+        mediaUrl,
         req.file.size,
         req.file.mimetype,
         'post'
@@ -454,14 +454,14 @@ router.post('/upload-post-image', authMiddleware, upload.single('image'), async 
       
       await client.query('COMMIT');
       
-      console.log('✅ Post image uploaded successfully:', imageResult.rows[0]);
+      console.log(`✅ Post ${isVideo ? 'video' : 'image'} uploaded successfully:`, imageResult.rows[0]);
       
       res.json({ 
         success: true, 
         image: {
           id: imageResult.rows[0].id,
           filename: imageResult.rows[0].filename,
-          url: imageUrl
+          url: mediaUrl
         }
       });
       
