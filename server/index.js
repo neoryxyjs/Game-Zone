@@ -360,6 +360,7 @@ app.get('/api/settings/:userId/stats', async (req, res) => {
 app.post('/api/create-user-images-table', async (req, res) => {
   try {
     console.log('🔄 Creando tabla de imágenes de usuarios...');
+    const pool = require('./db');
     
     // Crear tabla de imágenes de usuarios
     await pool.query(`
