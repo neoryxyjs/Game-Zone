@@ -10,6 +10,10 @@ import RankingsPage from './pages/RankingsPage';
 import TeamsPage from './pages/TeamsPage';
 import AboutPage from './pages/AboutPage';
 import UserProfile from './components/Profile/UserProfile';
+import Error404 from './pages/Error404';
+import Error403 from './pages/Error403';
+import Error500 from './pages/Error500';
+import ErrorBoundary from './components/ErrorBoundary';
 import { UserProvider, useUser } from './context/UserContext';
 import './App.css';
 
@@ -32,7 +36,14 @@ const AppContent = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/settings" element={<SettingsPage />} />
-          <Route path="*" element={<div className="p-8 text-center"><h1 className="text-2xl font-bold">404 - Página no encontrada</h1><p className="mt-4">La página que buscas no existe</p></div>} />
+          
+          {/* Páginas de error */}
+          <Route path="/error/403" element={<Error403 />} />
+          <Route path="/error/500" element={<Error500 />} />
+          <Route path="/error/404" element={<Error404 />} />
+          
+          {/* 404 - Debe ser la última ruta */}
+          <Route path="*" element={<Error404 />} />
         </Routes>
       </Layout>
     </Router>
@@ -41,9 +52,11 @@ const AppContent = () => {
 
 function App() {
   return (
-    <UserProvider>
-      <AppContent />
-    </UserProvider>
+    <ErrorBoundary>
+      <UserProvider>
+        <AppContent />
+      </UserProvider>
+    </ErrorBoundary>
   );
 }
 

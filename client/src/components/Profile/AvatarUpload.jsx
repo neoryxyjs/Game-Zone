@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useUser } from '../../context/UserContext';
-// import { useNotifications } from '../Notifications/NotificationManager';
+import { uploadFileAuth } from '../../utils/api';
+import { API_BASE_URL } from '../../config/api';
 
 const AvatarUpload = () => {
   const { user, updateAvatar } = useUser();
@@ -35,24 +36,43 @@ const AvatarUpload = () => {
   };
 
   const handleUpload = async () => {
-    if (!previewUrl) return;
+    if (!previewUrl || !fileInputRef.current?.files[0]) return;
 
     setIsUploading(true);
     try {
-      // Simular subida de archivo
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Crear FormData para enviar el archivo
+      const formData = new FormData();
+      formData.append('avatar', fileInputRef.current.files[0]);
+
+      console.log('📤 Subiendo avatar para usuario:', user.id);
       
-      // Actualizar avatar
-      updateAvatar(previewUrl);
-      // showSuccess('Avatar actualizado correctamente');
+      // Subir avatar al backend (Cloudinary)
+      const response = await uploadFileAuth(
+        `/api/profiles/${user.id}/avatar`,
+        formData
+      );
+
+      const data = await response.json();
       
-      // Limpiar preview
-      setPreviewUrl(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      if (data.success) {
+        console.log('✅ Avatar subido:', data.avatar_url);
+        
+        // Actualizar avatar en el contexto con la URL de Cloudinary
+        updateAvatar(data.avatar_url);
+        
+        alert('Avatar actualizado correctamente');
+        
+        // Limpiar preview
+        setPreviewUrl(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      } else {
+        throw new Error(data.error || 'Error subiendo avatar');
       }
     } catch (error) {
-      // showError('Error al actualizar el avatar');
+      console.error('❌ Error subiendo avatar:', error);
+      alert(`Error al actualizar el avatar: ${error.message}`);
     } finally {
       setIsUploading(false);
     }
