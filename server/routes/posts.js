@@ -53,7 +53,17 @@ router.get('/feed', async (req, res) => {
       LIMIT $1 OFFSET $2
     `, [limit, offset]);
     
-    res.json({ success: true, posts: result.rows });
+    // Transformar los datos para incluir el objeto user
+    const posts = result.rows.map(row => ({
+      ...row,
+      user: {
+        id: row.user_id,
+        username: row.username,
+        avatar: row.avatar
+      }
+    }));
+    
+    res.json({ success: true, posts });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -83,7 +93,17 @@ router.get('/user/:userId', async (req, res) => {
       LIMIT $2 OFFSET $3
     `, [userId, limit, offset]);
     
-    res.json({ success: true, posts: result.rows });
+    // Transformar los datos para incluir el objeto user
+    const posts = result.rows.map(row => ({
+      ...row,
+      user: {
+        id: row.user_id,
+        username: row.username,
+        avatar: row.avatar
+      }
+    }));
+    
+    res.json({ success: true, posts });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -191,7 +211,17 @@ router.get('/:postId/comments', async (req, res) => {
       ORDER BY pc.created_at ASC
     `, [postId]);
     
-    res.json({ success: true, comments: result.rows });
+    // Transformar los datos para incluir el objeto user
+    const comments = result.rows.map(row => ({
+      ...row,
+      user: {
+        id: row.user_id,
+        username: row.username,
+        avatar: row.avatar
+      }
+    }));
+    
+    res.json({ success: true, comments });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
