@@ -14,7 +14,7 @@ const OnlineUsers = ({ currentUserId }) => {
 
   const loadOnlineUsers = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/online/online`);
+      const response = await fetch(`${API_BASE_URL}/api/online`); // Ruta corregida
       const data = await response.json();
       
       if (data.success) {
@@ -22,6 +22,7 @@ const OnlineUsers = ({ currentUserId }) => {
       }
     } catch (error) {
       console.error('Error cargando usuarios en línea:', error);
+      setOnlineUsers([]); // Evitar errores si falla
     } finally {
       setLoading(false);
     }
