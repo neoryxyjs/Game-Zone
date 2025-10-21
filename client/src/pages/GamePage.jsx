@@ -35,7 +35,7 @@ const GamePage = ({ title, game }) => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center animate-fade-in">
           <div className="w-24 h-24 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl animate-bounce-in">
             <span className="text-white font-bold text-3xl">{currentGame.icon}</span>
@@ -43,11 +43,11 @@ const GamePage = ({ title, game }) => {
           <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
             {title}
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
             {currentGame.description}
           </p>
-          <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
-            <p className="text-gray-600 mb-4">Inicia sesión para acceder al contenido de {title}</p>
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">Inicia sesión para acceder al contenido de {title}</p>
             <Link to="/login" className="btn-primary px-8 py-3 text-lg font-semibold inline-block">
               Iniciar Sesión
             </Link>
@@ -58,7 +58,7 @@ const GamePage = ({ title, game }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header del juego */}
         <div className="mb-8 animate-slide-up">
@@ -70,16 +70,16 @@ const GamePage = ({ title, game }) => {
               <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 {title}
               </h1>
-              <p className="text-gray-600 text-lg">{currentGame.description}</p>
+              <p className="text-gray-600 dark:text-gray-400 text-lg">{currentGame.description}</p>
             </div>
           </div>
 
           {/* Features del juego */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {currentGame.features.map((feature, index) => (
-              <div key={index} className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div key={index} className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <div className="text-2xl mb-2">{currentGame.icon}</div>
-                <div className="font-semibold text-gray-900">{feature}</div>
+                <div className="font-semibold text-gray-900 dark:text-white">{feature}</div>
               </div>
             ))}
           </div>
@@ -87,13 +87,13 @@ const GamePage = ({ title, game }) => {
 
         {/* Tabs de navegación */}
         <div className="mb-8">
-          <nav className="flex space-x-1 bg-white/50 backdrop-blur-sm rounded-xl p-1 shadow-lg">
+          <nav className="flex space-x-1 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-1 shadow-lg">
             <button
               onClick={() => setActiveTab('feed')}
               className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'feed'
                   ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700'
               }`}
             >
               Feed de {title}
@@ -103,7 +103,7 @@ const GamePage = ({ title, game }) => {
               className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'create'
                   ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700'
               }`}
             >
               Crear Post
@@ -113,7 +113,7 @@ const GamePage = ({ title, game }) => {
               className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'players'
                   ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700'
               }`}
             >
               Jugadores Online
@@ -141,7 +141,7 @@ const GamePage = ({ title, game }) => {
             )}
             {activeTab === 'players' && (
               <div className="card">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Jugadores de {title}</h3>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Jugadores de {title}</h3>
                 <OnlineUsers />
               </div>
             )}
@@ -149,19 +149,19 @@ const GamePage = ({ title, game }) => {
 
           <div className="lg:col-span-1">
             <div className="card sticky top-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Información de {title}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Información de {title}</h3>
               <div className="space-y-4">
-                <div className="p-4 bg-gray-50 rounded-xl">
-                  <h4 className="font-semibold text-gray-900 mb-2">Últimas noticias</h4>
-                  <p className="text-sm text-gray-600">Mantente al día con las últimas actualizaciones del juego</p>
+                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Últimas noticias</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Mantente al día con las últimas actualizaciones del juego</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-xl">
-                  <h4 className="font-semibold text-gray-900 mb-2">Eventos</h4>
-                  <p className="text-sm text-gray-600">Participa en torneos y eventos especiales</p>
+                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Eventos</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Participa en torneos y eventos especiales</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-xl">
-                  <h4 className="font-semibold text-gray-900 mb-2">Comunidad</h4>
-                  <p className="text-sm text-gray-600">Conecta con otros jugadores</p>
+                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Comunidad</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Conecta con otros jugadores</p>
                 </div>
               </div>
             </div>

@@ -378,38 +378,54 @@ router.get('/:userId/images', async (req, res) => {
   }
 });
 
-// Endpoint para subir imágenes de posts - Usando Cloudinary (requiere autenticación)
+// Endpoint para subir imágenes/videos de posts - Usando Cloudinary (requiere autenticación)
 router.post('/upload-post-image', authMiddleware, upload.single('image'), async (req, res) => {
   try {
-    const { user_id, post_id } = req.body;
+    const { user_id, post_id, is_video } = req.body;
+    const isVideo = is_video === 'true' || is_video === true;
     
-    console.log('📸 Post image upload request:', { user_id, post_id, file: req.file });
+    console.log('📸 Post media upload request:', { user_id, post_id, isVideo, file: req.file });
     
     if (!req.file) {
       console.log('❌ No file provided');
-      return res.status(400).json({ success: false, message: 'No se proporcionó archivo de imagen' });
+      return res.status(400).json({ success: false, message: 'No se proporcionó archivo' });
     }
     
     console.log('📁 File details:', {
       filename: req.file.filename,
       originalname: req.file.originalname,
       mimetype: req.file.mimetype,
-      size: req.file.size
+      size: req.file.size,
+      isVideo: isVideo
     });
     
-    // Subir a Cloudinary
-    console.log('☁️ Subiendo imagen de post a Cloudinary...');
-    const cloudinaryResult = await cloudinary.uploader.upload(req.file.path, {
+    // Subir a Cloudinary (soporta imágenes y videos)
+    console.log(`☁️ Subiendo ${isVideo ? 'video' : 'imagen'} de post a Cloudinary...`);
+    
+    const uploadOptions = {
       folder: 'gamezone/posts',
       public_id: `post-${user_id}-${Date.now()}`,
-      transformation: [
+      resource_type: isVideo ? 'video' : 'image'
+    };
+    
+    // Añadir transformaciones solo para imágenes
+    if (!isVideo) {
+      uploadOptions.transformation = [
         { width: 1200, height: 1200, crop: 'limit' },
         { quality: 'auto', fetch_format: 'auto' }
-      ]
-    });
+      ];
+    } else {
+      // Para videos, limitamos el tamaño y añadimos formato automático
+      uploadOptions.eager = [
+        { width: 1280, height: 720, crop: 'limit', video_codec: 'auto', audio_codec: 'auto' }
+      ];
+      uploadOptions.eager_async = true;
+    }
     
-    const imageUrl = cloudinaryResult.secure_url;
-    console.log('✅ Imagen de post subida a Cloudinary:', imageUrl);
+    const cloudinaryResult = await cloudinary.uploader.upload(req.file.path, uploadOptions);
+    
+    const mediaUrl = cloudinaryResult.secure_url;
+    console.log(`✅ ${isVideo ? 'Video' : 'Imagen'} de post subida a Cloudinary:`, mediaUrl);
     
     // Eliminar archivo temporal local
     if (fs.existsSync(req.file.path)) {

@@ -10,16 +10,21 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Validar tipo de archivo
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    // Validar tipo de archivo (ahora incluye videos)
+    const allowedTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+      'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm'
+    ];
     if (!allowedTypes.includes(file.type)) {
-      setError('Solo se permiten archivos de imagen (JPEG, PNG, GIF, WebP)');
+      setError('Solo se permiten imágenes (JPEG, PNG, GIF, WebP) o videos (MP4, MOV, AVI, WebM)');
       return;
     }
 
-    // Validar tamaño (5MB máximo)
-    if (file.size > 5 * 1024 * 1024) {
-      setError('El archivo es demasiado grande. Máximo 5MB');
+    // Validar tamaño (10MB para imágenes, 50MB para videos)
+    const isVideo = file.type.startsWith('video/');
+    const maxSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError(`El archivo es demasiado grande. Máximo ${isVideo ? '50MB para videos' : '10MB para imágenes'}`);
       return;
     }
 
@@ -47,6 +52,7 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
       formData.append('image', file);
       formData.append('user_id', userId);
       formData.append('image_type', 'post');
+      formData.append('is_video', file.type.startsWith('video/'));
 
       console.log('📤 Enviando a: /api/profiles/upload-post-image');
 
@@ -90,7 +96,7 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
         <input
           type="file"
           id="image-upload"
-          accept="image/*"
+          accept="image/*,video/*"
           onChange={handleFileSelect}
           style={{ display: 'none' }}
           disabled={uploading}
@@ -111,7 +117,7 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
                 <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span>Subir imagen</span>
+              <span>Subir imagen/video</span>
             </div>
           )}
         </label>
@@ -119,7 +125,11 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
 
       {preview && (
         <div className="image-preview">
-          <img src={preview} alt="Preview" />
+          {preview.startsWith('data:video') ? (
+            <video src={preview} controls className="preview-video" />
+          ) : (
+            <img src={preview} alt="Preview" />
+          )}
           <button 
             type="button" 
             onClick={removePreview}
@@ -205,7 +215,8 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
           margin: 10px 0;
         }
 
-        .image-preview img {
+        .image-preview img,
+        .preview-video {
           max-width: 200px;
           max-height: 200px;
           border-radius: 8px;

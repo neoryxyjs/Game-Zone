@@ -304,16 +304,29 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
         
         {post.image_url && (
           <div className="mt-4">
-            <img 
-              src={post.image_url} 
-              alt="Post image" 
-              className="w-full max-w-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-              onError={(e) => {
-                // Evitar bucle infinito: solo ocultar la imagen si falla
-                e.target.onerror = null; // Remover el handler para evitar bucle
-                e.target.style.display = 'none';
-              }}
-            />
+            {post.image_url.match(/\.(mp4|webm|ogg|mov)(\?|$)/i) ? (
+              <video 
+                src={post.image_url} 
+                controls
+                className="w-full max-w-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.style.display = 'none';
+                }}
+              >
+                Tu navegador no soporta el tag de video.
+              </video>
+            ) : (
+              <img 
+                src={post.image_url} 
+                alt="Post image" 
+                className="w-full max-w-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.style.display = 'none';
+                }}
+              />
+            )}
           </div>
         )}
       </div>
