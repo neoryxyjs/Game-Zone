@@ -21,7 +21,7 @@ router.post('/:userId/online', async (req, res) => {
 });
 
 // Obtener usuarios en línea
-router.get('/online', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     // Usuarios que estuvieron activos en los últimos 5 minutos
     const result = await pool.query(`

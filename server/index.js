@@ -439,6 +439,73 @@ app.post('/api/add-image-id-to-posts', async (req, res) => {
   }
 });
 
+// Endpoint para crear tablas faltantes
+app.post('/api/create-missing-tables', async (req, res) => {
+  try {
+    const pool = require('./db');
+    
+    console.log('🚀 Creando tablas faltantes...');
+    
+    // Agregar columna last_seen a users
+    await pool.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    `);
+    
+    // Crear tabla notifications
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        from_user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        type VARCHAR(50) NOT NULL,
+        message TEXT NOT NULL,
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        is_read BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    // Crear tabla user_profiles
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS user_profiles (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+        bio TEXT,
+        location VARCHAR(255),
+        website VARCHAR(500),
+        gaming_style VARCHAR(100),
+        favorite_games TEXT[],
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    // Crear tabla user_settings
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS user_settings (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+        email_notifications BOOLEAN DEFAULT true,
+        public_profile BOOLEAN DEFAULT true,
+        dark_mode BOOLEAN DEFAULT false,
+        language VARCHAR(10) DEFAULT 'es',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    console.log('✅ Tablas creadas exitosamente');
+    
+    res.json({ 
+      success: true, 
+      message: 'Tablas faltantes creadas: notifications, user_profiles, user_settings, last_seen column' 
+    });
+  } catch (error) {
+    console.error('❌ Error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`✅ Servidor backend escuchando en puerto ${PORT}`);
   console.log(`✅ Healthcheck disponible en http://localhost:${PORT}/`);
