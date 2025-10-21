@@ -1,5 +1,5 @@
 import React, { useState, Fragment } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { 
   Bars3Icon, 
@@ -15,15 +15,24 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showSummonerSearch, setShowSummonerSearch] = useState(false);
 
   const navigation = [
-    { name: 'Inicio', href: '/', current: true },
-    { name: 'LoL', href: '/lol', current: false },
-    { name: 'Valorant', href: '/valorant', current: false },
-    { name: 'Rankings', href: '/rankings', current: false },
-    { name: 'Equipos', href: '/teams', current: false },
+    { name: 'Inicio', href: '/' },
+    { name: 'LoL', href: '/lol' },
+    { name: 'Valorant', href: '/valorant' },
+    { name: 'Rankings', href: '/rankings' },
+    { name: 'Equipos', href: '/teams' },
   ];
+
+  // Función para determinar si un item está activo
+  const isActive = (href) => {
+    if (href === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(href);
+  };
 
   return (
     <>
@@ -60,13 +69,16 @@ export default function Header() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  item.current 
-                    ? 'bg-indigo-100 text-indigo-700 shadow-sm' 
-                    : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-50'
+                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ease-in-out ${
+                  isActive(item.href)
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105' 
+                    : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 hover:scale-102'
                 }`}
               >
                 {item.name}
+                {isActive(item.href) && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-full animate-pulse"></span>
+                )}
               </Link>
             ))}
           </div>
@@ -236,8 +248,11 @@ export default function Header() {
                     <Link
                       key={item.name}
                       to={item.href}
-                      className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 ${
-                        item.current ? 'text-blue-600' : 'text-gray-900 hover:bg-gray-50'
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 transition-all duration-200 ${
+                        isActive(item.href) 
+                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md' 
+                          : 'text-gray-900 hover:bg-indigo-50'
                       }`}
                     >
                       {item.name}
