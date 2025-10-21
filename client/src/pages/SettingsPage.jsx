@@ -112,6 +112,10 @@ const SettingsPage = () => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleSettingChange = (field, value) => {
+    setSettings(prev => ({ ...prev, [field]: value }));
+  };
+
   const saveProfile = async () => {
     if (!user) return;
     
