@@ -63,10 +63,18 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
       if (!response.ok) {
         let errorText = '';
         try {
+          // Clonar la respuesta para poder leerla múltiples veces si es necesario
+          const responseClone = response.clone();
           const errorData = await response.json();
           errorText = errorData.message || errorData.error || response.statusText;
         } catch {
-          errorText = await response.text();
+          // Si falla el JSON, intentar leer como texto
+          try {
+            const responseText = await response.clone().text();
+            errorText = responseText || response.statusText;
+          } catch {
+            errorText = response.statusText;
+          }
         }
         console.error('❌ Error del servidor:', errorText);
         throw new Error(`Error subiendo archivo: ${errorText}`);

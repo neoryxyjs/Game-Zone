@@ -396,11 +396,19 @@ router.post('/upload-post-image', authMiddleware, upload.single('image'), async 
       originalname: req.file.originalname,
       mimetype: req.file.mimetype,
       size: req.file.size,
+      path: req.file.path,
       isVideo: isVideo
     });
     
+    // Verificar que el archivo existe
+    if (!req.file.path) {
+      console.error('❌ Error: req.file.path is undefined');
+      return res.status(400).json({ success: false, message: 'Error: ruta de archivo no válida' });
+    }
+    
     // Subir a Cloudinary (soporta imágenes y videos)
     console.log(`☁️ Subiendo ${isVideo ? 'video' : 'imagen'} de post a Cloudinary...`);
+    console.log('📂 Ruta del archivo:', req.file.path);
     
     const uploadOptions = {
       folder: 'gamezone/posts',
@@ -420,7 +428,10 @@ router.post('/upload-post-image', authMiddleware, upload.single('image'), async 
         { width: 1280, height: 720, crop: 'limit', video_codec: 'auto', audio_codec: 'auto' }
       ];
       uploadOptions.eager_async = true;
+      uploadOptions.chunk_size = 6000000; // 6MB chunks para videos grandes
     }
+    
+    console.log('⚙️ Upload options:', uploadOptions);
     
     const cloudinaryResult = await cloudinary.uploader.upload(req.file.path, uploadOptions);
     
@@ -473,8 +484,17 @@ router.post('/upload-post-image', authMiddleware, upload.single('image'), async 
     }
     
   } catch (error) {
-    console.error('❌ Error subiendo imagen de post:', error);
-    res.status(500).json({ success: false, error: error.message });
+    console.error('❌ Error subiendo imagen/video de post:', error);
+    console.error('❌ Stack trace:', error.stack);
+    
+    // Devolver mensaje de error detallado
+    const errorMessage = error.message || 'Error desconocido al subir archivo';
+    res.status(500).json({ 
+      success: false, 
+      message: errorMessage,
+      error: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
