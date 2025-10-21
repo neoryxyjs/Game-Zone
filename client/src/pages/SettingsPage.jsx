@@ -3,7 +3,7 @@ import { API_BASE_URL } from '../config/api';
 import { useUser } from '../context/UserContext';
 
 const SettingsPage = () => {
-  const { user, isAuthenticated } = useUser();
+  const { user, isAuthenticated, updateUser } = useUser();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [settings, setSettings] = useState({
