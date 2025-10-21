@@ -32,10 +32,48 @@ export const UserProvider = ({ children }) => {
     lowLatencyMode: true
   });
 
-  // Efecto para manejar la inicialización
+  // Efecto para manejar la inicialización y verificar sesión persistente
   useEffect(() => {
-    // El usuario se maneja a través de la autenticación del backend
-    // No necesitamos localStorage
+    const checkAuthStatus = async () => {
+      try {
+        // Verificar si hay un token en localStorage
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          console.log('🔍 Verificando sesión persistente...');
+          
+          // Verificar con el backend si el token es válido
+          const response = await fetch(`${API_ENDPOINTS.AUTH.VERIFY || 'http://localhost:8080/api/auth/verify'}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.user) {
+              console.log('✅ Sesión válida encontrada:', data.user);
+              setUser(data.user);
+              setIsAuthenticated(true);
+            } else {
+              console.log('❌ Token inválido, limpiando...');
+              localStorage.removeItem('authToken');
+            }
+          } else {
+            console.log('❌ Error verificando sesión, limpiando token...');
+            localStorage.removeItem('authToken');
+          }
+        } else {
+          console.log('ℹ️ No hay token de autenticación');
+        }
+      } catch (error) {
+        console.error('❌ Error verificando autenticación:', error);
+        localStorage.removeItem('authToken');
+      }
+    };
+    
+    checkAuthStatus();
   }, []);
 
   const [notifications, setNotifications] = useState([]);
@@ -93,12 +131,16 @@ export const UserProvider = ({ children }) => {
   const logout = () => {
     try {
       const username = user?.username || 'Usuario';
+      console.log('🚪 Cerrando sesión...');
       
       // Limpiar estados de forma segura
       setNotifications([]);
       setFriends([]);
       setIsAuthenticated(false);
       setUser(null);
+      
+      // Limpiar token del localStorage
+      localStorage.removeItem('authToken');
       
       // Mostrar notificación de logout
       if (window.showNotification) {
@@ -109,6 +151,7 @@ export const UserProvider = ({ children }) => {
       // Forzar limpieza de estados en caso de error
       setIsAuthenticated(false);
       setUser(null);
+      localStorage.removeItem('authToken');
     }
   };
 
@@ -172,19 +215,34 @@ export const UserProvider = ({ children }) => {
 
   const authenticateUser = async (email, password) => {
     try {
+      console.log('🔐 Autenticando usuario...');
       const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
+      
       const data = await response.json();
-      if (response.ok) {
-        login(data.user);
+      console.log('📥 Respuesta de autenticación:', data);
+      
+      if (response.ok && data.success) {
+        // Guardar token en localStorage
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+          console.log('✅ Token guardado en localStorage');
+        }
+        
+        // Establecer usuario y autenticación
+        setUser(data.user);
+        setIsAuthenticated(true);
+        console.log('✅ Usuario autenticado:', data.user);
         return true;
       } else {
+        console.log('❌ Error en autenticación:', data.message);
         return false;
       }
     } catch (err) {
+      console.error('❌ Error de conexión en autenticación:', err);
       return false;
     }
   };
