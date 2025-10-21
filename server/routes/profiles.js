@@ -7,8 +7,8 @@ const pool = require('../db');
 const cloudinary = require('../config/cloudinary');
 const { authMiddleware } = require('../middleware/auth');
 
-// Configurar multer para subir avatares
-const storage = multer.diskStorage({
+// Configurar multer para subir avatares (solo imágenes)
+const avatarStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = path.join(__dirname, '../uploads/avatars');
     if (!fs.existsSync(uploadDir)) {
@@ -22,14 +22,47 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
-  storage: storage,
+const avatarUpload = multer({ 
+  storage: avatarStorage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
       cb(new Error('Solo se permiten archivos de imagen'), false);
+    }
+  }
+});
+
+// Configurar multer para posts (imágenes y videos)
+const postStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, '../uploads/posts');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, `post-${uniqueSuffix}${ext}`);
+  }
+});
+
+const postUpload = multer({ 
+  storage: postStorage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB para videos
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+      'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm'
+    ];
+    
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten imágenes (JPEG, PNG, GIF, WebP) o videos (MP4, MOV, AVI, WebM)'), false);
     }
   }
 });
@@ -202,7 +235,7 @@ router.get('/:userId/stats', async (req, res) => {
 });
 
 // Actualizar avatar de usuario (archivo) - Usando Cloudinary (requiere autenticación)
-router.put('/:userId/avatar', authMiddleware, upload.single('avatar'), async (req, res) => {
+router.put('/:userId/avatar', authMiddleware, avatarUpload.single('avatar'), async (req, res) => {
   try {
     const { userId } = req.params;
     
@@ -379,7 +412,7 @@ router.get('/:userId/images', async (req, res) => {
 });
 
 // Endpoint para subir imágenes/videos de posts - Usando Cloudinary (requiere autenticación)
-router.post('/upload-post-image', authMiddleware, upload.single('image'), async (req, res) => {
+router.post('/upload-post-image', authMiddleware, postUpload.single('image'), async (req, res) => {
   try {
     const { user_id, post_id, is_video } = req.body;
     const isVideo = is_video === 'true' || is_video === true;
