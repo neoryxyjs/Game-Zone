@@ -251,8 +251,9 @@ function PostCard({ post, userId, onLike, index }) {
               alt="Post image" 
               className="w-full max-w-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
               onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/400x200?text=Imagen+no+disponible';
-                e.target.className = 'w-full max-w-md rounded-xl shadow-md bg-gray-100 p-4 text-gray-500 text-center';
+                // Evitar bucle infinito: solo ocultar la imagen si falla
+                e.target.onerror = null; // Remover el handler para evitar bucle
+                e.target.style.display = 'none';
               }}
             />
           </div>
