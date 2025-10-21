@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
 const AboutPage = () => {
@@ -60,12 +61,12 @@ const AboutPage = () => {
           </p>
           {!isAuthenticated && (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="/register" className="btn-primary px-8 py-4 text-lg font-semibold">
+              <Link to="/register" className="btn-primary px-8 py-4 text-lg font-semibold">
                 Únete Ahora
-              </a>
-              <a href="/login" className="btn-secondary px-8 py-4 text-lg font-semibold">
+              </Link>
+              <Link to="/login" className="btn-secondary px-8 py-4 text-lg font-semibold">
                 Iniciar Sesión
-              </a>
+              </Link>
             </div>
           )}
         </div>
@@ -169,9 +170,9 @@ const AboutPage = () => {
             <a href="mailto:support@gamezone.com" className="btn-primary px-6 py-3">
               📧 Contactar Soporte
             </a>
-            <a href="/" className="btn-secondary px-6 py-3">
+            <Link to="/" className="btn-secondary px-6 py-3">
               🏠 Volver al Inicio
-            </a>
+            </Link>
           </div>
         </div>
       </div>

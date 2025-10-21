@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { 
   HeartIcon,
   EnvelopeIcon,
@@ -97,12 +98,12 @@ export default function Footer() {
             <ul className="space-y-3">
               {navigation.main.slice(0, 4).map((item) => (
                 <li key={item.name}>
-                  <a
-                    href={item.href}
-                    className="text-sm leading-6 text-gray-600 hover:text-gray-900"
+                  <Link
+                    to={item.href}
+                    className="text-sm leading-6 text-gray-600 hover:text-gray-900 transition-colors duration-200"
                   >
                     {item.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -135,15 +136,15 @@ export default function Footer() {
               © 2024 GameZone. Todos los derechos reservados.
             </p>
             <div className="flex items-center space-x-6 text-sm text-gray-500">
-              <a href="/privacy" className="hover:text-gray-900">
+              <Link to="/about" className="hover:text-gray-900 transition-colors duration-200">
+                Sobre Nosotros
+              </Link>
+              <Link to="/about" className="hover:text-gray-900 transition-colors duration-200">
                 Privacidad
-              </a>
-              <a href="/terms" className="hover:text-gray-900">
+              </Link>
+              <Link to="/about" className="hover:text-gray-900 transition-colors duration-200">
                 Términos
-              </a>
-              <a href="/cookies" className="hover:text-gray-900">
-                Cookies
-              </a>
+              </Link>
             </div>
           </div>
           <div className="mt-4 text-center">
