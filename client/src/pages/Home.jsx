@@ -86,34 +86,48 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8 animate-slide-up">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                Feed de la Comunidad
-              </h1>
-              <p className="text-gray-600 text-lg">
-                Descubre lo que está pasando en la comunidad gaming
-              </p>
-            </div>
-            <div className="hidden md:flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-sm text-gray-500">Bienvenido,</p>
-                <p className="font-semibold text-gray-900">{user?.username}</p>
-              </div>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Hero Section para usuarios autenticados */}
+        <div className="mb-12 animate-slide-up">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center space-x-4 mb-6">
               {user?.avatar ? (
                 <img 
                   src={user.avatar} 
                   alt="Avatar" 
-                  className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-lg"
+                  className="w-16 h-16 rounded-2xl object-cover border-4 border-white shadow-xl"
                 />
               ) : (
-                <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-lg">
+                <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-xl">
                   {user?.username?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
               )}
+              <div className="text-left">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  ¡Hola, {user?.username}!
+                </h1>
+                <p className="text-gray-600">Bienvenido de vuelta a GameZone</p>
+              </div>
+            </div>
+            
+            {/* Stats rápidas */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-8">
+              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
+                <div className="text-2xl font-bold text-indigo-600">12</div>
+                <div className="text-sm text-gray-600">Posts</div>
+              </div>
+              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
+                <div className="text-2xl font-bold text-green-600">45</div>
+                <div className="text-sm text-gray-600">Seguidores</div>
+              </div>
+              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
+                <div className="text-2xl font-bold text-purple-600">23</div>
+                <div className="text-sm text-gray-600">Siguiendo</div>
+              </div>
+              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
+                <div className="text-2xl font-bold text-orange-600">156</div>
+                <div className="text-sm text-gray-600">Likes</div>
+              </div>
             </div>
           </div>
         </div>
@@ -139,46 +153,56 @@ export default function Home() {
           </div>
         )}
 
-        {/* Tabs de navegación */}
-        <div className="mb-6">
-          <nav className="flex space-x-8">
+        {/* Tabs de navegación mejorados */}
+        <div className="mb-8">
+          <nav className="flex space-x-1 bg-white/50 backdrop-blur-sm rounded-xl p-1 shadow-lg max-w-2xl mx-auto">
             <button
               onClick={() => setActiveTab('feed')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'feed'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'bg-indigo-600 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
               }`}
             >
-              Feed General
+              🏠 Feed General
             </button>
             <button
               onClick={() => setActiveTab('personal')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'personal'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'bg-indigo-600 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
               }`}
             >
-              Mis Posts
+              📝 Mis Posts
             </button>
             <button
               onClick={() => setActiveTab('discover')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'discover'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'bg-indigo-600 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
               }`}
             >
-              Descubrir
+              🔍 Descubrir
+            </button>
+            <button
+              onClick={() => setActiveTab('following')}
+              className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
+                activeTab === 'following'
+                  ? 'bg-indigo-600 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+              }`}
+            >
+              👥 Siguiendo
             </button>
           </nav>
         </div>
 
         {/* Contenido principal */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Columna principal */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-3">
             {activeTab === 'feed' && (
               <>
                 <CreatePost userId={user.id} onPostCreated={handlePostCreated} onError={handleError} />
@@ -194,17 +218,98 @@ export default function Home() {
             )}
             
             {activeTab === 'discover' && (
-              <UserSearch currentUserId={user.id} />
+              <div className="card">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Descubrir Jugadores</h2>
+                <UserSearch currentUserId={user.id} />
+              </div>
+            )}
+
+            {activeTab === 'following' && (
+              <div className="card">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Siguiendo</h2>
+                <FollowingList userId={user.id} />
+              </div>
             )}
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Usuarios en línea */}
-            <OnlineUsers currentUserId={user.id} />
-            
-            {/* Lista de seguidos */}
-            <FollowingList userId={user.id} />
+          {/* Sidebar mejorada */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
+              {/* Widget de bienvenida */}
+              <div className="card">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
+                    <span className="text-white text-lg">👋</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">¡Bienvenido!</h3>
+                    <p className="text-sm text-gray-500">Comparte tu experiencia</p>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  Únete a la conversación y comparte tus logros gaming con la comunidad.
+                </p>
+                <button className="w-full btn-primary py-2 text-sm">
+                  Crear mi primer post
+                </button>
+              </div>
+
+              {/* Usuarios en línea */}
+              <OnlineUsers currentUserId={user.id} />
+              
+              {/* Widget de juegos populares */}
+              <div className="card">
+                <h3 className="font-semibold text-gray-900 mb-4">Juegos Populares</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm">🎮</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">League of Legends</div>
+                      <div className="text-sm text-gray-500">1,234 jugadores activos</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm">🔫</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">Valorant</div>
+                      <div className="text-sm text-gray-500">856 jugadores activos</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm">🏗️</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">Fortnite</div>
+                      <div className="text-sm text-gray-500">567 jugadores activos</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Widget de eventos */}
+              <div className="card">
+                <h3 className="font-semibold text-gray-900 mb-4">Próximos Eventos</h3>
+                <div className="space-y-3">
+                  <div className="p-3 bg-indigo-50 rounded-lg">
+                    <div className="font-medium text-indigo-900 text-sm">Torneo LoL</div>
+                    <div className="text-xs text-indigo-600">Mañana 20:00</div>
+                  </div>
+                  <div className="p-3 bg-green-50 rounded-lg">
+                    <div className="font-medium text-green-900 text-sm">Stream Valorant</div>
+                    <div className="text-xs text-green-600">Hoy 18:00</div>
+                  </div>
+                  <div className="p-3 bg-purple-50 rounded-lg">
+                    <div className="font-medium text-purple-900 text-sm">Q&A Gaming</div>
+                    <div className="text-xs text-purple-600">Viernes 19:00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
