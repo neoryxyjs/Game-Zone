@@ -8,6 +8,33 @@ require('./scripts/setup-env');
 // Ejecutar migraciones automáticamente (no bloquea el inicio)
 const { runMigrations } = require('./scripts/migrate');
 // Temporalmente deshabilitado para debug
+
+// Crear tabla de imágenes automáticamente
+async function createImagesTable() {
+  try {
+    const pool = require('./db');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS user_images (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        filename VARCHAR(255) NOT NULL,
+        original_name VARCHAR(255) NOT NULL,
+        file_path VARCHAR(500) NOT NULL,
+        file_size INTEGER NOT NULL,
+        mime_type VARCHAR(100) NOT NULL,
+        image_type VARCHAR(50) DEFAULT 'avatar',
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('✅ Tabla user_images creada/verificada');
+  } catch (error) {
+    console.error('❌ Error creando tabla user_images:', error.message);
+  }
+}
+
+// Crear tabla al iniciar
+createImagesTable();
 // runMigrations().catch(err => {
 //   console.log('⚠️  Migraciones fallaron, continuando sin ellas:', err.message);
 // });
