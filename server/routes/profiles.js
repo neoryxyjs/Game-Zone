@@ -174,7 +174,7 @@ router.get('/:userId/stats', async (req, res) => {
   }
 });
 
-// Actualizar avatar de usuario (archivo)
+// Actualizar avatar de usuario (archivo) - Usando Cloudinary
 router.put('/:userId/avatar', upload.single('avatar'), async (req, res) => {
   try {
     const { userId } = req.params;
@@ -193,10 +193,24 @@ router.put('/:userId/avatar', upload.single('avatar'), async (req, res) => {
       size: req.file.size
     });
     
-    // Crear URL del avatar (forzar HTTPS en producción)
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : req.protocol;
-    const avatarUrl = `${protocol}://${req.get('host')}/api/profiles/avatar/${req.file.filename}`;
-    console.log('🔗 Avatar URL:', avatarUrl);
+    // Subir a Cloudinary
+    console.log('☁️ Subiendo a Cloudinary...');
+    const cloudinaryResult = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'gamezone/avatars',
+      public_id: `avatar-${userId}-${Date.now()}`,
+      transformation: [
+        { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+        { quality: 'auto', fetch_format: 'auto' }
+      ]
+    });
+    
+    const avatarUrl = cloudinaryResult.secure_url;
+    console.log('✅ Avatar subido a Cloudinary:', avatarUrl);
+    
+    // Eliminar archivo temporal local
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
     
     // Iniciar transacción
     const client = await pool.connect();
@@ -209,16 +223,16 @@ router.put('/:userId/avatar', upload.single('avatar'), async (req, res) => {
         [userId, 'avatar']
       );
       
-      // Insertar nueva imagen en user_images
+      // Insertar nueva imagen en user_images con URL de Cloudinary
       const imageResult = await client.query(`
         INSERT INTO user_images (user_id, filename, original_name, file_path, file_size, mime_type, image_type)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id, filename
       `, [
         userId,
-        req.file.filename,
+        cloudinaryResult.public_id,
         req.file.originalname,
-        req.file.path,
+        avatarUrl,
         req.file.size,
         req.file.mimetype,
         'avatar'
@@ -337,7 +351,7 @@ router.get('/:userId/images', async (req, res) => {
   }
 });
 
-// Endpoint para subir imágenes de posts
+// Endpoint para subir imágenes de posts - Usando Cloudinary
 router.post('/upload-post-image', upload.single('image'), async (req, res) => {
   try {
     const { user_id, post_id } = req.body;
@@ -356,26 +370,40 @@ router.post('/upload-post-image', upload.single('image'), async (req, res) => {
       size: req.file.size
     });
     
-    // Crear URL de la imagen (forzar HTTPS en producción)
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : req.protocol;
-    const imageUrl = `${protocol}://${req.get('host')}/api/profiles/post-image/${req.file.filename}`;
-    console.log('🔗 Image URL:', imageUrl);
+    // Subir a Cloudinary
+    console.log('☁️ Subiendo imagen de post a Cloudinary...');
+    const cloudinaryResult = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'gamezone/posts',
+      public_id: `post-${user_id}-${Date.now()}`,
+      transformation: [
+        { width: 1200, height: 1200, crop: 'limit' },
+        { quality: 'auto', fetch_format: 'auto' }
+      ]
+    });
+    
+    const imageUrl = cloudinaryResult.secure_url;
+    console.log('✅ Imagen de post subida a Cloudinary:', imageUrl);
+    
+    // Eliminar archivo temporal local
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
     
     // Iniciar transacción
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
       
-      // Insertar imagen en user_images
+      // Insertar imagen en user_images con URL de Cloudinary
       const imageResult = await client.query(`
         INSERT INTO user_images (user_id, filename, original_name, file_path, file_size, mime_type, image_type)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id, filename
       `, [
         user_id,
-        req.file.filename,
+        cloudinaryResult.public_id,
         req.file.originalname,
-        req.file.path,
+        imageUrl,
         req.file.size,
         req.file.mimetype,
         'post'
