@@ -5,6 +5,10 @@ import Home from './pages/Home';
 import AuthPage from './pages/AuthPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
+import GamePage from './pages/GamePage';
+import RankingsPage from './pages/RankingsPage';
+import TeamsPage from './pages/TeamsPage';
+import AboutPage from './pages/AboutPage';
 import UserProfile from './components/Profile/UserProfile';
 import { UserProvider, useUser } from './context/UserContext';
 import './App.css';
@@ -20,11 +24,11 @@ const AppContent = () => {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
-          <Route path="/lol" element={<div className="p-8 text-center"><h1 className="text-2xl font-bold">League of Legends</h1><p className="mt-4">Página en construcción</p></div>} />
-          <Route path="/valorant" element={<div className="p-8 text-center"><h1 className="text-2xl font-bold">Valorant</h1><p className="mt-4">Página en construcción</p></div>} />
-          <Route path="/rankings" element={<div className="p-8 text-center"><h1 className="text-2xl font-bold">Rankings</h1><p className="mt-4">Página en construcción</p></div>} />
-          <Route path="/teams" element={<div className="p-8 text-center"><h1 className="text-2xl font-bold">Equipos</h1><p className="mt-4">Página en construcción</p></div>} />
-          <Route path="/about" element={<div className="p-8 text-center"><h1 className="text-2xl font-bold">Sobre Nosotros</h1><p className="mt-4">Página en construcción</p></div>} />
+          <Route path="/lol" element={<GamePage title="League of Legends" game="lol" />} />
+          <Route path="/valorant" element={<GamePage title="Valorant" game="valorant" />} />
+          <Route path="/rankings" element={<RankingsPage />} />
+          <Route path="/teams" element={<TeamsPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/settings" element={<SettingsPage />} />
