@@ -192,19 +192,20 @@ export const UserProvider = ({ children }) => {
   };
 
   const register = (userData) => {
-    // Crear nuevo usuario
+    // Usar los datos del servidor directamente (incluye el id real de la base de datos)
     const newUser = {
       ...userData,
-      id: Date.now(),
-      level: 1,
-      joinDate: new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }),
-      followers: 0,
-      following: 0,
-      posts: 0,
-      notifications: 0,
+      level: userData.level || 1,
+      joinDate: userData.created_at ? new Date(userData.created_at).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }) : new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }),
+      followers: userData.followers || 0,
+      following: userData.following || 0,
+      posts: userData.posts || 0,
+      notifications: userData.notifications || 0,
       avatar: userData.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
       bio: userData.bio || '¡Nuevo jugador en GameZone!'
     };
+    
+    console.log('📝 Registrando usuario con datos del servidor:', newUser);
     
     // Iniciar sesión automáticamente
     login(newUser);
