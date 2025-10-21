@@ -28,8 +28,6 @@ const SettingsPage = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      console.log('👤 Usuario en SettingsPage:', user);
-      console.log('🖼️ Avatar en SettingsPage:', user.avatar);
       loadUserStats(user.id);
       loadUserSettings(user.id);
       loadUserProfile(user.id);
@@ -46,7 +44,6 @@ const SettingsPage = () => {
       if (data.success) {
         setStats(data.stats);
       } else {
-        console.error('Error cargando estadísticas:', data.error);
         setStats({
           posts_count: 0,
           followers_count: 0,
@@ -67,14 +64,14 @@ const SettingsPage = () => {
 
   const loadUserSettings = async (userId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/profiles/${userId}`);
+      const response = await fetch(`${API_BASE_URL}/api/profiles/${userId}/settings`);
       const data = await response.json();
       
-      if (data.success && data.profile && data.profile.settings) {
-        setSettings(data.profile.settings);
+      if (data.success) {
+        setSettings(data.settings);
       }
     } catch (error) {
-      console.error('Error cargando configuraciones:', error);
+      console.error('Error cargando configuración:', error);
     }
   };
 
@@ -83,539 +80,329 @@ const SettingsPage = () => {
       const response = await fetch(`${API_BASE_URL}/api/profiles/${userId}`);
       const data = await response.json();
       
-      if (data.success && data.profile && data.profile.profile) {
-        setProfile(data.profile.profile);
+      if (data.success) {
+        setProfile(data.profile);
       }
     } catch (error) {
       console.error('Error cargando perfil:', error);
     }
   };
 
-  const saveSettings = async () => {
-    try {
-      setSaving(true);
-      const response = await fetch(`${API_BASE_URL}/api/profiles/${user.id}/settings`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings)
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        setMessage('Configuraciones guardadas correctamente');
-        setTimeout(() => setMessage(''), 3000);
-      } else {
-        setMessage('Error guardando configuraciones');
-      }
-    } catch (error) {
-      console.error('Error guardando configuraciones:', error);
-      setMessage('Error de conexión');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleChange = (field, value) => {
-    setSettings(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleProfileChange = (field, value) => {
-    setProfile(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleAvatarChange = (event) => {
-    const file = event.target.files[0];
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
     if (file) {
       setAvatarFile(file);
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setAvatarPreview(e.target.result);
-      };
+      reader.onload = (e) => setAvatarPreview(e.target.result);
       reader.readAsDataURL(file);
     }
   };
 
+  const handleProfileChange = (field, value) => {
+    setProfile(prev => ({ ...prev, [field]: value }));
+  };
+
   const saveProfile = async () => {
+    if (!user) return;
+    
+    setSaving(true);
+    setMessage('');
+
     try {
-      setSaving(true);
-      
-      // Actualizar username si cambió
-      if (username !== user.username) {
-        const usernameResponse = await fetch(`${API_BASE_URL}/api/auth/update-username`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            userId: user.id, 
-            username: username 
-          })
-        });
-        
-        if (!usernameResponse.ok) {
-          throw new Error('Error actualizando username');
-        }
-      }
-      
-      // Subir avatar si hay uno nuevo
+      // Subir avatar si hay uno
       if (avatarFile) {
-        console.log('📸 Subiendo avatar:', avatarFile);
         const formData = new FormData();
         formData.append('avatar', avatarFile);
-        
-        console.log('📤 Enviando a:', `${API_BASE_URL}/api/profiles/${user.id}/avatar`);
         
         const avatarResponse = await fetch(`${API_BASE_URL}/api/profiles/${user.id}/avatar`, {
           method: 'PUT',
           body: formData
         });
         
-        console.log('📥 Respuesta del servidor:', avatarResponse.status, avatarResponse.statusText);
-        
-        if (!avatarResponse.ok) {
-          const errorText = await avatarResponse.text();
-          console.error('❌ Error del servidor:', errorText);
-          throw new Error(`Error subiendo avatar: ${avatarResponse.status} - ${errorText}`);
-        }
-        
-        const avatarData = await avatarResponse.json();
-        console.log('✅ Datos del avatar:', avatarData);
-        
-        if (avatarData.success && avatarData.avatar_url) {
-          // Actualizar el avatar en el contexto del usuario
-          updateUser({ avatar: avatarData.avatar_url });
-          console.log('✅ Avatar actualizado en contexto:', avatarData.avatar_url);
-        } else {
-          console.error('❌ Respuesta del avatar no exitosa:', avatarData);
-          throw new Error('Error en la respuesta del servidor');
+        if (avatarResponse.ok) {
+          const avatarData = await avatarResponse.json();
+          if (avatarData.success) {
+            updateUser({ ...user, avatar: avatarData.avatar_url });
+          }
         }
       }
-      
+
       // Actualizar perfil
-      const response = await fetch(`${API_BASE_URL}/api/profiles/${user.id}`, {
+      const profileResponse = await fetch(`${API_BASE_URL}/api/profiles/${user.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profile)
       });
-      
-      const data = await response.json();
-      
-      if (data.success) {
+
+      if (profileResponse.ok) {
         setMessage('Perfil actualizado correctamente');
         setTimeout(() => setMessage(''), 3000);
-        setAvatarFile(null);
-        setAvatarPreview(null);
-        // Actualizar el contexto del usuario
-        if (username !== user.username) {
-          // Aquí podrías actualizar el contexto del usuario
-          window.location.reload(); // Recarga simple para actualizar el username
-        }
-      } else {
-        setMessage('Error actualizando perfil');
       }
     } catch (error) {
       console.error('Error actualizando perfil:', error);
-      setMessage('Error de conexión');
+      setMessage('Error actualizando perfil');
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) {
+  if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="spinner mx-auto mb-4"></div>
-          <p>Cargando configuraciones...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            Inicia sesión para acceder a las configuraciones
-          </h1>
-          <a 
-            href="/login" 
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Iniciar Sesión
-          </a>
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Acceso requerido</h2>
+          <p className="text-gray-600">Necesitas iniciar sesión para acceder a la configuración</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Configuraciones
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            Configuración
           </h1>
-          <p className="text-gray-600">
-            Personaliza tu experiencia en GameZone Social
-          </p>
+          <p className="text-gray-600">Personaliza tu experiencia en GameZone</p>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Estadísticas del usuario */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4">Tu Perfil</h3>
-              <div className="flex items-center mb-4">
-                {user.avatar ? (
-                  <img 
-                    src={user.avatar} 
-                    alt={user.username}
-                    className="w-16 h-16 rounded-full object-cover mr-4"
-                  />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center mr-4">
-                    <span className="text-gray-600 font-bold text-xl">{user.username?.[0]?.toUpperCase()}</span>
-                  </div>
-                )}
-                <div>
-                  <h4 className="font-medium">{user.username}</h4>
-                  <p className="text-sm text-gray-600">{user.email}</p>
-                </div>
-              </div>
-              
-              {stats && (
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Posts:</span>
-                    <span className="font-medium">{stats.posts_count}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Seguidores:</span>
-                    <span className="font-medium">{stats.followers_count}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Siguiendo:</span>
-                    <span className="font-medium">{stats.following_count}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Likes recibidos:</span>
-                    <span className="font-medium">{stats.likes_received}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Navegación */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold mb-4">Navegación</h3>
-              <div className="space-y-2">
-                <a 
-                  href="/social" 
-                  className="block px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                >
-                  ← Volver al Feed
-                </a>
-                <a 
-                  href="/profile" 
-                  className="block px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                >
-                  Ver Perfil
-                </a>
-              </div>
+        
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-center">
+              <div className="loading-spinner mx-auto mb-4"></div>
+              <p className="text-gray-500">Cargando configuración...</p>
             </div>
           </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Sidebar de navegación */}
+            <div className="lg:col-span-1">
+              <div className="card sticky top-8">
+                <nav className="space-y-2">
+                  <a href="#profile" className="block px-4 py-3 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg">
+                    Perfil
+                  </a>
+                  <a href="#account" className="block px-4 py-3 text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                    Cuenta
+                  </a>
+                  <a href="#privacy" className="block px-4 py-3 text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                    Privacidad
+                  </a>
+                  <a href="#notifications" className="block px-4 py-3 text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                    Notificaciones
+                  </a>
+                </nav>
+              </div>
+            </div>
 
-          {/* Configuraciones principales */}
-          <div className="lg:col-span-2">
-            {/* Personalización del Perfil */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h2 className="text-2xl font-bold mb-6">Personalizar Perfil</h2>
-              
-              {message && (
-                <div className={`mb-4 p-3 rounded-lg ${
-                  message.includes('correctamente') 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
-                }`}>
-                  {message}
+            {/* Contenido principal */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Avatar Section */}
+              <div id="profile" className="card">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                    👤
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Foto de Perfil</h2>
+                    <p className="text-sm text-gray-500">Actualiza tu foto de perfil</p>
+                  </div>
                 </div>
-              )}
-
-              <div className="space-y-6">
-                {/* Apodo/Username */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Apodo/Username
-                  </label>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Tu apodo en GameZone"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Este será tu nombre visible en la red social
-                  </p>
-                </div>
-
-                {/* Avatar */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Foto de Perfil
-                  </label>
-                  <div className="flex items-center space-x-4">
-                    <div className="relative">
-                      {(avatarPreview || user.avatar) ? (
-                        <img 
-                          src={avatarPreview || user.avatar} 
-                          alt="Avatar" 
-                          className="w-20 h-20 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center">
-                          <span className="text-gray-600 font-bold text-2xl">{user.username?.[0]?.toUpperCase()}</span>
-                        </div>
-                      )}
-                      {avatarPreview && (
-                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">✓</span>
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleAvatarChange}
-                        className="hidden"
-                        id="avatar-upload"
+                
+                <div className="flex items-center space-x-6">
+                  <div className="flex-shrink-0">
+                    {user?.avatar ? (
+                      <img 
+                        src={user.avatar} 
+                        alt="Avatar" 
+                        className="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-xl"
                       />
-                      <label
-                        htmlFor="avatar-upload"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
-                      >
-                        Cambiar Foto
-                      </label>
-                      <p className="text-xs text-gray-500 mt-1">
-                        JPG, PNG, GIF (máx. 5MB)
-                      </p>
-                    </div>
+                    ) : (
+                      <div className="w-24 h-24 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-xl">
+                        {user?.username?.charAt(0)?.toUpperCase() || 'U'}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-colors"
+                    />
+                    <p className="text-sm text-gray-500 mt-2">JPG, PNG o GIF. Máximo 5MB.</p>
+                    {avatarPreview && (
+                      <div className="mt-3">
+                        <img 
+                          src={avatarPreview} 
+                          alt="Preview" 
+                          className="w-16 h-16 rounded-lg object-cover border-2 border-indigo-200"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Información del perfil */}
+              <div className="card">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                    📝
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Información Personal</h2>
+                    <p className="text-sm text-gray-500">Actualiza tu información personal</p>
                   </div>
                 </div>
 
-                {/* Bio */}
-                <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nombre de usuario
+                    </label>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="input-field"
+                      placeholder="Tu nombre de usuario"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Ubicación
+                    </label>
+                    <input
+                      type="text"
+                      value={profile.location}
+                      onChange={(e) => handleProfileChange('location', e.target.value)}
+                      className="input-field"
+                      placeholder="Tu ubicación"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sitio web
+                    </label>
+                    <input
+                      type="url"
+                      value={profile.website}
+                      onChange={(e) => handleProfileChange('website', e.target.value)}
+                      className="input-field"
+                      placeholder="https://tu-sitio.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Estilo de juego
+                    </label>
+                    <select
+                      value={profile.gaming_style}
+                      onChange={(e) => handleProfileChange('gaming_style', e.target.value)}
+                      className="input-field"
+                    >
+                      <option value="casual">Casual</option>
+                      <option value="competitive">Competitivo</option>
+                      <option value="hardcore">Hardcore</option>
+                      <option value="social">Social</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="mt-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Biografía
                   </label>
                   <textarea
                     value={profile.bio}
                     onChange={(e) => handleProfileChange('bio', e.target.value)}
+                    className="input-field"
+                    rows="4"
                     placeholder="Cuéntanos sobre ti..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows={3}
                   />
                 </div>
-
-                {/* Ubicación */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ubicación
-                  </label>
-                  <input
-                    type="text"
-                    value={profile.location}
-                    onChange={(e) => handleProfileChange('location', e.target.value)}
-                    placeholder="Ciudad, País"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                {/* Sitio Web */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sitio Web
-                  </label>
-                  <input
-                    type="url"
-                    value={profile.website}
-                    onChange={(e) => handleProfileChange('website', e.target.value)}
-                    placeholder="https://tu-sitio.com"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                {/* Estilo de Gaming */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Estilo de Gaming
-                  </label>
-                  <select
-                    value={profile.gaming_style}
-                    onChange={(e) => handleProfileChange('gaming_style', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="casual">Casual</option>
-                    <option value="competitive">Competitivo</option>
-                    <option value="professional">Profesional</option>
-                    <option value="streamer">Streamer</option>
-                  </select>
-                </div>
-
-                {/* Juegos Favoritos */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Juegos Favoritos
-                  </label>
-                  <input
-                    type="text"
-                    value={profile.favorite_games.join(', ')}
-                    onChange={(e) => handleProfileChange('favorite_games', e.target.value.split(', ').filter(game => game.trim()))}
-                    placeholder="League of Legends, Valorant, CS2..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Separa los juegos con comas
-                  </p>
-                </div>
-
-                {/* Botón Guardar Perfil */}
-                <button
-                  onClick={saveProfile}
-                  disabled={saving}
-                  className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50"
-                >
-                  {saving ? 'Guardando...' : 'Guardar Perfil'}
-                </button>
               </div>
-            </div>
 
-            {/* Configuraciones */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold mb-6">Configuraciones</h2>
-              
-              {message && (
-                <div className={`mb-4 p-3 rounded-lg ${
-                  message.includes('correctamente') 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
-                }`}>
-                  {message}
+              {/* Estadísticas */}
+              {stats && (
+                <div className="card">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                      📊
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-900">Estadísticas</h2>
+                      <p className="text-sm text-gray-500">Tu actividad en GameZone</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center p-4 bg-gray-50 rounded-xl">
+                      <div className="text-2xl font-bold text-indigo-600">{stats.posts_count || 0}</div>
+                      <div className="text-sm text-gray-500">Publicaciones</div>
+                    </div>
+                    <div className="text-center p-4 bg-gray-50 rounded-xl">
+                      <div className="text-2xl font-bold text-green-600">{stats.followers_count || 0}</div>
+                      <div className="text-sm text-gray-500">Seguidores</div>
+                    </div>
+                    <div className="text-center p-4 bg-gray-50 rounded-xl">
+                      <div className="text-2xl font-bold text-purple-600">{stats.following_count || 0}</div>
+                      <div className="text-sm text-gray-500">Siguiendo</div>
+                    </div>
+                    <div className="text-center p-4 bg-gray-50 rounded-xl">
+                      <div className="text-2xl font-bold text-red-600">{stats.likes_received || 0}</div>
+                      <div className="text-sm text-gray-500">Likes recibidos</div>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              <div className="space-y-6">
-                {/* Tema */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tema
-                  </label>
-                  <select
-                    value={settings.theme}
-                    onChange={(e) => handleChange('theme', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="dark">Oscuro</option>
-                    <option value="light">Claro</option>
-                  </select>
-                </div>
-
-                {/* Notificaciones */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Notificaciones
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={settings.notifications_enabled}
-                        onChange={(e) => handleChange('notifications_enabled', e.target.checked)}
-                        className="mr-2"
-                      />
-                      Habilitar notificaciones
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={settings.email_notifications}
-                        onChange={(e) => handleChange('email_notifications', e.target.checked)}
-                        className="mr-2"
-                      />
-                      Notificaciones por email
-                    </label>
+              {/* Botón de guardar */}
+              <div className="card">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Guardar cambios</h3>
+                    <p className="text-sm text-gray-500">Guarda todos los cambios realizados</p>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    {message && (
+                      <div className={`text-sm font-medium ${
+                        message.includes('Error') ? 'text-red-600' : 'text-green-600'
+                      }`}>
+                        {message}
+                      </div>
+                    )}
+                    <button
+                      onClick={saveProfile}
+                      disabled={saving}
+                      className="btn-primary px-8 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {saving ? (
+                        <div className="flex items-center">
+                          <div className="loading-spinner mr-2"></div>
+                          Guardando...
+                        </div>
+                      ) : (
+                        'Guardar cambios'
+                      )}
+                    </button>
                   </div>
                 </div>
-
-                {/* Nivel de Privacidad */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nivel de Privacidad
-                  </label>
-                  <select
-                    value={settings.privacy_level}
-                    onChange={(e) => handleChange('privacy_level', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="public">Público</option>
-                    <option value="friends">Solo Amigos</option>
-                    <option value="private">Privado</option>
-                  </select>
-                </div>
-
-                {/* Idioma */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Idioma
-                  </label>
-                  <select
-                    value={settings.language}
-                    onChange={(e) => handleChange('language', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="es">Español</option>
-                    <option value="en">English</option>
-                  </select>
-                </div>
-
-                {/* Botón Guardar */}
-                <button
-                  onClick={saveSettings}
-                  disabled={saving}
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {saving ? 'Guardando...' : 'Guardar Configuraciones'}
-                </button>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
-
-      <style jsx>{`
-        .spinner {
-          width: 40px;
-          height: 40px;
-          border: 4px solid #e2e8f0;
-          border-top: 4px solid #3182ce;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 };

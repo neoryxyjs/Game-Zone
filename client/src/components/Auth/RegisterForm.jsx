@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { API_ENDPOINTS } from '../../config/api';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
-// import { useNotifications } from '../Notifications/NotificationManager';
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -17,7 +16,6 @@ export default function RegisterForm() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useUser();
-  // const { showSuccess, showError } = useNotifications();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -27,14 +25,12 @@ export default function RegisterForm() {
     // Validar que las contraseñas coincidan
     if (formData.password !== formData.confirmPassword) {
       setError('Las contraseñas no coinciden');
-      // showError('Las contraseñas no coinciden');
       return;
     }
 
     // Validar longitud de contraseña
     if (formData.password.length < 6) {
       setError('La contraseña debe tener al menos 6 caracteres');
-      // showError('La contraseña debe tener al menos 6 caracteres');
       return;
     }
 
@@ -48,22 +44,14 @@ export default function RegisterForm() {
         password: formData.password,
       };
 
-      const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        // showSuccess(`¡Bienvenido a GameZone, ${formData.username}!`);
+      const success = await register(userData);
+      if (success) {
         navigate('/');
       } else {
-        setError(data.message || 'Error al registrar usuario');
-        // showError(data.message || 'Error al registrar usuario');
+        setError('Error al crear la cuenta');
       }
     } catch (err) {
-      setError('Error de conexión con el servidor');
-      // showError('Error de conexión con el servidor');
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -77,131 +65,145 @@ export default function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-          <p className="text-red-400 text-sm">{error}</p>
+    <div className="w-full max-w-md mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            ¡Únete a GameZone!
+          </h2>
+          <p className="text-gray-600 mt-2">Crea tu cuenta y comienza a jugar</p>
         </div>
-      )}
-      <div>
-        <label htmlFor="username" className="block text-xs font-medium text-gray-300 mb-1">
-          Nombre de usuario
-        </label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          required
-          className="w-full bg-gray-700 text-white rounded px-3 py-2 border border-gray-600 focus:outline-none focus:border-purple-500 text-sm"
-          placeholder="Tu nombre de usuario"
-        />
-      </div>
-      <div>
-        <label htmlFor="email" className="block text-xs font-medium text-gray-300 mb-1">
-          Email
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="w-full bg-gray-700 text-white rounded px-3 py-2 border border-gray-600 focus:outline-none focus:border-purple-500 text-sm"
-          placeholder="tu@email.com"
-        />
-      </div>
-      <div>
-        <label htmlFor="password" className="block text-xs font-medium text-gray-300 mb-1">
-          Contraseña
-        </label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          className="w-full bg-gray-700 text-white rounded px-3 py-2 border border-gray-600 focus:outline-none focus:border-purple-500 text-sm"
-          placeholder="••••••••"
-        />
-      </div>
-      <div>
-        <label htmlFor="confirmPassword" className="block text-xs font-medium text-gray-300 mb-1">
-          Confirmar contraseña
-        </label>
-        <input
-          type="password"
-          id="confirmPassword"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-          className="w-full bg-gray-700 text-white rounded px-3 py-2 border border-gray-600 focus:outline-none focus:border-purple-500 text-sm"
-          placeholder="••••••••"
-        />
-      </div>
-      <div>
-        <label htmlFor="game" className="block text-xs font-medium text-gray-300 mb-1">
-          Juego principal
-        </label>
-        <select
-          id="game"
-          name="game"
-          value={formData.game}
-          onChange={handleChange}
-          className="w-full bg-gray-700 text-white rounded px-3 py-2 border border-gray-600 focus:outline-none focus:border-purple-500 text-sm"
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 animate-bounce-in">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <p className="text-red-700 text-sm font-medium">{error}</p>
+            </div>
+          </div>
+        )}
+        
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-2">
+              Nombre de usuario
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+                className="input-field pl-10"
+                placeholder="Tu nombre de usuario"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+              Email
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                </svg>
+              </div>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="input-field pl-10"
+                placeholder="tu@email.com"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+              Contraseña
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="input-field pl-10"
+                placeholder="Mínimo 6 caracteres"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-2">
+              Confirmar contraseña
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0018 0z" />
+                </svg>
+              </div>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="input-field pl-10"
+                placeholder="Repite tu contraseña"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full btn-primary py-3 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
-          <option value="League of Legends">League of Legends</option>
-          <option value="Valorant">Valorant</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="rank" className="block text-xs font-medium text-gray-300 mb-1">
-          Rango
-        </label>
-        <select
-          id="rank"
-          name="rank"
-          value={formData.rank}
-          onChange={handleChange}
-          className="w-full bg-gray-700 text-white rounded px-3 py-2 border border-gray-600 focus:outline-none focus:border-purple-500 text-sm"
-        >
-          <option value="Bronze">Bronze</option>
-          <option value="Silver">Silver</option>
-          <option value="Gold">Gold</option>
-          <option value="Platinum">Platinum</option>
-          <option value="Diamond">Diamond</option>
-          <option value="Master">Master</option>
-          <option value="Grandmaster">Grandmaster</option>
-          <option value="Challenger">Challenger</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="riotId" className="block text-xs font-medium text-gray-300 mb-1">
-          Riot ID (nombre de invocador)
-          <span className="text-gray-400 ml-1">(opcional)</span>
-        </label>
-        <input
-          type="text"
-          id="riotId"
-          name="riotId"
-          value={formData.riotId}
-          onChange={handleChange}
-          className="w-full bg-gray-700 text-white rounded px-3 py-2 border border-gray-600 focus:outline-none focus:border-purple-500 text-sm"
-          placeholder="Ej: Faker, TheShy, etc."
-        />
-      </div>
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded font-medium text-sm transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {isLoading ? 'Registrando...' : 'Registrarse'}
-      </button>
-      {/* Riot Games login temporalmente deshabilitado */}
-    </form>
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <div className="loading-spinner mr-2"></div>
+              Creando cuenta...
+            </div>
+          ) : (
+            'Crear Cuenta'
+          )}
+        </button>
+
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            ¿Ya tienes cuenta?{' '}
+            <a href="#" className="text-indigo-600 hover:text-indigo-500 font-medium transition-colors duration-200">
+              Inicia sesión aquí
+            </a>
+          </p>
+        </div>
+      </form>
+    </div>
   );
 }

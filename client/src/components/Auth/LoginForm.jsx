@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { API_ENDPOINTS } from '../../config/api';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
-// import { useNotifications } from '../Notifications/NotificationManager';
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -12,7 +11,6 @@ export default function LoginForm() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { authenticateUser } = useUser();
-  // const { showSuccess, showError } = useNotifications();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,15 +21,12 @@ export default function LoginForm() {
     try {
       const success = await authenticateUser(formData.email, formData.password);
       if (success) {
-        // showSuccess('¡Sesión iniciada correctamente!');
         navigate('/');
       } else {
         setError('Email o contraseña incorrectos');
-        // showError('Credenciales incorrectas');
       }
     } catch (err) {
       setError(err.message);
-      // showError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -45,80 +40,107 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-          <p className="text-red-400 text-sm">{error}</p>
+    <div className="w-full max-w-md mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            ¡Bienvenido de vuelta!
+          </h2>
+          <p className="text-gray-600 mt-2">Inicia sesión en tu cuenta</p>
         </div>
-      )}
-      <div>
-        <label htmlFor="email" className="block text-xs font-semibold text-gray-300 mb-1">
-          Email
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-            <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-            </svg>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 animate-bounce-in">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <p className="text-red-700 text-sm font-medium">{error}</p>
+            </div>
           </div>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full bg-gray-700/50 text-white rounded pl-8 pr-3 py-2 border border-gray-600/50 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 placeholder-gray-400 text-sm"
-            placeholder="tu@email.com"
-          />
-        </div>
-      </div>
-      <div>
-        <label htmlFor="password" className="block text-xs font-semibold text-gray-300 mb-1">
-          Contraseña
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-            <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+        )}
+        
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+              Email
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                </svg>
+              </div>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="input-field pl-10"
+                placeholder="tu@email.com"
+              />
+            </div>
           </div>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="w-full bg-gray-700/50 text-white rounded pl-8 pr-3 py-2 border border-gray-600/50 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 placeholder-gray-400 text-sm"
-            placeholder="••••••••"
-          />
+          
+          <div>
+            <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+              Contraseña
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="input-field pl-10"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <input
-            id="remember-me"
-            name="remember-me"
-            type="checkbox"
-            className="h-3 w-3 text-purple-600 focus:ring-purple-500 border-gray-600 rounded bg-gray-700"
-          />
-          <label htmlFor="remember-me" className="ml-2 block text-xs text-gray-400">
-            Recordarme
-          </label>
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <input
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+              Recordarme
+            </label>
+          </div>
+          <a href="#" className="text-sm text-indigo-600 hover:text-indigo-500 transition-colors duration-200">
+            ¿Olvidaste tu contraseña?
+          </a>
         </div>
-        <a href="#" className="text-xs text-purple-400 hover:text-purple-300 transition-colors duration-200">
-          ¿Olvidaste tu contraseña?
-        </a>
-        </div>
+        
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-2 px-4 rounded font-semibold text-sm transition-all duration-300 shadow hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full btn-primary py-3 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
-          {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <div className="loading-spinner mr-2"></div>
+              Iniciando sesión...
+            </div>
+          ) : (
+            'Iniciar Sesión'
+          )}
         </button>
-        {/* Riot Games login temporalmente deshabilitado */}
       </form>
+    </div>
   );
 }
