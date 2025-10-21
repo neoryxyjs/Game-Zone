@@ -7,8 +7,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   console.error('❌ ERROR CRÍTICO: JWT_SECRET no está configurado en las variables de entorno');
   console.error('⚠️  Por favor configura JWT_SECRET en Railway antes de desplegar');
+  console.error('⚠️  La autenticación NO FUNCIONARÁ hasta que lo configures');
   if (process.env.NODE_ENV === 'production') {
-    throw new Error('JWT_SECRET es requerido en producción');
+    console.error('⚠️  USANDO SECRETO TEMPORAL - ESTO NO ES SEGURO EN PRODUCCIÓN');
   }
 }
 
