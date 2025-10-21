@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchAuth, postAuth } from '../../utils/api';
+import { API_BASE_URL } from '../../config/api';
+import { postAuth } from '../../utils/api';
 
 export default function UserSearch({ currentUserId }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -15,7 +16,8 @@ export default function UserSearch({ currentUserId }) {
 
     try {
       setLoading(true);
-      const response = await fetchAuth(`/api/social/search/users?q=${encodeURIComponent(query)}`);
+      // Búsqueda PÚBLICA - no requiere autenticación
+      const response = await fetch(`${API_BASE_URL}/api/social/search/users?q=${encodeURIComponent(query)}`);
       const data = await response.json();
       
       if (data.success) {

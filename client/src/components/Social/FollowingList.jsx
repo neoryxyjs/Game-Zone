@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchAuth, postAuth } from '../../utils/api';
+import { API_BASE_URL } from '../../config/api';
+import { postAuth } from '../../utils/api';
 
 export default function FollowingList({ currentUserId }) {
   const [following, setFollowing] = useState([]);
@@ -16,12 +17,12 @@ export default function FollowingList({ currentUserId }) {
     try {
       setLoading(true);
       
-      // Cargar usuarios que sigue
-      const followingResponse = await fetchAuth(`/api/social/following/${currentUserId}`);
+      // Cargar usuarios que sigue (PÚBLICO - no requiere autenticación)
+      const followingResponse = await fetch(`${API_BASE_URL}/api/social/following/${currentUserId}`);
       const followingData = await followingResponse.json();
       
-      // Cargar seguidores
-      const followersResponse = await fetchAuth(`/api/social/followers/${currentUserId}`);
+      // Cargar seguidores (PÚBLICO - no requiere autenticación)
+      const followersResponse = await fetch(`${API_BASE_URL}/api/social/followers/${currentUserId}`);
       const followersData = await followersResponse.json();
       
       if (followingData.success) {

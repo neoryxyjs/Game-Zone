@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchAuth, postAuth } from '../../utils/api';
+import { API_BASE_URL } from '../../config/api';
+import { postAuth } from '../../utils/api';
 import { useUser } from '../../context/UserContext';
 
 export default function UserProfile() {
@@ -22,8 +23,8 @@ export default function UserProfile() {
     try {
       setLoading(true);
       
-      // Cargar información del usuario
-      const userResponse = await fetchAuth(`/api/profiles/${userId}`);
+      // Cargar información del usuario (PÚBLICO - no requiere autenticación)
+      const userResponse = await fetch(`${API_BASE_URL}/api/profiles/${userId}`);
       const userData = await userResponse.json();
       
       if (userData.success) {
@@ -32,17 +33,17 @@ export default function UserProfile() {
         setError('Usuario no encontrado');
       }
 
-      // Cargar posts del usuario
-      const postsResponse = await fetchAuth(`/api/social/feed/${userId}`);
+      // Cargar posts del usuario (PÚBLICO - no requiere autenticación)
+      const postsResponse = await fetch(`${API_BASE_URL}/api/social/feed/${userId}`);
       const postsData = await postsResponse.json();
       
       if (postsData.success) {
         setUserPosts(postsData.posts || []);
       }
 
-      // Verificar si el usuario actual sigue a este usuario
+      // Verificar si el usuario actual sigue a este usuario (PÚBLICO)
       if (currentUser && currentUser.id !== userId) {
-        const followResponse = await fetchAuth(`/api/social/following/${currentUser.id}`);
+        const followResponse = await fetch(`${API_BASE_URL}/api/social/following/${currentUser.id}`);
         const followData = await followResponse.json();
         
         if (followData.success) {
