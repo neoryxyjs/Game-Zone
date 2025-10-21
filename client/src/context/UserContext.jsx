@@ -54,6 +54,7 @@ export const UserProvider = ({ children }) => {
             const data = await response.json();
             if (data.success && data.user) {
               console.log('✅ Sesión válida encontrada:', data.user);
+              console.log('🖼️ Avatar en sesión persistente:', data.user.avatar);
               setUser(data.user);
               setIsAuthenticated(true);
             } else {
@@ -236,6 +237,7 @@ export const UserProvider = ({ children }) => {
         setUser(data.user);
         setIsAuthenticated(true);
         console.log('✅ Usuario autenticado:', data.user);
+        console.log('🖼️ Avatar del usuario:', data.user.avatar);
         return true;
       } else {
         console.log('❌ Error en autenticación:', data.message);

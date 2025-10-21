@@ -28,6 +28,8 @@ const SettingsPage = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
+      console.log('👤 Usuario en SettingsPage:', user);
+      console.log('🖼️ Avatar en SettingsPage:', user.avatar);
       loadUserStats(user.id);
       loadUserSettings(user.id);
       loadUserProfile(user.id);
