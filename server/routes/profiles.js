@@ -192,8 +192,9 @@ router.put('/:userId/avatar', upload.single('avatar'), async (req, res) => {
       size: req.file.size
     });
     
-    // Crear URL del avatar
-    const avatarUrl = `${req.protocol}://${req.get('host')}/api/profiles/avatar/${req.file.filename}`;
+    // Crear URL del avatar (forzar HTTPS en producción)
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : req.protocol;
+    const avatarUrl = `${protocol}://${req.get('host')}/api/profiles/avatar/${req.file.filename}`;
     console.log('🔗 Avatar URL:', avatarUrl);
     
     // Iniciar transacción
@@ -354,8 +355,9 @@ router.post('/upload-post-image', upload.single('image'), async (req, res) => {
       size: req.file.size
     });
     
-    // Crear URL de la imagen
-    const imageUrl = `${req.protocol}://${req.get('host')}/api/profiles/post-image/${req.file.filename}`;
+    // Crear URL de la imagen (forzar HTTPS en producción)
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : req.protocol;
+    const imageUrl = `${protocol}://${req.get('host')}/api/profiles/post-image/${req.file.filename}`;
     console.log('🔗 Image URL:', imageUrl);
     
     // Iniciar transacción
