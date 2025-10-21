@@ -410,6 +410,35 @@ app.post('/api/create-images-table', async (req, res) => {
   }
 });
 
+// Endpoint temporal para agregar columna image_id a posts
+app.post('/api/add-image-id-to-posts', async (req, res) => {
+  try {
+    const pool = require('./db');
+    
+    console.log('🚀 Agregando columna image_id a posts...');
+    
+    // Agregar columna image_id a posts
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS image_id INTEGER REFERENCES user_images(id) ON DELETE SET NULL
+    `);
+    
+    // Crear índice
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_posts_image_id ON posts(image_id)
+    `);
+    
+    console.log('✅ Columna image_id agregada exitosamente');
+    
+    res.json({ 
+      success: true, 
+      message: 'Columna image_id agregada a posts' 
+    });
+  } catch (error) {
+    console.error('❌ Error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`✅ Servidor backend escuchando en puerto ${PORT}`);
   console.log(`✅ Healthcheck disponible en http://localhost:${PORT}/`);

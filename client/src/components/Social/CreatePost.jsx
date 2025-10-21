@@ -21,7 +21,8 @@ export default function CreatePost({ userId, onPostCreated }) {
         body: JSON.stringify({
           user_id: userId,
           content: content.trim(),
-          image_url: uploadedImage ? uploadedImage.url : (imageUrl || null),
+          image_id: uploadedImage ? uploadedImage.id : null, // ID de la imagen en la BD
+          image_url: uploadedImage ? uploadedImage.url : (imageUrl || null), // URL de respaldo
           game_tag: gameTag || null
         })
       });

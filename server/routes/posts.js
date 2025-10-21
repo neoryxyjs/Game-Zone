@@ -4,13 +4,19 @@ const pool = require('../db');
 
 // Crear un nuevo post
 router.post('/create', async (req, res) => {
-  const { user_id, content, image_url, game_tag } = req.body;
+  const { user_id, content, image_url, image_id, game_tag } = req.body;
   
   try {
-    const result = await pool.query(
-      'INSERT INTO posts (user_id, content, image_url, game_tag) VALUES ($1, $2, $3, $4) RETURNING *',
-      [user_id, content, image_url, game_tag]
-    );
+    // Si hay image_id, usarlo; si no, usar image_url (compatibilidad)
+    const query = image_id 
+      ? 'INSERT INTO posts (user_id, content, image_id, game_tag) VALUES ($1, $2, $3, $4) RETURNING *'
+      : 'INSERT INTO posts (user_id, content, image_url, game_tag) VALUES ($1, $2, $3, $4) RETURNING *';
+    
+    const params = image_id 
+      ? [user_id, content, image_id, game_tag]
+      : [user_id, content, image_url, game_tag];
+    
+    const result = await pool.query(query, params);
     
     // Obtener información del usuario
     const userResult = await pool.query(
@@ -18,8 +24,22 @@ router.post('/create', async (req, res) => {
       [user_id]
     );
     
+    // Si hay image_id, obtener la URL de la imagen desde user_images
+    let imageUrl = result.rows[0].image_url;
+    if (result.rows[0].image_id) {
+      const imageResult = await pool.query(
+        'SELECT filename FROM user_images WHERE id = $1',
+        [result.rows[0].image_id]
+      );
+      if (imageResult.rows.length > 0) {
+        // Construir URL desde el servidor
+        imageUrl = `/api/profiles/post-image/${imageResult.rows[0].filename}`;
+      }
+    }
+    
     const post = {
       ...result.rows[0],
+      image_url: imageUrl, // Asegurar que siempre haya una URL
       user: userResult.rows[0],
       likes_count: 0,
       comments_count: 0
@@ -42,26 +62,38 @@ router.get('/feed', async (req, res) => {
         p.*,
         u.username,
         u.avatar,
+        ui.filename as image_filename,
         COUNT(DISTINCT pl.id) as likes_count,
         COUNT(DISTINCT pc.id) as comments_count
       FROM posts p
       JOIN users u ON p.user_id = u.id
+      LEFT JOIN user_images ui ON p.image_id = ui.id
       LEFT JOIN post_likes pl ON p.id = pl.post_id
       LEFT JOIN post_comments pc ON p.id = pc.post_id
-      GROUP BY p.id, u.username, u.avatar
+      GROUP BY p.id, u.username, u.avatar, ui.filename
       ORDER BY p.created_at DESC
       LIMIT $1 OFFSET $2
     `, [limit, offset]);
     
-    // Transformar los datos para incluir el objeto user
-    const posts = result.rows.map(row => ({
-      ...row,
-      user: {
-        id: row.user_id,
-        username: row.username,
-        avatar: row.avatar
+    // Transformar los datos para incluir el objeto user y la URL de la imagen
+    const posts = result.rows.map(row => {
+      let imageUrl = row.image_url; // URL directa si existe
+      
+      // Si hay image_id y filename, construir URL desde el servidor
+      if (row.image_id && row.image_filename) {
+        imageUrl = `/api/profiles/post-image/${row.image_filename}`;
       }
-    }));
+      
+      return {
+        ...row,
+        image_url: imageUrl,
+        user: {
+          id: row.user_id,
+          username: row.username,
+          avatar: row.avatar
+        }
+      };
+    });
     
     res.json({ success: true, posts });
   } catch (err) {
@@ -81,27 +113,39 @@ router.get('/user/:userId', async (req, res) => {
         p.*,
         u.username,
         u.avatar,
+        ui.filename as image_filename,
         COUNT(DISTINCT pl.id) as likes_count,
         COUNT(DISTINCT pc.id) as comments_count
       FROM posts p
       JOIN users u ON p.user_id = u.id
+      LEFT JOIN user_images ui ON p.image_id = ui.id
       LEFT JOIN post_likes pl ON p.id = pl.post_id
       LEFT JOIN post_comments pc ON p.id = pc.post_id
       WHERE p.user_id = $1
-      GROUP BY p.id, u.username, u.avatar
+      GROUP BY p.id, u.username, u.avatar, ui.filename
       ORDER BY p.created_at DESC
       LIMIT $2 OFFSET $3
     `, [userId, limit, offset]);
     
-    // Transformar los datos para incluir el objeto user
-    const posts = result.rows.map(row => ({
-      ...row,
-      user: {
-        id: row.user_id,
-        username: row.username,
-        avatar: row.avatar
+    // Transformar los datos para incluir el objeto user y la URL de la imagen
+    const posts = result.rows.map(row => {
+      let imageUrl = row.image_url; // URL directa si existe
+      
+      // Si hay image_id y filename, construir URL desde el servidor
+      if (row.image_id && row.image_filename) {
+        imageUrl = `/api/profiles/post-image/${row.image_filename}`;
       }
-    }));
+      
+      return {
+        ...row,
+        image_url: imageUrl,
+        user: {
+          id: row.user_id,
+          username: row.username,
+          avatar: row.avatar
+        }
+      };
+    });
     
     res.json({ success: true, posts });
   } catch (err) {
