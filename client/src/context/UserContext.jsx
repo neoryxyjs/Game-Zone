@@ -55,8 +55,8 @@ export const UserProvider = ({ children }) => {
             if (data.success && data.user) {
               console.log('✅ Sesión válida encontrada:', data.user);
               console.log('🖼️ Avatar en sesión persistente:', data.user.avatar);
-              setUser(data.user);
-              setIsAuthenticated(true);
+              // Usar el método login para configurar el usuario correctamente
+              login(data.user);
             } else {
               console.log('❌ Token inválido, limpiando...');
               localStorage.removeItem('authToken');
@@ -158,18 +158,21 @@ export const UserProvider = ({ children }) => {
 
   const login = (userData) => {
     try {
+      console.log('🔐 Login con datos del servidor:', userData);
+      
+      // Usar datos directamente del servidor (base de datos)
       const userWithDefaults = {
         ...userData,
-        id: userData.id || Date.now(),
         level: userData.level || 1,
-        joinDate: userData.joinDate || new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }),
+        joinDate: userData.created_at ? new Date(userData.created_at).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }) : new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }),
         followers: userData.followers || 0,
         following: userData.following || 0,
         posts: userData.posts || 0,
         notifications: userData.notifications || 0,
-        avatar: userData.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
         bio: userData.bio || '¡Nuevo jugador en GameZone!'
       };
+      
+      console.log('👤 Usuario configurado:', userWithDefaults);
       
       // Actualizar estados de forma segura
       setIsAuthenticated(true);
@@ -181,13 +184,6 @@ export const UserProvider = ({ children }) => {
           window.showNotification('success', `¡Bienvenido de vuelta, ${userWithDefaults.username}!`);
         }
       }, 1000);
-
-      // Simular notificaciones de actividad reciente
-      setTimeout(() => {
-        if (window.showNotification) {
-          window.showNotification('info', 'Tienes 3 nuevos mensajes y 2 solicitudes de amistad');
-        }
-      }, 3000);
 
     } catch (error) {
       console.error('Error durante login:', error);
@@ -233,9 +229,8 @@ export const UserProvider = ({ children }) => {
           console.log('✅ Token guardado en localStorage');
         }
         
-        // Establecer usuario y autenticación
-        setUser(data.user);
-        setIsAuthenticated(true);
+        // Usar el método login para configurar el usuario correctamente
+        login(data.user);
         console.log('✅ Usuario autenticado:', data.user);
         console.log('🖼️ Avatar del usuario:', data.user.avatar);
         return true;
