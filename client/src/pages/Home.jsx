@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import CreatePost from '../components/Social/CreatePost';
 import Feed from '../components/Social/Feed';
@@ -33,18 +34,18 @@ export default function Home() {
             Inicia sesión para ver el feed de la comunidad
           </p>
           <div className="space-x-4">
-            <a
-              href="/login"
+            <Link
+              to="/login"
               className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
             >
               Iniciar Sesión
-            </a>
-            <a
-              href="/register"
+            </Link>
+            <Link
+              to="/register"
               className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
               Registrarse
-            </a>
+            </Link>
           </div>
         </div>
       </div>
