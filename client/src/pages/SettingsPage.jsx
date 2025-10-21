@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { fetchAuth, putAuth, uploadFileAuth } from '../utils/api';
 import { useUser } from '../context/UserContext';
+import { useTheme } from '../context/ThemeContext';
 
 const SettingsPage = () => {
   const { user, isAuthenticated, updateUser } = useUser();
+  const { theme, toggleTheme, isDark } = useTheme();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [settings, setSettings] = useState({
@@ -371,6 +373,124 @@ const SettingsPage = () => {
                   </div>
                 </div>
               )}
+
+              {/* Apariencia y Tema */}
+              <div id="appearance" className="card">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                    🎨
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Apariencia</h2>
+                    <p className="text-sm text-gray-500">Personaliza la apariencia de GameZone</p>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Modo Oscuro */}
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center">
+                        {isDark ? (
+                          <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                          </svg>
+                        ) : (
+                          <svg className="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                          </svg>
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">Modo {isDark ? 'Oscuro' : 'Claro'}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {isDark ? 'Apariencia oscura activada' : 'Apariencia clara activada'}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={toggleTheme}
+                      className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                        isDark ? 'bg-indigo-600' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          isDark ? 'translate-x-9' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Información adicional */}
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                    <div className="flex items-start space-x-3">
+                      <svg className="w-5 h-5 text-blue-500 dark:text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-blue-900 dark:text-blue-200">Acerca del modo oscuro</h4>
+                        <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                          El modo oscuro reduce la fatiga visual en ambientes con poca luz y ahorra batería en dispositivos con pantallas OLED.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Notificaciones */}
+              <div id="notifications" className="card">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                    🔔
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Notificaciones</h2>
+                    <p className="text-sm text-gray-500">Administra tus preferencias de notificaciones</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Notificaciones push</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Recibe notificaciones en tiempo real</p>
+                    </div>
+                    <button
+                      onClick={() => handleSettingChange('notifications_enabled', !settings.notifications_enabled)}
+                      className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors ${
+                        settings.notifications_enabled ? 'bg-indigo-600' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          settings.notifications_enabled ? 'translate-x-9' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Notificaciones por email</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Recibe resúmenes por correo electrónico</p>
+                    </div>
+                    <button
+                      onClick={() => handleSettingChange('email_notifications', !settings.email_notifications)}
+                      className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors ${
+                        settings.email_notifications ? 'bg-indigo-600' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          settings.email_notifications ? 'translate-x-9' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
 
               {/* Botón de guardar */}
               <div className="card">

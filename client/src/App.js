@@ -15,6 +15,7 @@ import Error403 from './pages/Error403';
 import Error500 from './pages/Error500';
 import ErrorBoundary from './components/ErrorBoundary';
 import { UserProvider, useUser } from './context/UserContext';
+import { ThemeProvider } from './context/ThemeContext';
 import './App.css';
 
 // Componente wrapper principal
@@ -53,9 +54,11 @@ const AppContent = () => {
 function App() {
   return (
     <ErrorBoundary>
-      <UserProvider>
-        <AppContent />
-      </UserProvider>
+      <ThemeProvider>
+        <UserProvider>
+          <AppContent />
+        </UserProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }
