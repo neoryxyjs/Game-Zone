@@ -293,7 +293,15 @@ router.get('/:postId/comments', async (req, res) => {
 // Eliminar un post (requiere autenticación)
 router.delete('/:postId', authMiddleware, async (req, res) => {
   const { postId } = req.params;
-  const { user_id } = req.body;
+  
+  // Obtener user_id del JWT (agregado por authMiddleware en req.userId)
+  const userId = req.userId;
+  
+  console.log('🗑️ Intento de eliminar post:', { postId, userId });
+  
+  if (!userId) {
+    return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
+  }
   
   try {
     // Verificar que el post existe y pertenece al usuario
@@ -308,8 +316,14 @@ router.delete('/:postId', authMiddleware, async (req, res) => {
     
     const post = postResult.rows[0];
     
+    console.log('🔍 Verificando permisos:', { 
+      postOwnerId: post.user_id, 
+      requestUserId: userId,
+      match: post.user_id === parseInt(userId)
+    });
+    
     // Verificar que el usuario es el dueño del post
-    if (post.user_id !== parseInt(user_id)) {
+    if (post.user_id !== parseInt(userId)) {
       return res.status(403).json({ success: false, message: 'No tienes permiso para eliminar este post' });
     }
     
