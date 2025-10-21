@@ -356,6 +356,52 @@ app.get('/api/settings/:userId/stats', async (req, res) => {
   }
 });
 
+// Endpoint para crear tabla de imágenes de usuarios
+app.post('/api/create-user-images-table', async (req, res) => {
+  try {
+    console.log('🔄 Creando tabla de imágenes de usuarios...');
+    
+    // Crear tabla de imágenes de usuarios
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS user_images (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        filename VARCHAR(255) NOT NULL,
+        original_name VARCHAR(255) NOT NULL,
+        file_path VARCHAR(500) NOT NULL,
+        file_size INTEGER NOT NULL,
+        mime_type VARCHAR(100) NOT NULL,
+        image_type VARCHAR(50) NOT NULL DEFAULT 'avatar',
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    // Crear índices
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_user_images_user_id ON user_images(user_id)
+    `);
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_user_images_type ON user_images(image_type)
+    `);
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_user_images_active ON user_images(is_active)
+    `);
+    
+    console.log('✅ Tabla de imágenes creada exitosamente');
+    res.json({ 
+      success: true, 
+      message: 'Tabla de imágenes de usuarios creada exitosamente',
+      table: 'user_images',
+      indexes: ['idx_user_images_user_id', 'idx_user_images_type', 'idx_user_images_active']
+    });
+  } catch (error) {
+    console.error('❌ Error creando tabla de imágenes:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`✅ Servidor backend escuchando en puerto ${PORT}`);
   console.log(`✅ Healthcheck disponible en http://localhost:${PORT}/`);
@@ -363,4 +409,5 @@ app.listen(PORT, () => {
   console.log(`   - GET  /`);
   console.log(`   - POST /api/auth/register`);
   console.log(`   - POST /api/auth/login`);
+  console.log(`   - POST /api/create-user-images-table`);
 }); 

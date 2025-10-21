@@ -196,18 +196,63 @@ router.put('/:userId/avatar', upload.single('avatar'), async (req, res) => {
     const avatarUrl = `${req.protocol}://${req.get('host')}/api/profiles/avatar/${req.file.filename}`;
     console.log('🔗 Avatar URL:', avatarUrl);
     
-    const result = await pool.query(
-      'UPDATE users SET avatar = $1 WHERE id = $2 RETURNING id, username, avatar',
-      [avatarUrl, userId]
-    );
-    
-    if (result.rows.length === 0) {
-      console.log('❌ User not found:', userId);
-      return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    // Iniciar transacción
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      // Desactivar avatares anteriores del usuario
+      await client.query(
+        'UPDATE user_images SET is_active = false WHERE user_id = $1 AND image_type = $2',
+        [userId, 'avatar']
+      );
+      
+      // Insertar nueva imagen en user_images
+      const imageResult = await client.query(`
+        INSERT INTO user_images (user_id, filename, original_name, file_path, file_size, mime_type, image_type)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id, filename
+      `, [
+        userId,
+        req.file.filename,
+        req.file.originalname,
+        req.file.path,
+        req.file.size,
+        req.file.mimetype,
+        'avatar'
+      ]);
+      
+      // Actualizar avatar en tabla users
+      const userResult = await client.query(
+        'UPDATE users SET avatar = $1 WHERE id = $2 RETURNING id, username, avatar',
+        [avatarUrl, userId]
+      );
+      
+      if (userResult.rows.length === 0) {
+        throw new Error('Usuario no encontrado');
+      }
+      
+      await client.query('COMMIT');
+      
+      console.log('✅ Avatar updated successfully:', {
+        user: userResult.rows[0],
+        image: imageResult.rows[0]
+      });
+      
+      res.json({ 
+        success: true, 
+        user: userResult.rows[0], 
+        avatar_url: avatarUrl,
+        image_id: imageResult.rows[0].id
+      });
+      
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
     }
     
-    console.log('✅ Avatar updated successfully:', result.rows[0]);
-    res.json({ success: true, user: result.rows[0], avatar_url: avatarUrl });
   } catch (error) {
     console.error('❌ Error actualizando avatar:', error);
     res.status(500).json({ success: false, error: error.message });
@@ -231,6 +276,40 @@ router.get('/avatar/:filename', (req, res) => {
     res.sendFile(filePath);
   } catch (error) {
     console.error('❌ Error sirviendo avatar:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Obtener imágenes de un usuario
+router.get('/:userId/images', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { type = 'all' } = req.query;
+    
+    let query = `
+      SELECT id, filename, original_name, file_size, mime_type, image_type, created_at
+      FROM user_images 
+      WHERE user_id = $1 AND is_active = true
+    `;
+    let params = [userId];
+    
+    if (type !== 'all') {
+      query += ' AND image_type = $2';
+      params.push(type);
+    }
+    
+    query += ' ORDER BY created_at DESC';
+    
+    const result = await pool.query(query, params);
+    
+    res.json({
+      success: true,
+      images: result.rows,
+      count: result.rows.length
+    });
+    
+  } catch (error) {
+    console.error('Error obteniendo imágenes del usuario:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
