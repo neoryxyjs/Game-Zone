@@ -271,4 +271,48 @@ router.get('/:postId/comments', async (req, res) => {
   }
 });
 
+// Eliminar un post
+router.delete('/:postId', async (req, res) => {
+  const { postId } = req.params;
+  const { user_id } = req.body;
+  
+  try {
+    // Verificar que el post existe y pertenece al usuario
+    const postResult = await pool.query(
+      'SELECT user_id, image_id FROM posts WHERE id = $1',
+      [postId]
+    );
+    
+    if (postResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Post no encontrado' });
+    }
+    
+    const post = postResult.rows[0];
+    
+    // Verificar que el usuario es el dueño del post
+    if (post.user_id !== parseInt(user_id)) {
+      return res.status(403).json({ success: false, message: 'No tienes permiso para eliminar este post' });
+    }
+    
+    // Eliminar comentarios del post
+    await pool.query('DELETE FROM post_comments WHERE post_id = $1', [postId]);
+    
+    // Eliminar likes del post
+    await pool.query('DELETE FROM post_likes WHERE post_id = $1', [postId]);
+    
+    // Si el post tiene una imagen asociada, marcarla como inactiva (no la eliminamos de Cloudinary)
+    if (post.image_id) {
+      await pool.query('UPDATE user_images SET is_active = false WHERE id = $1', [post.image_id]);
+    }
+    
+    // Eliminar el post
+    await pool.query('DELETE FROM posts WHERE id = $1', [postId]);
+    
+    res.json({ success: true, message: 'Post eliminado correctamente' });
+  } catch (err) {
+    console.error('Error eliminando post:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;
