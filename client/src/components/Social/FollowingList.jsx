@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { API_BASE_URL } from '../../config/api';
+import { fetchAuth, postAuth } from '../../utils/api';
 
 export default function FollowingList({ currentUserId }) {
   const [following, setFollowing] = useState([]);
@@ -17,11 +17,11 @@ export default function FollowingList({ currentUserId }) {
       setLoading(true);
       
       // Cargar usuarios que sigue
-      const followingResponse = await fetch(`${API_BASE_URL}/api/social/following/${currentUserId}`);
+      const followingResponse = await fetchAuth(`/api/social/following/${currentUserId}`);
       const followingData = await followingResponse.json();
       
       // Cargar seguidores
-      const followersResponse = await fetch(`${API_BASE_URL}/api/social/followers/${currentUserId}`);
+      const followersResponse = await fetchAuth(`/api/social/followers/${currentUserId}`);
       const followersData = await followersResponse.json();
       
       if (followingData.success) {
@@ -40,13 +40,9 @@ export default function FollowingList({ currentUserId }) {
 
   const handleUnfollow = async (userId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/social/unfollow`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          follower_id: currentUserId,
-          following_id: userId
-        })
+      const response = await postAuth('/api/social/unfollow', {
+        follower_id: currentUserId,
+        following_id: userId
       });
       
       const data = await response.json();

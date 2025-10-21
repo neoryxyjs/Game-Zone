@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { API_BASE_URL } from '../../config/api';
+import { uploadFileAuth } from '../../utils/api';
 
 const ImageUpload = ({ onImageUploaded, postId, userId }) => {
   const [uploading, setUploading] = useState(false);
@@ -41,19 +41,16 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
     setError(null);
 
     try {
-      console.log('📸 Subiendo imagen de post:', file);
+      console.log('📸 Subiendo imagen de post con autenticación:', file);
       
       const formData = new FormData();
       formData.append('image', file);
       formData.append('user_id', userId);
-      formData.append('post_id', postId);
+      formData.append('image_type', 'post');
 
-      console.log('📤 Enviando a:', `${API_BASE_URL}/api/profiles/upload-post-image`);
+      console.log('📤 Enviando a: /api/profiles/upload-post-image');
 
-      const response = await fetch(`${API_BASE_URL}/api/profiles/upload-post-image`, {
-        method: 'POST',
-        body: formData
-      });
+      const response = await uploadFileAuth('/api/profiles/upload-post-image', formData);
 
       console.log('📥 Respuesta del servidor:', response.status, response.statusText);
 
@@ -76,7 +73,7 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
       }
     } catch (error) {
       console.error('❌ Error subiendo imagen:', error);
-      setError('Error de conexión al subir imagen');
+      setError(error.message || 'Error de conexión al subir imagen');
     } finally {
       setUploading(false);
     }

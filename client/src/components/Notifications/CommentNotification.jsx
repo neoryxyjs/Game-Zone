@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../../context/UserContext';
-import { API_BASE_URL } from '../../config/api';
+import { postAuth } from '../../utils/api';
 
 export default function CommentNotification({ postId, onNewComment }) {
   const { user } = useUser();
@@ -25,15 +25,11 @@ export default function CommentNotification({ postId, onNewComment }) {
   // Crear notificación en el backend
   const createNotification = async (type, message, targetUserId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/notifications/create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: targetUserId,
-          type: type,
-          message: message,
-          is_read: false
-        })
+      const response = await postAuth('/api/notifications/create', {
+        user_id: targetUserId,
+        type: type,
+        message: message,
+        is_read: false
       });
       
       if (response.ok) {
@@ -92,15 +88,12 @@ export default function CommentNotification({ postId, onNewComment }) {
 // Función helper para notificar comentarios
 export const notifyComment = async (commenterName, postAuthorId, postId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/notifications/create`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_id: postAuthorId,
-        type: 'comment',
-        message: `${commenterName} comentó en tu post`,
-        is_read: false
-      })
+    const { postAuth } = await import('../../utils/api');
+    const response = await postAuth('/api/notifications/create', {
+      user_id: postAuthorId,
+      type: 'comment',
+      message: `${commenterName} comentó en tu post`,
+      is_read: false
     });
     
     if (response.ok) {

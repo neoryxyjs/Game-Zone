@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { API_BASE_URL } from '../../config/api';
+import { fetchAuth, postAuth } from '../../utils/api';
 import { useUser } from '../../context/UserContext';
 
 export default function UserProfile() {
@@ -23,7 +23,7 @@ export default function UserProfile() {
       setLoading(true);
       
       // Cargar información del usuario
-      const userResponse = await fetch(`${API_BASE_URL}/api/profiles/${userId}`);
+      const userResponse = await fetchAuth(`/api/profiles/${userId}`);
       const userData = await userResponse.json();
       
       if (userData.success) {
@@ -33,7 +33,7 @@ export default function UserProfile() {
       }
 
       // Cargar posts del usuario
-      const postsResponse = await fetch(`${API_BASE_URL}/api/social/feed/${userId}`);
+      const postsResponse = await fetchAuth(`/api/social/feed/${userId}`);
       const postsData = await postsResponse.json();
       
       if (postsData.success) {
@@ -42,7 +42,7 @@ export default function UserProfile() {
 
       // Verificar si el usuario actual sigue a este usuario
       if (currentUser && currentUser.id !== userId) {
-        const followResponse = await fetch(`${API_BASE_URL}/api/social/following/${currentUser.id}`);
+        const followResponse = await fetchAuth(`/api/social/following/${currentUser.id}`);
         const followData = await followResponse.json();
         
         if (followData.success) {
@@ -62,13 +62,9 @@ export default function UserProfile() {
     if (!currentUser) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/social/follow`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: currentUser.id,
-          follow_user_id: userId
-        })
+      const response = await postAuth('/api/social/follow', {
+        user_id: currentUser.id,
+        follow_user_id: userId
       });
 
       const data = await response.json();

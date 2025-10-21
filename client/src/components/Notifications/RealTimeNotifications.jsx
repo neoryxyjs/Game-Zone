@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../../context/UserContext';
-import { API_BASE_URL } from '../../config/api';
+import { fetchAuth, putAuth } from '../../utils/api';
 
 export default function RealTimeNotifications() {
   const { user } = useUser();
@@ -17,7 +17,7 @@ export default function RealTimeNotifications() {
 
   const loadNotifications = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/notifications/${user.id}`);
+      const response = await fetchAuth(`/api/notifications/${user.id}`);
       const data = await response.json();
       
       if (data.success) {
@@ -32,9 +32,7 @@ export default function RealTimeNotifications() {
   // Marcar notificación como leída
   const markAsRead = async (notificationId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/notifications/${notificationId}/read`, {
-        method: 'PUT'
-      });
+      const response = await putAuth(`/api/notifications/${notificationId}/read`, {});
       
       if (response.ok) {
         setNotifications(prev => 

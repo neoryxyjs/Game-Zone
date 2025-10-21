@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { API_BASE_URL } from '../../config/api';
+import { fetchAuth, postAuth } from '../../utils/api';
 
 export default function UserSearch({ currentUserId }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -15,7 +15,7 @@ export default function UserSearch({ currentUserId }) {
 
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/social/search/users?q=${encodeURIComponent(query)}`);
+      const response = await fetchAuth(`/api/social/search/users?q=${encodeURIComponent(query)}`);
       const data = await response.json();
       
       if (data.success) {
@@ -35,13 +35,9 @@ export default function UserSearch({ currentUserId }) {
 
   const handleFollow = async (userId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/social/follow`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          follower_id: currentUserId,
-          following_id: userId
-        })
+      const response = await postAuth('/api/social/follow', {
+        follower_id: currentUserId,
+        following_id: userId
       });
       
       const data = await response.json();
