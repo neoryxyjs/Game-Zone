@@ -28,12 +28,12 @@ router.post('/create', async (req, res) => {
     let imageUrl = result.rows[0].image_url;
     if (result.rows[0].image_id) {
       const imageResult = await pool.query(
-        'SELECT filename FROM user_images WHERE id = $1',
+        'SELECT file_path FROM user_images WHERE id = $1',
         [result.rows[0].image_id]
       );
       if (imageResult.rows.length > 0) {
-        // Construir URL desde el servidor
-        imageUrl = `/api/profiles/post-image/${imageResult.rows[0].filename}`;
+        // Usar la URL de Cloudinary directamente
+        imageUrl = imageResult.rows[0].file_path;
       }
     }
     
@@ -62,7 +62,7 @@ router.get('/feed', async (req, res) => {
         p.*,
         u.username,
         u.avatar,
-        ui.filename as image_filename,
+        ui.file_path as image_file_path,
         COUNT(DISTINCT pl.id) as likes_count,
         COUNT(DISTINCT pc.id) as comments_count
       FROM posts p
@@ -70,7 +70,7 @@ router.get('/feed', async (req, res) => {
       LEFT JOIN user_images ui ON p.image_id = ui.id
       LEFT JOIN post_likes pl ON p.id = pl.post_id
       LEFT JOIN post_comments pc ON p.id = pc.post_id
-      GROUP BY p.id, u.username, u.avatar, ui.filename
+      GROUP BY p.id, u.username, u.avatar, ui.file_path
       ORDER BY p.created_at DESC
       LIMIT $1 OFFSET $2
     `, [limit, offset]);
@@ -79,9 +79,9 @@ router.get('/feed', async (req, res) => {
     const posts = result.rows.map(row => {
       let imageUrl = row.image_url; // URL directa si existe
       
-      // Si hay image_id y filename, construir URL desde el servidor
-      if (row.image_id && row.image_filename) {
-        imageUrl = `/api/profiles/post-image/${row.image_filename}`;
+      // Si hay image_id y file_path (URL de Cloudinary), usarla
+      if (row.image_id && row.image_file_path) {
+        imageUrl = row.image_file_path; // URL completa de Cloudinary
       }
       
       return {
@@ -113,7 +113,7 @@ router.get('/user/:userId', async (req, res) => {
         p.*,
         u.username,
         u.avatar,
-        ui.filename as image_filename,
+        ui.file_path as image_file_path,
         COUNT(DISTINCT pl.id) as likes_count,
         COUNT(DISTINCT pc.id) as comments_count
       FROM posts p
@@ -122,7 +122,7 @@ router.get('/user/:userId', async (req, res) => {
       LEFT JOIN post_likes pl ON p.id = pl.post_id
       LEFT JOIN post_comments pc ON p.id = pc.post_id
       WHERE p.user_id = $1
-      GROUP BY p.id, u.username, u.avatar, ui.filename
+      GROUP BY p.id, u.username, u.avatar, ui.file_path
       ORDER BY p.created_at DESC
       LIMIT $2 OFFSET $3
     `, [userId, limit, offset]);
@@ -131,9 +131,9 @@ router.get('/user/:userId', async (req, res) => {
     const posts = result.rows.map(row => {
       let imageUrl = row.image_url; // URL directa si existe
       
-      // Si hay image_id y filename, construir URL desde el servidor
-      if (row.image_id && row.image_filename) {
-        imageUrl = `/api/profiles/post-image/${row.image_filename}`;
+      // Si hay image_id y file_path (URL de Cloudinary), usarla
+      if (row.image_id && row.image_file_path) {
+        imageUrl = row.image_file_path; // URL completa de Cloudinary
       }
       
       return {
