@@ -61,9 +61,15 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
       console.log('📥 Respuesta del servidor:', response.status, response.statusText);
 
       if (!response.ok) {
-        const errorText = await response.text();
+        let errorText = '';
+        try {
+          const errorData = await response.json();
+          errorText = errorData.message || errorData.error || response.statusText;
+        } catch {
+          errorText = await response.text();
+        }
         console.error('❌ Error del servidor:', errorText);
-        throw new Error(`Error subiendo imagen: ${response.status} - ${errorText}`);
+        throw new Error(`Error subiendo archivo: ${errorText}`);
       }
 
       const data = await response.json();
@@ -78,8 +84,10 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
         setError(data.message || 'Error subiendo imagen');
       }
     } catch (error) {
-      console.error('❌ Error subiendo imagen:', error);
-      setError(error.message || 'Error de conexión al subir imagen');
+      console.error('❌ Error subiendo archivo:', error);
+      const errorMessage = error.message || 'Error de conexión al subir archivo';
+      setError(errorMessage);
+      alert(`Error al subir: ${errorMessage}`); // Mostrar alerta al usuario
     } finally {
       setUploading(false);
     }

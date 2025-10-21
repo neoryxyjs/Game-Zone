@@ -2,35 +2,19 @@
 import { API_BASE_URL } from '../config/api';
 
 /**
- * Manejar errores HTTP y redirigir a páginas de error
+ * Manejar errores HTTP - NO redirige automáticamente
+ * Los componentes deben manejar los errores según su contexto
  */
 const handleHttpError = (response) => {
   if (!response.ok) {
-    switch (response.status) {
-      case 403:
-        window.location.href = '/error/403';
-        throw new Error('Acceso denegado');
-      case 404:
-        // No redirigir automáticamente en 404, dejar que el componente lo maneje
-        throw new Error('Recurso no encontrado');
-      case 500:
-      case 502:
-      case 503:
-        window.location.href = '/error/500';
-        throw new Error('Error del servidor');
-      case 401:
-        // Token expirado o inválido
-        localStorage.removeItem('authToken');
-        if (window.location.pathname !== '/auth' && window.location.pathname !== '/login') {
-          window.location.href = '/auth';
-        }
-        throw new Error('No autenticado');
-      default:
-        if (response.status >= 500) {
-          window.location.href = '/error/500';
-        }
-        throw new Error(`Error HTTP ${response.status}`);
+    // Limpiar token solo en errores de autenticación
+    if (response.status === 401) {
+      localStorage.removeItem('authToken');
+      console.warn('Sesión expirada o inválida');
     }
+    
+    // Log del error pero NO redirigir automáticamente
+    console.error(`Error HTTP ${response.status}:`, response.statusText);
   }
   return response;
 };
