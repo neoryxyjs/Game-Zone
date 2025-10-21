@@ -28,6 +28,7 @@ const allowedOrigins = [
   'http://localhost:3000', // Desarrollo local
   'http://localhost:3001',
   'https://gamezone-social.vercel.app', // Producción Vercel
+  'https://game-zone-8ko5.onrender.com', // Producción Render
   process.env.FRONTEND_URL, // URL dinámica desde variables de entorno
 ].filter(Boolean); // Eliminar valores undefined/null
 
