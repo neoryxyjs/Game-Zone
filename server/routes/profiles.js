@@ -280,6 +280,27 @@ router.get('/avatar/:filename', (req, res) => {
   }
 });
 
+// Servir imágenes de posts
+router.get('/post-image/:filename', (req, res) => {
+  try {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, '../uploads/avatars', filename); // Usamos la misma carpeta por ahora
+    
+    console.log('🖼️ Serving post image:', { filename, filePath });
+    
+    if (!fs.existsSync(filePath)) {
+      console.log('❌ Post image file not found:', filePath);
+      return res.status(404).json({ success: false, message: 'Imagen de post no encontrada' });
+    }
+    
+    console.log('✅ Post image file found, serving:', filePath);
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('❌ Error sirviendo imagen de post:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Obtener imágenes de un usuario
 router.get('/:userId/images', async (req, res) => {
   try {
@@ -334,7 +355,7 @@ router.post('/upload-post-image', upload.single('image'), async (req, res) => {
     });
     
     // Crear URL de la imagen
-    const imageUrl = `${req.protocol}://${req.get('host')}/api/profiles/avatar/${req.file.filename}`;
+    const imageUrl = `${req.protocol}://${req.get('host')}/api/profiles/post-image/${req.file.filename}`;
     console.log('🔗 Image URL:', imageUrl);
     
     // Iniciar transacción
