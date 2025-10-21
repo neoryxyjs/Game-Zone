@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import Feed from '../components/Social/Feed';
 import CreatePost from '../components/Social/CreatePost';
@@ -18,13 +19,15 @@ const GamePage = ({ title, game }) => {
       icon: '🎮',
       color: 'from-blue-500 to-purple-500',
       description: 'El MOBA más popular del mundo',
-      features: ['Rankings', 'Builds', 'Pro Players', 'Tournaments']
+      features: ['Rankings', 'Builds', 'Pro Players', 'Tournaments'],
+      tag: 'League of Legends'
     },
     valorant: {
       icon: '🔫',
       color: 'from-red-500 to-orange-500',
       description: 'FPS táctico de Riot Games',
-      features: ['Agents', 'Maps', 'Weapons', 'Esports']
+      features: ['Agents', 'Maps', 'Weapons', 'Esports'],
+      tag: 'Valorant'
     }
   };
 
@@ -45,9 +48,9 @@ const GamePage = ({ title, game }) => {
           </p>
           <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
             <p className="text-gray-600 mb-4">Inicia sesión para acceder al contenido de {title}</p>
-            <a href="/login" className="btn-primary px-8 py-3 text-lg font-semibold">
+            <Link to="/login" className="btn-primary px-8 py-3 text-lg font-semibold inline-block">
               Iniciar Sesión
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -122,10 +125,19 @@ const GamePage = ({ title, game }) => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
             {activeTab === 'feed' && (
-              <Feed userId={user?.id} isPersonalFeed={false} onNewPost={newPost} />
+              <Feed 
+                userId={user?.id} 
+                isPersonalFeed={false} 
+                onNewPost={newPost} 
+                gameFilter={currentGame.tag}
+              />
             )}
             {activeTab === 'create' && (
-              <CreatePost userId={user?.id} onPostCreated={handlePostCreated} />
+              <CreatePost 
+                userId={user?.id} 
+                onPostCreated={handlePostCreated}
+                defaultGame={currentGame.tag}
+              />
             )}
             {activeTab === 'players' && (
               <div className="card">

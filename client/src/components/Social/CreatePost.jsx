@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { postAuth } from '../../utils/api';
 import ImageUpload from './ImageUpload';
 
-export default function CreatePost({ userId, onPostCreated }) {
+export default function CreatePost({ userId, onPostCreated, defaultGame = '' }) {
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [gameTag, setGameTag] = useState('');
+  const [gameTag, setGameTag] = useState(defaultGame);
   const [loading, setLoading] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
+
+  // Actualizar gameTag cuando cambia defaultGame
+  useEffect(() => {
+    if (defaultGame) {
+      setGameTag(defaultGame);
+    }
+  }, [defaultGame]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

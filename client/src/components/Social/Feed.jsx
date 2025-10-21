@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../config/api';
 import { postAuth, deleteAuth } from '../../utils/api';
 
-export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
+export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFilter = null }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -11,7 +11,7 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
 
   useEffect(() => {
     loadPosts();
-  }, [userId, isPersonalFeed]);
+  }, [userId, isPersonalFeed, gameFilter]);
 
   // Escuchar nuevos posts
   useEffect(() => {
@@ -27,7 +27,9 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
         ? `${API_BASE_URL}/api/social/feed/${userId}`
         : `${API_BASE_URL}/api/posts/feed`;
       
-      const response = await fetch(`${endpoint}?page=${page}&limit=10`);
+      // Agregar filtro de juego si está presente
+      const gameParam = gameFilter ? `&game=${encodeURIComponent(gameFilter)}` : '';
+      const response = await fetch(`${endpoint}?page=${page}&limit=10${gameParam}`);
       const data = await response.json();
       
       if (data.success) {
@@ -98,6 +100,22 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
 
   return (
     <div className="space-y-6">
+      {gameFilter && (
+        <div className="card bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">Filtrando por: {gameFilter}</h3>
+              <p className="text-sm text-gray-600">Mostrando solo publicaciones de {gameFilter}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {posts.map((post, index) => (
         <PostCard 
           key={post.id} 
@@ -135,8 +153,12 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay publicaciones aún</h3>
-          <p className="text-gray-500">Sé el primero en compartir algo en GameZone</p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            {gameFilter ? `No hay publicaciones de ${gameFilter} aún` : 'No hay publicaciones aún'}
+          </h3>
+          <p className="text-gray-500">
+            {gameFilter ? `Sé el primero en compartir algo sobre ${gameFilter}` : 'Sé el primero en compartir algo en GameZone'}
+          </p>
         </div>
       )}
     </div>

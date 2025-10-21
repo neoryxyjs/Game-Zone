@@ -54,11 +54,12 @@ router.post('/create', authMiddleware, async (req, res) => {
 
 // Obtener feed público (posts de todos los usuarios)
 router.get('/feed', async (req, res) => {
-  const { page = 1, limit = 20 } = req.query;
+  const { page = 1, limit = 20, game } = req.query;
   const offset = (page - 1) * limit;
   
   try {
-    const result = await pool.query(`
+    // Construir query con filtro opcional de juego
+    let query = `
       SELECT 
         p.*,
         u.username,
@@ -71,10 +72,27 @@ router.get('/feed', async (req, res) => {
       LEFT JOIN user_images ui ON p.image_id = ui.id
       LEFT JOIN post_likes pl ON p.id = pl.post_id
       LEFT JOIN post_comments pc ON p.id = pc.post_id
+    `;
+    
+    const params = [];
+    let paramIndex = 1;
+    
+    // Agregar filtro de juego si está presente
+    if (game) {
+      query += ` WHERE p.game_tag = $${paramIndex}`;
+      params.push(game);
+      paramIndex++;
+    }
+    
+    query += `
       GROUP BY p.id, u.username, u.avatar, ui.file_path
       ORDER BY p.created_at DESC
-      LIMIT $1 OFFSET $2
-    `, [limit, offset]);
+      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+    `;
+    
+    params.push(limit, offset);
+    
+    const result = await pool.query(query, params);
     
     // Transformar los datos para incluir el objeto user y la URL de la imagen
     const posts = result.rows.map(row => {
