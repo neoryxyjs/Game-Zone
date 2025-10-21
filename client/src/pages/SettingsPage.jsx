@@ -162,22 +162,35 @@ const SettingsPage = () => {
       
       // Subir avatar si hay uno nuevo
       if (avatarFile) {
+        console.log('📸 Subiendo avatar:', avatarFile);
         const formData = new FormData();
         formData.append('avatar', avatarFile);
+        
+        console.log('📤 Enviando a:', `${API_BASE_URL}/api/profiles/${user.id}/avatar`);
         
         const avatarResponse = await fetch(`${API_BASE_URL}/api/profiles/${user.id}/avatar`, {
           method: 'PUT',
           body: formData
         });
         
+        console.log('📥 Respuesta del servidor:', avatarResponse.status, avatarResponse.statusText);
+        
         if (!avatarResponse.ok) {
-          throw new Error('Error subiendo avatar');
+          const errorText = await avatarResponse.text();
+          console.error('❌ Error del servidor:', errorText);
+          throw new Error(`Error subiendo avatar: ${avatarResponse.status} - ${errorText}`);
         }
         
         const avatarData = await avatarResponse.json();
+        console.log('✅ Datos del avatar:', avatarData);
+        
         if (avatarData.success && avatarData.avatar_url) {
           // Actualizar el avatar en el contexto del usuario
           updateUser({ avatar: avatarData.avatar_url });
+          console.log('✅ Avatar actualizado en contexto:', avatarData.avatar_url);
+        } else {
+          console.error('❌ Respuesta del avatar no exitosa:', avatarData);
+          throw new Error('Error en la respuesta del servidor');
         }
       }
       

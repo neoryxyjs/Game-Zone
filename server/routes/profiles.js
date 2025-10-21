@@ -178,12 +178,23 @@ router.put('/:userId/avatar', upload.single('avatar'), async (req, res) => {
   try {
     const { userId } = req.params;
     
+    console.log('📸 Avatar upload request:', { userId, file: req.file });
+    
     if (!req.file) {
+      console.log('❌ No file provided');
       return res.status(400).json({ success: false, message: 'No se proporcionó archivo de avatar' });
     }
     
+    console.log('📁 File details:', {
+      filename: req.file.filename,
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size
+    });
+    
     // Crear URL del avatar
     const avatarUrl = `${req.protocol}://${req.get('host')}/api/profiles/avatar/${req.file.filename}`;
+    console.log('🔗 Avatar URL:', avatarUrl);
     
     const result = await pool.query(
       'UPDATE users SET avatar = $1 WHERE id = $2 RETURNING id, username, avatar',
@@ -191,12 +202,14 @@ router.put('/:userId/avatar', upload.single('avatar'), async (req, res) => {
     );
     
     if (result.rows.length === 0) {
+      console.log('❌ User not found:', userId);
       return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
     }
     
+    console.log('✅ Avatar updated successfully:', result.rows[0]);
     res.json({ success: true, user: result.rows[0], avatar_url: avatarUrl });
   } catch (error) {
-    console.error('Error actualizando avatar:', error);
+    console.error('❌ Error actualizando avatar:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
@@ -207,15 +220,29 @@ router.get('/avatar/:filename', (req, res) => {
     const filename = req.params.filename;
     const filePath = path.join(__dirname, '../uploads/avatars', filename);
     
+    console.log('🖼️ Serving avatar:', { filename, filePath });
+    
     if (!fs.existsSync(filePath)) {
+      console.log('❌ Avatar file not found:', filePath);
       return res.status(404).json({ success: false, message: 'Avatar no encontrado' });
     }
     
+    console.log('✅ Avatar file found, serving:', filePath);
     res.sendFile(filePath);
   } catch (error) {
-    console.error('Error sirviendo avatar:', error);
+    console.error('❌ Error sirviendo avatar:', error);
     res.status(500).json({ success: false, error: error.message });
   }
+});
+
+// Endpoint de prueba para verificar que el sistema funciona
+router.get('/test-avatar', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Sistema de avatares funcionando',
+    uploadsDir: path.join(__dirname, '../uploads/avatars'),
+    exists: fs.existsSync(path.join(__dirname, '../uploads/avatars'))
+  });
 });
 
 module.exports = router;
