@@ -82,6 +82,10 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
     }
   };
 
+  const handleDeletePost = (postId) => {
+    setPosts(prev => prev.filter(p => p.id !== postId));
+  };
+
   if (loading && posts.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -101,6 +105,7 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
           post={post} 
           userId={userId}
           onLike={handleLike}
+          onDelete={handleDeletePost}
           index={index}
         />
       ))}
@@ -139,7 +144,7 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
   );
 }
 
-function PostCard({ post, userId, onLike, index }) {
+function PostCard({ post, userId, onLike, onDelete, index }) {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
@@ -205,8 +210,10 @@ function PostCard({ post, userId, onLike, index }) {
 
       const data = await response.json();
       if (data.success) {
-        // Actualizar el feed eliminando el post
-        setPosts(prev => prev.filter(p => p.id !== post.id));
+        // Llamar a la función onDelete del componente padre
+        if (onDelete) {
+          onDelete(post.id);
+        }
       } else {
         alert(data.message || 'Error al eliminar el post');
       }
