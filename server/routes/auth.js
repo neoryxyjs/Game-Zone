@@ -16,20 +16,45 @@ router.post('/register', async (req, res) => {
       [username, email]
     );
     if (userExists.rows.length > 0) {
-      return res.status(400).json({ message: 'Usuario o email ya existe' });
+      return res.status(400).json({ success: false, message: 'Usuario o email ya existe' });
     }
 
     // Hashea la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Inserta el usuario
-    await pool.query(
-      'INSERT INTO users (username, email, password) VALUES ($1, $2, $3)',
+    // Inserta el usuario y obtiene sus datos
+    const result = await pool.query(
+      'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email, avatar, created_at',
       [username, email, hashedPassword]
     );
-    res.status(201).json({ message: 'Usuario registrado correctamente' });
+    
+    const newUser = result.rows[0];
+    
+    // Generar token JWT
+    const token = jwt.sign(
+      { 
+        userId: newUser.id, 
+        email: newUser.email,
+        username: newUser.username 
+      },
+      JWT_SECRET,
+      { expiresIn: '7d' } // Token válido por 7 días
+    );
+    
+    res.status(201).json({ 
+      success: true,
+      message: 'Usuario registrado correctamente',
+      token: token,
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        avatar: newUser.avatar,
+        created_at: newUser.created_at
+      }
+    });
   } catch (err) {
-    res.status(500).json({ message: 'Error en el servidor', error: err.message });
+    res.status(500).json({ success: false, message: 'Error en el servidor', error: err.message });
   }
 });
 

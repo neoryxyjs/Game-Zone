@@ -191,24 +191,39 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const register = (userData) => {
-    // Usar los datos del servidor directamente (incluye el id real de la base de datos)
-    const newUser = {
-      ...userData,
-      level: userData.level || 1,
-      joinDate: userData.created_at ? new Date(userData.created_at).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }) : new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }),
-      followers: userData.followers || 0,
-      following: userData.following || 0,
-      posts: userData.posts || 0,
-      notifications: userData.notifications || 0,
-      avatar: userData.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      bio: userData.bio || '¡Nuevo jugador en GameZone!'
-    };
-    
-    console.log('📝 Registrando usuario con datos del servidor:', newUser);
-    
-    // Iniciar sesión automáticamente
-    login(newUser);
+  const register = async (userData) => {
+    try {
+      console.log('📝 Registrando nuevo usuario en el backend...');
+      
+      // Enviar datos al backend para crear el usuario en la base de datos
+      const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      
+      const data = await response.json();
+      console.log('📥 Respuesta del registro:', data);
+      
+      if (response.ok && data.success) {
+        // Guardar token en localStorage
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+          console.log('✅ Token guardado en localStorage');
+        }
+        
+        // Usar el método login para configurar el usuario correctamente
+        login(data.user);
+        console.log('✅ Usuario registrado y autenticado:', data.user);
+        return true;
+      } else {
+        console.log('❌ Error en registro:', data.message);
+        throw new Error(data.message || 'Error al crear la cuenta');
+      }
+    } catch (err) {
+      console.error('❌ Error de conexión en registro:', err);
+      throw err;
+    }
   };
 
   const authenticateUser = async (email, password) => {
