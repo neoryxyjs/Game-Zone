@@ -66,7 +66,10 @@ export default function CreatePost({ userId, onPostCreated }) {
 
         {/* Componente de carga de imágenes */}
         <ImageUpload 
-          onImageUploaded={setUploadedImage}
+          onImageUploaded={(image) => {
+            console.log('📸 Imagen recibida en CreatePost:', image);
+            setUploadedImage(image);
+          }}
           userId={userId}
           postId={null}
         />

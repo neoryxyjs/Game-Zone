@@ -41,30 +41,41 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
     setError(null);
 
     try {
+      console.log('📸 Subiendo imagen de post:', file);
+      
       const formData = new FormData();
       formData.append('image', file);
       formData.append('user_id', userId);
       formData.append('post_id', postId);
 
-      const response = await fetch(`${API_BASE_URL}/api/upload-image`, {
+      console.log('📤 Enviando a:', `${API_BASE_URL}/api/profiles/upload-post-image`);
+
+      const response = await fetch(`${API_BASE_URL}/api/profiles/upload-post-image`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          post_id: postId
-        })
+        body: formData
       });
 
-      const data = await response.json();
+      console.log('📥 Respuesta del servidor:', response.status, response.statusText);
 
-      if (data.success) {
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Error del servidor:', errorText);
+        throw new Error(`Error subiendo imagen: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Datos de la imagen:', data);
+
+      if (data.success && data.image) {
         onImageUploaded(data.image);
         setPreview(null);
+        console.log('✅ Imagen subida exitosamente:', data.image);
       } else {
+        console.error('❌ Respuesta de imagen no exitosa:', data);
         setError(data.message || 'Error subiendo imagen');
       }
     } catch (error) {
-      console.error('Error subiendo imagen:', error);
+      console.error('❌ Error subiendo imagen:', error);
       setError('Error de conexión al subir imagen');
     } finally {
       setUploading(false);

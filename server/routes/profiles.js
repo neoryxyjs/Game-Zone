@@ -314,6 +314,75 @@ router.get('/:userId/images', async (req, res) => {
   }
 });
 
+// Endpoint para subir imágenes de posts
+router.post('/upload-post-image', upload.single('image'), async (req, res) => {
+  try {
+    const { user_id, post_id } = req.body;
+    
+    console.log('📸 Post image upload request:', { user_id, post_id, file: req.file });
+    
+    if (!req.file) {
+      console.log('❌ No file provided');
+      return res.status(400).json({ success: false, message: 'No se proporcionó archivo de imagen' });
+    }
+    
+    console.log('📁 File details:', {
+      filename: req.file.filename,
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size
+    });
+    
+    // Crear URL de la imagen
+    const imageUrl = `${req.protocol}://${req.get('host')}/api/profiles/avatar/${req.file.filename}`;
+    console.log('🔗 Image URL:', imageUrl);
+    
+    // Iniciar transacción
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      // Insertar imagen en user_images
+      const imageResult = await client.query(`
+        INSERT INTO user_images (user_id, filename, original_name, file_path, file_size, mime_type, image_type)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id, filename
+      `, [
+        user_id,
+        req.file.filename,
+        req.file.originalname,
+        req.file.path,
+        req.file.size,
+        req.file.mimetype,
+        'post'
+      ]);
+      
+      await client.query('COMMIT');
+      
+      console.log('✅ Post image uploaded successfully:', imageResult.rows[0]);
+      
+      res.json({ 
+        success: true, 
+        image: {
+          id: imageResult.rows[0].id,
+          filename: imageResult.rows[0].filename,
+          url: imageUrl
+        }
+      });
+      
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+    
+  } catch (error) {
+    console.error('❌ Error subiendo imagen de post:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Endpoint de prueba para verificar que el sistema funciona
 router.get('/test-avatar', (req, res) => {
   res.json({ 
