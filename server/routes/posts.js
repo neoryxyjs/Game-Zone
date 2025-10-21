@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const { authMiddleware } = require('../middleware/auth');
 
-// Crear un nuevo post
-router.post('/create', async (req, res) => {
+// Crear un nuevo post (requiere autenticación)
+router.post('/create', authMiddleware, async (req, res) => {
   const { user_id, content, image_url, image_id, game_tag } = req.body;
   
   try {
@@ -153,8 +154,8 @@ router.get('/user/:userId', async (req, res) => {
   }
 });
 
-// Dar like a un post
-router.post('/:postId/like', async (req, res) => {
+// Dar like a un post (requiere autenticación)
+router.post('/:postId/like', authMiddleware, async (req, res) => {
   const { postId } = req.params;
   const { user_id } = req.body;
   
@@ -185,8 +186,8 @@ router.post('/:postId/like', async (req, res) => {
   }
 });
 
-// Comentar en un post
-router.post('/:postId/comment', async (req, res) => {
+// Comentar en un post (requiere autenticación)
+router.post('/:postId/comment', authMiddleware, async (req, res) => {
   const { postId } = req.params;
   const { user_id, content } = req.body;
   
@@ -271,8 +272,8 @@ router.get('/:postId/comments', async (req, res) => {
   }
 });
 
-// Eliminar un post
-router.delete('/:postId', async (req, res) => {
+// Eliminar un post (requiere autenticación)
+router.delete('/:postId', authMiddleware, async (req, res) => {
   const { postId } = req.params;
   const { user_id } = req.body;
   

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../config/api';
+import { postAuth, deleteAuth } from '../../utils/api';
 
 export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
   const [posts, setPosts] = useState([]);
@@ -53,10 +54,8 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost }) {
 
   const handleLike = async (postId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/posts/${postId}/like`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
+      const response = await postAuth(`/api/posts/${postId}/like`, {
+        user_id: userId
       });
       
       if (!response.ok) {
@@ -175,13 +174,9 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
 
     try {
       setCommentLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/posts/${post.id}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          content: newComment.trim()
-        })
+      const response = await postAuth(`/api/posts/${post.id}/comment`, {
+        user_id: userId,
+        content: newComment.trim()
       });
 
       const data = await response.json();
@@ -202,11 +197,7 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/posts/${post.id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
-      });
+      const response = await deleteAuth(`/api/posts/${post.id}`);
 
       const data = await response.json();
       if (data.success) {

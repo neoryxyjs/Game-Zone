@@ -5,6 +5,7 @@ const fs = require('fs');
 const router = express.Router();
 const pool = require('../db');
 const cloudinary = require('../config/cloudinary');
+const { authMiddleware } = require('../middleware/auth');
 
 // Configurar multer para subir avatares
 const storage = multer.diskStorage({
@@ -80,8 +81,8 @@ router.get('/:userId', async (req, res) => {
   }
 });
 
-// Actualizar perfil de usuario
-router.put('/:userId', async (req, res) => {
+// Actualizar perfil de usuario (requiere autenticación)
+router.put('/:userId', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
     const { bio, location, website, birth_date, gender, favorite_games, gaming_style, availability, looking_for_team, streaming_platform, streaming_url, social_links } = req.body;
@@ -114,8 +115,8 @@ router.put('/:userId', async (req, res) => {
   }
 });
 
-// Actualizar configuraciones de usuario
-router.put('/:userId/settings', async (req, res) => {
+// Actualizar configuraciones de usuario (requiere autenticación)
+router.put('/:userId/settings', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
     const { theme, language, notifications_enabled, email_notifications, push_notifications, privacy_level, show_online_status, show_activity, allow_friend_requests, allow_messages, auto_save, performance_mode, low_latency_mode } = req.body;
@@ -174,8 +175,8 @@ router.get('/:userId/stats', async (req, res) => {
   }
 });
 
-// Actualizar avatar de usuario (archivo) - Usando Cloudinary
-router.put('/:userId/avatar', upload.single('avatar'), async (req, res) => {
+// Actualizar avatar de usuario (archivo) - Usando Cloudinary (requiere autenticación)
+router.put('/:userId/avatar', authMiddleware, upload.single('avatar'), async (req, res) => {
   try {
     const { userId } = req.params;
     
@@ -351,8 +352,8 @@ router.get('/:userId/images', async (req, res) => {
   }
 });
 
-// Endpoint para subir imágenes de posts - Usando Cloudinary
-router.post('/upload-post-image', upload.single('image'), async (req, res) => {
+// Endpoint para subir imágenes de posts - Usando Cloudinary (requiere autenticación)
+router.post('/upload-post-image', authMiddleware, upload.single('image'), async (req, res) => {
   try {
     const { user_id, post_id } = req.body;
     

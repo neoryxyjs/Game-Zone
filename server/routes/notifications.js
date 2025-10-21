@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const { authMiddleware } = require('../middleware/auth');
 
-// Obtener notificaciones de un usuario
-router.get('/:userId', async (req, res) => {
+// Obtener notificaciones de un usuario (requiere autenticación)
+router.get('/:userId', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
     const { limit = 20, offset = 0 } = req.query;
@@ -66,8 +67,8 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// Marcar notificación como leída
-router.put('/:notificationId/read', async (req, res) => {
+// Marcar notificación como leída (requiere autenticación)
+router.put('/:notificationId/read', authMiddleware, async (req, res) => {
   try {
     const { notificationId } = req.params;
     
@@ -85,8 +86,8 @@ router.put('/:notificationId/read', async (req, res) => {
   }
 });
 
-// Marcar todas las notificaciones como leídas
-router.put('/:userId/read-all', async (req, res) => {
+// Marcar todas las notificaciones como leídas (requiere autenticación)
+router.put('/:userId/read-all', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
     
@@ -103,8 +104,8 @@ router.put('/:userId/read-all', async (req, res) => {
   }
 });
 
-// Obtener contador de notificaciones no leídas
-router.get('/:userId/unread-count', async (req, res) => {
+// Obtener contador de notificaciones no leídas (requiere autenticación)
+router.get('/:userId/unread-count', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
     

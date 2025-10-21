@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const { authMiddleware } = require('../middleware/auth');
 
-// Seguir a un usuario
-router.post('/follow', async (req, res) => {
+// Seguir a un usuario (requiere autenticación)
+router.post('/follow', authMiddleware, async (req, res) => {
   const { follower_id, following_id } = req.body;
   
   try {
@@ -29,8 +30,8 @@ router.post('/follow', async (req, res) => {
   }
 });
 
-// Dejar de seguir a un usuario
-router.post('/unfollow', async (req, res) => {
+// Dejar de seguir a un usuario (requiere autenticación)
+router.post('/unfollow', authMiddleware, async (req, res) => {
   const { follower_id, following_id } = req.body;
   
   try {

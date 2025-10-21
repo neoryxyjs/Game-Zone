@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { API_BASE_URL } from '../../config/api';
+import { postAuth } from '../../utils/api';
 import ImageUpload from './ImageUpload';
 
 export default function CreatePost({ userId, onPostCreated }) {
@@ -15,16 +15,12 @@ export default function CreatePost({ userId, onPostCreated }) {
 
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/posts/create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          content: content.trim(),
-          image_id: uploadedImage ? uploadedImage.id : null, // ID de la imagen en la BD
-          image_url: uploadedImage ? uploadedImage.url : (imageUrl || null), // URL de respaldo
-          game_tag: gameTag || null
-        })
+      const response = await postAuth('/api/posts/create', {
+        user_id: userId,
+        content: content.trim(),
+        image_id: uploadedImage ? uploadedImage.id : null,
+        image_url: uploadedImage ? uploadedImage.url : (imageUrl || null),
+        game_tag: gameTag || null
       });
 
       const data = await response.json();
