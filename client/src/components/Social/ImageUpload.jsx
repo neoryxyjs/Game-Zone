@@ -60,36 +60,32 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
 
       console.log('📥 Respuesta del servidor:', response.status, response.statusText);
 
+      // Leer el body una sola vez
+      let data;
+      try {
+        data = await response.json();
+        console.log('📦 Datos recibidos:', data);
+      } catch (parseError) {
+        console.error('❌ Error al parsear respuesta:', parseError);
+        throw new Error('Error al procesar la respuesta del servidor');
+      }
+
+      // Verificar si la respuesta fue exitosa
       if (!response.ok) {
-        let errorText = '';
-        try {
-          // Clonar la respuesta para poder leerla múltiples veces si es necesario
-          const responseClone = response.clone();
-          const errorData = await response.json();
-          errorText = errorData.message || errorData.error || response.statusText;
-        } catch {
-          // Si falla el JSON, intentar leer como texto
-          try {
-            const responseText = await response.clone().text();
-            errorText = responseText || response.statusText;
-          } catch {
-            errorText = response.statusText;
-          }
-        }
+        const errorText = data.message || data.error || response.statusText || 'Error desconocido';
         console.error('❌ Error del servidor:', errorText);
         throw new Error(`Error subiendo archivo: ${errorText}`);
       }
 
-      const data = await response.json();
-      console.log('✅ Datos de la imagen:', data);
-
+      // Verificar que los datos sean válidos
       if (data.success && data.image) {
         onImageUploaded(data.image);
         setPreview(null);
-        console.log('✅ Imagen subida exitosamente:', data.image);
+        console.log('✅ Archivo subido exitosamente a Cloudinary:', data.image);
       } else {
-        console.error('❌ Respuesta de imagen no exitosa:', data);
-        setError(data.message || 'Error subiendo imagen');
+        const errorMsg = data.message || data.error || 'Error subiendo archivo';
+        console.error('❌ Respuesta no exitosa:', data);
+        throw new Error(errorMsg);
       }
     } catch (error) {
       console.error('❌ Error subiendo archivo:', error);
