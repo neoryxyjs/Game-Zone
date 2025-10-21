@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE_URL } from '../config/api';
+import { fetchAuth, putAuth, uploadFileAuth } from '../utils/api';
 import { useUser } from '../context/UserContext';
 
 const SettingsPage = () => {
@@ -38,7 +38,7 @@ const SettingsPage = () => {
 
   const loadUserStats = async (userId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/profiles/${userId}/stats`);
+      const response = await fetchAuth(`/api/profiles/${userId}/stats`);
       const data = await response.json();
       
       if (data.success) {
@@ -64,7 +64,7 @@ const SettingsPage = () => {
 
   const loadUserSettings = async (userId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/profiles/${userId}/settings`);
+      const response = await fetchAuth(`/api/profiles/${userId}/settings`);
       const data = await response.json();
       
       if (data.success) {
@@ -72,16 +72,24 @@ const SettingsPage = () => {
       }
     } catch (error) {
       console.error('Error cargando configuración:', error);
+      // Usar configuración por defecto en caso de error
+      setSettings({
+        theme: 'dark',
+        notifications_enabled: true,
+        email_notifications: true,
+        privacy_level: 'public',
+        language: 'es'
+      });
     }
   };
 
   const loadUserProfile = async (userId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/profiles/${userId}`);
+      const response = await fetchAuth(`/api/profiles/${userId}`);
       const data = await response.json();
       
-      if (data.success) {
-        setProfile(data.profile);
+      if (data.success && data.profile && data.profile.profile) {
+        setProfile(data.profile.profile);
       }
     } catch (error) {
       console.error('Error cargando perfil:', error);
@@ -114,10 +122,11 @@ const SettingsPage = () => {
         const formData = new FormData();
         formData.append('avatar', avatarFile);
         
-        const avatarResponse = await fetch(`${API_BASE_URL}/api/profiles/${user.id}/avatar`, {
-          method: 'PUT',
-          body: formData
-        });
+        const avatarResponse = await uploadFileAuth(
+          `/api/profiles/${user.id}/avatar`,
+          formData,
+          { method: 'PUT' }
+        );
         
         if (avatarResponse.ok) {
           const avatarData = await avatarResponse.json();
@@ -128,11 +137,7 @@ const SettingsPage = () => {
       }
 
       // Actualizar perfil
-      const profileResponse = await fetch(`${API_BASE_URL}/api/profiles/${user.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile)
-      });
+      const profileResponse = await putAuth(`/api/profiles/${user.id}`, profile);
 
       if (profileResponse.ok) {
         setMessage('Perfil actualizado correctamente');

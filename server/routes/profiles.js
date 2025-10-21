@@ -115,6 +115,32 @@ router.put('/:userId', authMiddleware, async (req, res) => {
   }
 });
 
+// Obtener configuraciones de usuario
+router.get('/:userId/settings', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    const result = await pool.query(
+      'SELECT * FROM user_settings WHERE user_id = $1',
+      [userId]
+    );
+    
+    if (result.rows.length === 0) {
+      // Crear configuraciones por defecto si no existen
+      const defaultSettings = await pool.query(
+        'INSERT INTO user_settings (user_id) VALUES ($1) RETURNING *',
+        [userId]
+      );
+      return res.json({ success: true, settings: defaultSettings.rows[0] });
+    }
+    
+    res.json({ success: true, settings: result.rows[0] });
+  } catch (error) {
+    console.error('Error obteniendo configuraciones:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Actualizar configuraciones de usuario (requiere autenticación)
 router.put('/:userId/settings', authMiddleware, async (req, res) => {
   try {

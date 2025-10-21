@@ -165,7 +165,7 @@ export const uploadFileAuth = async (endpoint, formData, options = {}) => {
     }
     
     const response = await fetch(url, {
-      method: 'POST',
+      method: options.method || 'POST', // Soportar POST y PUT
       headers: {
         ...headers,
         ...options.headers,
