@@ -13,8 +13,11 @@ export default function ChatWindow({ conversation, onClose }) {
   const pollingRef = useRef(null);
 
   useEffect(() => {
-    if (conversation) {
+    if (conversation && currentUser) {
+      setLoading(true);
+      setMessages([]);
       loadMessages();
+      
       // Polling cada 3 segundos para nuevos mensajes
       pollingRef.current = setInterval(loadMessages, 3000);
       
@@ -24,7 +27,8 @@ export default function ChatWindow({ conversation, onClose }) {
         }
       };
     }
-  }, [conversation?.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversation?.other_user_id, currentUser?.id]);
 
   useEffect(() => {
     scrollToBottom();
