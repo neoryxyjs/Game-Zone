@@ -259,7 +259,8 @@ router.get('/list/:userId', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
-        u.id,
+        f.id as friendship_id,
+        u.id as friend_id,
         u.username,
         u.avatar,
         f.created_at as friends_since
@@ -279,7 +280,28 @@ router.get('/list/:userId', authMiddleware, async (req, res) => {
   }
 });
 
-// Eliminar amigo (requiere autenticación)
+// Eliminar amigo por ID de amistad (requiere autenticación)
+router.delete('/remove/:friendshipId', authMiddleware, async (req, res) => {
+  const { friendshipId } = req.params;
+  
+  try {
+    const result = await pool.query(
+      'DELETE FROM friendships WHERE id = $1 RETURNING *',
+      [friendshipId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: 'Amistad no encontrada' });
+    }
+    
+    res.json({ success: true, message: 'Amistad eliminada' });
+  } catch (err) {
+    console.error('Error eliminando amistad:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Eliminar amigo por IDs de usuarios (requiere autenticación)
 router.delete('/remove', authMiddleware, async (req, res) => {
   const { user_id_1, user_id_2 } = req.body;
   
