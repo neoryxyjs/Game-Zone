@@ -258,17 +258,35 @@ router.post('/:postId/comment', authMiddleware, async (req, res) => {
     // Crear notificación para el autor del post (si no es el mismo usuario)
     if (postResult.rows[0] && postResult.rows[0].user_id !== user_id) {
       try {
-        await pool.query(`
-          INSERT INTO notifications (user_id, from_user_id, type, message, post_id, is_read)
-          VALUES ($1, $2, $3, $4, $5, $6)
-        `, [
-          postResult.rows[0].user_id, // Autor del post
-          user_id, // Usuario que comenta
-          'comment',
-          `${userResult.rows[0].username} comentó en tu post`,
-          postId,
-          false
-        ]);
+        // Intentar con comment_id primero, si falla usar sin comment_id
+        try {
+          await pool.query(`
+            INSERT INTO notifications (user_id, from_user_id, type, message, post_id, comment_id, is_read)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+          `, [
+            postResult.rows[0].user_id, // Autor del post
+            user_id, // Usuario que comenta
+            'comment',
+            `${userResult.rows[0].username} comentó en tu post`,
+            postId,
+            comment.id, // ID del comentario
+            false
+          ]);
+        } catch (colErr) {
+          // Fallback sin comment_id si la columna no existe
+          console.log('Columna comment_id no existe, usando notificación simple');
+          await pool.query(`
+            INSERT INTO notifications (user_id, from_user_id, type, message, post_id, is_read)
+            VALUES ($1, $2, $3, $4, $5, $6)
+          `, [
+            postResult.rows[0].user_id, // Autor del post
+            user_id, // Usuario que comenta
+            'comment',
+            `${userResult.rows[0].username} comentó en tu post`,
+            postId,
+            false
+          ]);
+        }
       } catch (notifError) {
         console.error('Error creando notificación:', notifError);
         // No fallar el comentario si la notificación falla
@@ -425,17 +443,35 @@ router.post('/:postId/comments/:commentId/reply', authMiddleware, async (req, re
       const commentResult = await pool.query('SELECT user_id, post_id FROM post_comments WHERE id = $1', [commentId]);
       
       if (commentResult.rows[0] && commentResult.rows[0].user_id !== user_id) {
-        await pool.query(`
-          INSERT INTO notifications (user_id, from_user_id, type, message, post_id, is_read)
-          VALUES ($1, $2, $3, $4, $5, $6)
-        `, [
-          commentResult.rows[0].user_id, // Autor del comentario
-          user_id, // Usuario que responde
-          'comment',
-          `${userResult.rows[0].username} respondió a tu comentario`,
-          commentResult.rows[0].post_id,
-          false
-        ]);
+        // Intentar con comment_id primero, si falla usar sin comment_id
+        try {
+          await pool.query(`
+            INSERT INTO notifications (user_id, from_user_id, type, message, post_id, comment_id, is_read)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+          `, [
+            commentResult.rows[0].user_id, // Autor del comentario
+            user_id, // Usuario que responde
+            'comment',
+            `${userResult.rows[0].username} respondió a tu comentario`,
+            commentResult.rows[0].post_id,
+            commentId, // ID del comentario al que se responde
+            false
+          ]);
+        } catch (colErr) {
+          // Fallback sin comment_id si la columna no existe
+          console.log('Columna comment_id no existe en respuesta, usando notificación simple');
+          await pool.query(`
+            INSERT INTO notifications (user_id, from_user_id, type, message, post_id, is_read)
+            VALUES ($1, $2, $3, $4, $5, $6)
+          `, [
+            commentResult.rows[0].user_id, // Autor del comentario
+            user_id, // Usuario que responde
+            'comment',
+            `${userResult.rows[0].username} respondió a tu comentario`,
+            commentResult.rows[0].post_id,
+            false
+          ]);
+        }
       }
     } catch (notifError) {
       console.error('Error creando notificación de respuesta:', notifError);

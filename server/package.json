@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node scripts/run-migration-013.js && node index.js",
     "dev": "node index.js",
     "migrate": "node scripts/migrate.js",
     "migrate:009": "node scripts/run-migration-009.js",
     "migrate:010": "node scripts/run-migration-010.js",
     "migrate:011": "node scripts/run-migration-011.js",
     "migrate:012": "node scripts/run-migration-012.js",
+    "migrate:013": "node scripts/run-migration-013.js",
     "migrate:all": "node scripts/run-all-migrations.js",
     "export-data": "node scripts/export-data.js",
     "create-tables": "node scripts/create-tables.js"

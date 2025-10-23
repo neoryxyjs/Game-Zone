@@ -32,6 +32,22 @@ async function runAllMigrations() {
     console.log('✅ Migración 011 completada exitosamente');
     console.log('   - comment_replies');
     
+    // Migración 012: add_reply_to_reply
+    console.log('\n🚀 Ejecutando migración 012: add_reply_to_reply...');
+    const migration012Path = path.join(__dirname, '../migrations/012_add_reply_to_reply.sql');
+    const sql012 = fs.readFileSync(migration012Path, 'utf8');
+    await pool.query(sql012);
+    console.log('✅ Migración 012 completada exitosamente');
+    console.log('   - Columnas reply_to_reply_id y reply_to_username agregadas a comment_replies');
+    
+    // Migración 013: add_comment_id_to_notifications
+    console.log('\n🚀 Ejecutando migración 013: add_comment_id_to_notifications...');
+    const migration013Path = path.join(__dirname, '../migrations/013_add_comment_id_to_notifications.sql');
+    const sql013 = fs.readFileSync(migration013Path, 'utf8');
+    await pool.query(sql013);
+    console.log('✅ Migración 013 completada exitosamente');
+    console.log('   - Columna comment_id agregada a notifications');
+    
     console.log('\n✅ Todas las migraciones completadas exitosamente!');
     await pool.end();
     process.exit(0);
