@@ -244,7 +244,7 @@ export default function UserProfile() {
         )}
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {/* Avatar y header */}
         <div className="relative -mt-20 sm:-mt-24 mb-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-end space-y-4 sm:space-y-0 sm:space-x-6">
