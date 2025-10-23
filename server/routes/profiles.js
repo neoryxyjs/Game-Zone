@@ -141,6 +141,17 @@ router.get('/:userId', async (req, res) => {
       bio: profileData?.bio || '',
       location: profileData?.location || '',
       gaming_style: profileData?.gaming_style || '',
+      banner_url: profileData?.banner_url || null,
+      discord_url: profileData?.discord_url || null,
+      twitch_url: profileData?.twitch_url || null,
+      youtube_url: profileData?.youtube_url || null,
+      twitter_url: profileData?.twitter_url || null,
+      favorite_games: profileData?.favorite_games || [],
+      badges: profileData?.badges || [],
+      level: profileData?.level || 1,
+      experience_points: profileData?.experience_points || 0,
+      is_verified: profileData?.is_verified || false,
+      profile_color: profileData?.profile_color || '#6366f1',
       followers_count: parseInt(stats.followers_count) || 0,
       following_count: parseInt(stats.following_count) || 0,
       posts_count: parseInt(stats.posts_count) || 0,
@@ -185,6 +196,99 @@ router.put('/:userId', authMiddleware, async (req, res) => {
     res.json({ success: true, profile: result.rows[0] });
   } catch (error) {
     console.error('Error actualizando perfil:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Actualizar banner y personalización del perfil (requiere autenticación)
+router.put('/:userId/customization', authMiddleware, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { 
+      banner_url, 
+      discord_url, 
+      twitch_url, 
+      youtube_url, 
+      twitter_url, 
+      favorite_games,
+      profile_color,
+      bio,
+      location
+    } = req.body;
+    
+    // Verificar si existe el perfil
+    const existingProfile = await pool.query(
+      'SELECT id FROM user_profiles WHERE user_id = $1',
+      [userId]
+    );
+    
+    let result;
+    if (existingProfile.rows.length === 0) {
+      // Crear nuevo perfil con los campos
+      result = await pool.query(`
+        INSERT INTO user_profiles (
+          user_id, bio, location, banner_url, discord_url, twitch_url, 
+          youtube_url, twitter_url, favorite_games, profile_color
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *
+      `, [
+        userId, bio, location, banner_url, discord_url, twitch_url, 
+        youtube_url, twitter_url, favorite_games, profile_color
+      ]);
+    } else {
+      // Actualizar perfil existente solo con los campos proporcionados
+      const updates = [];
+      const values = [];
+      let paramCounter = 1;
+      
+      if (bio !== undefined) {
+        updates.push(`bio = $${paramCounter++}`);
+        values.push(bio);
+      }
+      if (location !== undefined) {
+        updates.push(`location = $${paramCounter++}`);
+        values.push(location);
+      }
+      if (banner_url !== undefined) {
+        updates.push(`banner_url = $${paramCounter++}`);
+        values.push(banner_url);
+      }
+      if (discord_url !== undefined) {
+        updates.push(`discord_url = $${paramCounter++}`);
+        values.push(discord_url);
+      }
+      if (twitch_url !== undefined) {
+        updates.push(`twitch_url = $${paramCounter++}`);
+        values.push(twitch_url);
+      }
+      if (youtube_url !== undefined) {
+        updates.push(`youtube_url = $${paramCounter++}`);
+        values.push(youtube_url);
+      }
+      if (twitter_url !== undefined) {
+        updates.push(`twitter_url = $${paramCounter++}`);
+        values.push(twitter_url);
+      }
+      if (favorite_games !== undefined) {
+        updates.push(`favorite_games = $${paramCounter++}`);
+        values.push(favorite_games);
+      }
+      if (profile_color !== undefined) {
+        updates.push(`profile_color = $${paramCounter++}`);
+        values.push(profile_color);
+      }
+      
+      updates.push(`updated_at = CURRENT_TIMESTAMP`);
+      values.push(userId);
+      
+      result = await pool.query(
+        `UPDATE user_profiles SET ${updates.join(', ')} WHERE user_id = $${paramCounter} RETURNING *`,
+        values
+      );
+    }
+    
+    res.json({ success: true, profile: result.rows[0] });
+  } catch (error) {
+    console.error('Error actualizando personalización del perfil:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

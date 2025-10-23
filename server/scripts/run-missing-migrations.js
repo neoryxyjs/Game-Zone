@@ -8,7 +8,8 @@ async function runMissingMigrations() {
     
     const migrations = [
       { file: '009_create_friend_requests_table.sql', name: 'Friend Requests & Friendships' },
-      { file: '014_create_messages_table.sql', name: 'Messages' }
+      { file: '014_create_messages_table.sql', name: 'Messages' },
+      { file: '015_add_profile_customization.sql', name: 'Profile Customization' }
     ];
 
     for (const migration of migrations) {
@@ -41,7 +42,7 @@ async function runMissingMigrations() {
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public' 
-      AND table_name IN ('friend_requests', 'friendships', 'messages')
+      AND table_name IN ('friend_requests', 'friendships', 'messages', 'user_profiles')
       ORDER BY table_name;
     `);
     
