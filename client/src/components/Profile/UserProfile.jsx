@@ -204,9 +204,9 @@ export default function UserProfile() {
   return (
     <div className="bg-gray-50 dark:bg-gray-900 pt-16">
       {/* Banner del perfil */}
-      <div className="relative">
+      <div className="relative -mt-16">
         {profileUser.banner_url ? (
-          <div className="w-full h-72 md:h-80 lg:h-96 relative overflow-hidden bg-gray-900">
+          <div className="w-full h-72 md:h-80 lg:h-96 relative overflow-hidden bg-gray-900 pt-16">
               <img
                 src={profileUser.banner_url}
                 alt="Banner"
@@ -227,7 +227,7 @@ export default function UserProfile() {
             </div>
           ) : (
             <div 
-              className="w-full h-72 md:h-80 lg:h-96 relative overflow-hidden"
+              className="w-full h-72 md:h-80 lg:h-96 relative overflow-hidden pt-16"
               style={{ 
                 background: `linear-gradient(135deg, ${profileUser.profile_color || '#6366f1'} 0%, #8b5cf6 100%)` 
               }}
