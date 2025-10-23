@@ -206,16 +206,17 @@ export default function UserProfile() {
       {/* Banner del perfil */}
       <div className="relative">
         {profileUser.banner_url ? (
-          <div className="w-full h-[27rem] md:h-[33rem] lg:h-[43rem] relative overflow-hidden bg-gray-900 pt-16">
+          <div className="w-full h-80 md:h-96 lg:h-[28rem] relative overflow-hidden bg-gray-900 pt-16">
               <img
                 src={profileUser.banner_url}
                 alt="Banner"
-                className="absolute top-0 left-0"
+                className="absolute"
                 style={{
                   transform: `translate(${profileUser.banner_position_x || 0}%, ${profileUser.banner_position_y || 0}%) scale(${profileUser.banner_scale || 1})`,
                   transformOrigin: 'top left',
                   width: '100%',
-                  height: '100%',
+                  height: 'auto',
+                  minHeight: '100%',
                   objectFit: 'cover'
                 }}
               />
@@ -226,7 +227,7 @@ export default function UserProfile() {
             </div>
           ) : (
             <div 
-              className="w-full h-[27rem] md:h-[33rem] lg:h-[43rem] relative overflow-hidden pt-16"
+              className="w-full h-80 md:h-96 lg:h-[28rem] relative overflow-hidden pt-16"
               style={{ 
                 background: `linear-gradient(135deg, ${profileUser.profile_color || '#6366f1'} 0%, #8b5cf6 100%)` 
               }}
@@ -246,7 +247,7 @@ export default function UserProfile() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {/* Avatar y header */}
-        <div className="relative -mt-24 sm:-mt-28 mb-6">
+        <div className="relative -mt-20 sm:-mt-24 mb-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-end space-y-4 sm:space-y-0 sm:space-x-6">
             {/* Avatar */}
             <div className="relative">
@@ -273,7 +274,7 @@ export default function UserProfile() {
                 <span className="text-white font-bold text-sm">Nv. {profileUser.level || 1}</span>
               </div>
             </div>
-
+            
                     {/* Info y acciones */}
                     <div className="flex-1 text-center sm:text-left">
                       <div className="mb-2">
@@ -346,10 +347,10 @@ export default function UserProfile() {
               {currentUser && currentUser.id !== parseInt(userId) && (
                 <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
                   {/* Botón de seguir */}
-                  <button
-                    onClick={handleFollow}
+              <button
+                onClick={handleFollow}
                     className={`flex items-center space-x-2 px-5 py-2.5 rounded-lg font-medium transition-all ${
-                      isFollowing
+                  isFollowing
                         ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                         : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/50'
                     }`}
@@ -410,8 +411,8 @@ export default function UserProfile() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                       </svg>
                       <span>Agregar amigo</span>
-                    </button>
-                  )}
+              </button>
+            )}
 
                   {/* Botón de mensaje */}
                   <button
