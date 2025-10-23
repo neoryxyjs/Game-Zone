@@ -83,6 +83,14 @@ export default function RealTimeNotifications() {
   // Marcar notificación como leída y navegar al post
   const markAsRead = async (notification) => {
     try {
+      console.log('🔔 Notificación clickeada:', {
+        id: notification.id,
+        type: notification.type,
+        post_id: notification.post_id,
+        comment_id: notification.comment_id,
+        message: notification.message
+      });
+
       const response = await putAuth(`/api/notifications/${notification.id}/read`, {});
       
       if (response.ok) {
@@ -101,9 +109,13 @@ export default function RealTimeNotifications() {
           
           // Construir URL con query params
           if (notification.comment_id) {
-            navigate(`/?post=${notification.post_id}&comment=${notification.comment_id}`);
+            const url = `/?post=${notification.post_id}&comment=${notification.comment_id}`;
+            console.log('🚀 Navegando con comentario:', url);
+            navigate(url);
           } else {
-            navigate(`/?post=${notification.post_id}`);
+            const url = `/?post=${notification.post_id}`;
+            console.log('🚀 Navegando sin comentario:', url);
+            navigate(url);
           }
         }
       }
