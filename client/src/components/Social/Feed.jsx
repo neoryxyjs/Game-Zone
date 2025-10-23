@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../config/api';
 import { postAuth, deleteAuth } from '../../utils/api';
+import Lightbox from '../Common/Lightbox';
 
 export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFilter = null, customEndpoint = null }) {
   const [posts, setPosts] = useState([]);
@@ -294,6 +295,8 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
   const [replyingTo, setReplyingTo] = useState(null); // ID del comentario al que se está respondiendo
   const [replyContent, setReplyContent] = useState('');
   const [replyLoading, setReplyLoading] = useState(false);
+  const [lightboxMedia, setLightboxMedia] = useState(null); // Para el lightbox
+  const [lightboxType, setLightboxType] = useState('image'); // 'image' o 'video'
   const pollingCommentsRef = useRef(null);
 
   // Auto-actualización de comentarios cuando están abiertos
@@ -500,27 +503,54 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
         {post.image_url && (
           <div className="mt-4">
             {post.image_url.match(/\.(mp4|webm|ogg|mov)(\?|$)/i) ? (
-              <video 
-                src={post.image_url} 
-                controls
-                className="w-full max-w-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.style.display = 'none';
-                }}
-              >
-                Tu navegador no soporta el tag de video.
-              </video>
+              <div className="relative group">
+                <video 
+                  src={post.image_url} 
+                  controls
+                  className="w-full max-w-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = 'none';
+                  }}
+                >
+                  Tu navegador no soporta el tag de video.
+                </video>
+                <button
+                  onClick={() => {
+                    setLightboxMedia(post.image_url);
+                    setLightboxType('video');
+                  }}
+                  className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Ver en pantalla completa"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-5v4m0-4h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                  </svg>
+                </button>
+              </div>
             ) : (
-              <img 
-                src={post.image_url} 
-                alt="Post image" 
-                className="w-full max-w-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.style.display = 'none';
-                }}
-              />
+              <div className="relative group">
+                <img 
+                  src={post.image_url} 
+                  alt="Post image" 
+                  className="w-full max-w-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                  onClick={() => {
+                    setLightboxMedia(post.image_url);
+                    setLightboxType('image');
+                  }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = 'none';
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none">
+                  <div className="bg-white/90 dark:bg-gray-900/90 p-2 rounded-full">
+                    <svg className="w-6 h-6 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         )}
@@ -716,6 +746,14 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
             <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No hay comentarios aún</p>
           )}
         </div>
+      )}
+      {/* Lightbox para ver imágenes/videos en grande */}
+      {lightboxMedia && (
+        <Lightbox
+          src={lightboxMedia}
+          type={lightboxType}
+          onClose={() => setLightboxMedia(null)}
+        />
       )}
     </article>
   );

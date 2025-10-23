@@ -9,25 +9,32 @@ router.get('/:userId', authMiddleware, async (req, res) => {
     const { userId } = req.params;
     const { limit = 20, offset = 0 } = req.query;
     
-    const result = await pool.query(`
-      SELECT 
-        n.*,
-        u.username as from_username,
-        u.avatar as from_avatar,
-        p.content as post_content,
-        p.id as post_id
-      FROM notifications n
-      LEFT JOIN users u ON n.from_user_id = u.id
-      LEFT JOIN posts p ON n.post_id = p.id
-      WHERE n.user_id = $1
-      ORDER BY n.created_at DESC
-      LIMIT $2 OFFSET $3
-    `, [userId, limit, offset]);
-    
-    res.json({ success: true, notifications: result.rows });
+    // Intentar obtener notificaciones, si la tabla no existe retornar array vacío
+    try {
+      const result = await pool.query(`
+        SELECT 
+          n.*,
+          COALESCE(u.username, 'Usuario desconocido') as from_username,
+          u.avatar as from_avatar,
+          p.content as post_content,
+          COALESCE(n.post_id, p.id) as post_id
+        FROM notifications n
+        LEFT JOIN users u ON n.from_user_id = u.id
+        LEFT JOIN posts p ON n.post_id = p.id
+        WHERE n.user_id = $1
+        ORDER BY n.created_at DESC
+        LIMIT $2 OFFSET $3
+      `, [userId, limit, offset]);
+      
+      res.json({ success: true, notifications: result.rows || [] });
+    } catch (notifErr) {
+      // Si la tabla notifications no existe, retornar array vacío en lugar de error
+      console.log('Tabla notifications no disponible:', notifErr.message);
+      res.json({ success: true, notifications: [] });
+    }
   } catch (error) {
     console.error('Error obteniendo notificaciones:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: error.message, notifications: [] });
   }
 });
 
