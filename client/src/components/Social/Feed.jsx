@@ -65,36 +65,35 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
           postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
           
           // Highlight elegante del post con gradiente de marca
-          postElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+          postElement.style.transition = 'all 0.25s ease-out';
           postElement.classList.add(
-            'ring-4', 
-            'ring-indigo-500/50',
-            'shadow-2xl', 
-            'shadow-indigo-500/20',
-            'dark:shadow-indigo-500/40',
-            'scale-[1.01]',
+            'ring-2', 
+            'ring-indigo-400',
+            'shadow-lg', 
+            'shadow-indigo-500/10',
+            'dark:shadow-indigo-500/20',
             'bg-gradient-to-r',
-            'from-indigo-50/50',
-            'to-purple-50/50',
-            'dark:from-indigo-900/20',
-            'dark:to-purple-900/20'
+            'from-indigo-50/40',
+            'to-purple-50/40',
+            'dark:from-indigo-900/10',
+            'dark:to-purple-900/10'
           );
           
           setTimeout(() => {
+            postElement.style.transition = 'all 0.3s ease-in-out';
             postElement.classList.remove(
-              'ring-4', 
-              'ring-indigo-500/50',
-              'shadow-2xl', 
-              'shadow-indigo-500/20',
-              'dark:shadow-indigo-500/40',
-              'scale-[1.01]',
+              'ring-2', 
+              'ring-indigo-400',
+              'shadow-lg', 
+              'shadow-indigo-500/10',
+              'dark:shadow-indigo-500/20',
               'bg-gradient-to-r',
-              'from-indigo-50/50',
-              'to-purple-50/50',
-              'dark:from-indigo-900/20',
-              'dark:to-purple-900/20'
+              'from-indigo-50/40',
+              'to-purple-50/40',
+              'dark:from-indigo-900/10',
+              'dark:to-purple-900/10'
             );
-          }, 2200);
+          }, 1500);
 
           // Abrir comentarios automáticamente
           const toggleButton = postElement.querySelector('[data-toggle-comments]');
@@ -112,81 +111,79 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
                     commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
                     // Highlight elegante del comentario con gradiente púrpura-rosa
-                    commentElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    commentElement.style.transition = 'all 0.25s ease-out';
                     commentElement.classList.add(
-                      'ring-4',
-                      'ring-purple-500/50',
-                      'shadow-xl',
-                      'shadow-purple-500/30',
-                      'dark:shadow-purple-500/40',
-                      'scale-[1.01]',
+                      'ring-2',
+                      'ring-purple-400',
+                      'shadow-lg',
+                      'shadow-purple-500/15',
+                      'dark:shadow-purple-500/25',
                       'bg-gradient-to-r',
-                      'from-purple-50',
-                      'to-pink-50',
-                      'dark:from-purple-900/30',
-                      'dark:to-pink-900/30'
+                      'from-purple-50/60',
+                      'to-pink-50/60',
+                      'dark:from-purple-900/20',
+                      'dark:to-pink-900/20'
                     );
                     
                     setTimeout(() => {
+                      commentElement.style.transition = 'all 0.3s ease-in-out';
                       commentElement.classList.remove(
-                        'ring-4',
-                        'ring-purple-500/50',
-                        'shadow-xl',
-                        'shadow-purple-500/30',
-                        'dark:shadow-purple-500/40',
-                        'scale-[1.01]',
+                        'ring-2',
+                        'ring-purple-400',
+                        'shadow-lg',
+                        'shadow-purple-500/15',
+                        'dark:shadow-purple-500/25',
                         'bg-gradient-to-r',
-                        'from-purple-50',
-                        'to-pink-50',
-                        'dark:from-purple-900/30',
-                        'dark:to-pink-900/30'
+                        'from-purple-50/60',
+                        'to-pink-50/60',
+                        'dark:from-purple-900/20',
+                        'dark:to-pink-900/20'
                       );
-                    }, 2500);
+                    }, 1800);
                   }
-                }, 400);
+                }, 250);
               }
-            }, 300);
+            }, 200);
           } else if (toggleButton?.classList.contains('comments-open') && commentId) {
             // Si ya están abiertos, solo hacer scroll al comentario
             setTimeout(() => {
               const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
               if (commentElement) {
                 commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                commentElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                commentElement.style.transition = 'all 0.25s ease-out';
                 commentElement.classList.add(
-                  'ring-4',
-                  'ring-purple-500/50',
-                  'shadow-xl',
-                  'shadow-purple-500/30',
-                  'dark:shadow-purple-500/40',
-                  'scale-[1.01]',
+                  'ring-2',
+                  'ring-purple-400',
+                  'shadow-lg',
+                  'shadow-purple-500/15',
+                  'dark:shadow-purple-500/25',
                   'bg-gradient-to-r',
-                  'from-purple-50',
-                  'to-pink-50',
-                  'dark:from-purple-900/30',
-                  'dark:to-pink-900/30'
+                  'from-purple-50/60',
+                  'to-pink-50/60',
+                  'dark:from-purple-900/20',
+                  'dark:to-pink-900/20'
                 );
                 
                 setTimeout(() => {
+                  commentElement.style.transition = 'all 0.3s ease-in-out';
                   commentElement.classList.remove(
-                    'ring-4',
-                    'ring-purple-500/50',
-                    'shadow-xl',
-                    'shadow-purple-500/30',
-                    'dark:shadow-purple-500/40',
-                    'scale-[1.01]',
+                    'ring-2',
+                    'ring-purple-400',
+                    'shadow-lg',
+                    'shadow-purple-500/15',
+                    'dark:shadow-purple-500/25',
                     'bg-gradient-to-r',
-                    'from-purple-50',
-                    'to-pink-50',
-                    'dark:from-purple-900/30',
-                    'dark:to-pink-900/30'
+                    'from-purple-50/60',
+                    'to-pink-50/60',
+                    'dark:from-purple-900/20',
+                    'dark:to-pink-900/20'
                   );
-                }, 2500);
+                }, 1800);
               }
-            }, 400);
+            }, 250);
           }
         }
-      }, 400);
+      }, 300);
     }
   }, [loading, posts, location.search]);
 
