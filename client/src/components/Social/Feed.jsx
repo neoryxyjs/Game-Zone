@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../config/api';
 import { postAuth, deleteAuth } from '../../utils/api';
@@ -8,6 +8,10 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [newPostsAvailable, setNewPostsAvailable] = useState(0);
+  const [lastPostId, setLastPostId] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const pollingIntervalRef = useRef(null);
 
   useEffect(() => {
     loadPosts();
@@ -17,8 +21,69 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
   useEffect(() => {
     if (onNewPost) {
       setPosts(prev => [onNewPost, ...prev]);
+      setLastPostId(onNewPost.id);
     }
   }, [onNewPost]);
+
+  // Polling para detectar nuevos posts cada 15 segundos
+  useEffect(() => {
+    if (!isPersonalFeed && posts.length > 0) {
+      pollingIntervalRef.current = setInterval(checkForNewPosts, 15000);
+      return () => {
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+        }
+      };
+    }
+  }, [posts.length, isPersonalFeed, lastPostId]);
+
+  const checkForNewPosts = async () => {
+    if (!lastPostId) return;
+    
+    try {
+      const endpoint = isPersonalFeed 
+        ? `${API_BASE_URL}/api/social/feed/${userId}`
+        : `${API_BASE_URL}/api/posts/feed`;
+      
+      const gameParam = gameFilter ? `&game=${encodeURIComponent(gameFilter)}` : '';
+      const response = await fetch(`${endpoint}?page=1&limit=5${gameParam}`);
+      const data = await response.json();
+      
+      if (data.success && data.posts) {
+        const newPosts = data.posts.filter(post => post.id > lastPostId);
+        if (newPosts.length > 0) {
+          setNewPostsAvailable(newPosts.length);
+        }
+      }
+    } catch (error) {
+      console.error('Error verificando nuevos posts:', error);
+    }
+  };
+
+  const loadNewPosts = async () => {
+    setRefreshing(true);
+    try {
+      const endpoint = isPersonalFeed 
+        ? `${API_BASE_URL}/api/social/feed/${userId}`
+        : `${API_BASE_URL}/api/posts/feed`;
+      
+      const gameParam = gameFilter ? `&game=${encodeURIComponent(gameFilter)}` : '';
+      const response = await fetch(`${endpoint}?page=1&limit=10${gameParam}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setPosts(data.posts);
+        if (data.posts.length > 0) {
+          setLastPostId(data.posts[0].id);
+        }
+        setNewPostsAvailable(0);
+      }
+    } catch (error) {
+      console.error('Error cargando nuevos posts:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const loadPosts = async () => {
     try {
@@ -35,6 +100,9 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
       if (data.success) {
         if (page === 1) {
           setPosts(data.posts);
+          if (data.posts.length > 0) {
+            setLastPostId(data.posts[0].id);
+          }
         } else {
           setPosts(prev => [...prev, ...data.posts]);
         }
@@ -89,17 +157,41 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
 
   if (loading && posts.length === 0) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <div className="text-center">
-          <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Cargando publicaciones...</p>
-        </div>
+      <div className="space-y-6">
+        <SkeletonPost />
+        <SkeletonPost />
+        <SkeletonPost />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
+      {/* Banner de nuevos posts disponibles */}
+      {newPostsAvailable > 0 && (
+        <div className="animate-notification-slide">
+          <button
+            onClick={loadNewPosts}
+            disabled={refreshing}
+            className="w-full py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2"
+          >
+            {refreshing ? (
+              <>
+                <div className="loading-spinner border-white"></div>
+                <span>Cargando...</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                </svg>
+                <span>{newPostsAvailable} {newPostsAvailable === 1 ? 'nueva publicación' : 'nuevas publicaciones'} disponible{newPostsAvailable === 1 ? '' : 's'}</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
       {gameFilter && (
         <div className="card bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-l-4 border-indigo-500">
           <div className="flex items-center space-x-3">
@@ -165,12 +257,51 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
   );
 }
 
+// Componente de skeleton loader para posts
+function SkeletonPost() {
+  return (
+    <div className="card animate-pulse">
+      <div className="flex items-start space-x-3 mb-4">
+        <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+        <div className="flex-1 space-y-2">
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/6"></div>
+        </div>
+      </div>
+      <div className="space-y-3 mb-4">
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6"></div>
+      </div>
+      <div className="flex items-center space-x-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+      </div>
+    </div>
+  );
+}
+
 function PostCard({ post, userId, onLike, onDelete, index }) {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentsLoading, setCommentsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [commentsCount, setCommentsCount] = useState(0);
+  const pollingCommentsRef = useRef(null);
+
+  // Auto-actualización de comentarios cuando están abiertos
+  useEffect(() => {
+    if (showComments) {
+      pollingCommentsRef.current = setInterval(loadCommentsUpdate, 10000); // Cada 10 segundos
+      return () => {
+        if (pollingCommentsRef.current) {
+          clearInterval(pollingCommentsRef.current);
+        }
+      };
+    }
+  }, [showComments, post.id]);
 
   const loadComments = async () => {
     if (comments.length > 0) return;
@@ -182,11 +313,29 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
       
       if (data.success) {
         setComments(data.comments || []);
+        setCommentsCount(data.comments?.length || 0);
       }
     } catch (error) {
       console.error('Error cargando comentarios:', error);
     } finally {
       setCommentsLoading(false);
+    }
+  };
+
+  const loadCommentsUpdate = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/posts/${post.id}/comments`);
+      const data = await response.json();
+      
+      if (data.success) {
+        // Solo actualizar si hay nuevos comentarios
+        if (data.comments?.length !== comments.length) {
+          setComments(data.comments || []);
+          setCommentsCount(data.comments?.length || 0);
+        }
+      }
+    } catch (error) {
+      console.error('Error actualizando comentarios:', error);
     }
   };
 
@@ -196,6 +345,7 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
 
     try {
       setCommentLoading(true);
+      setIsTyping(false);
       const response = await postAuth(`/api/posts/${post.id}/comment`, {
         user_id: userId,
         content: newComment.trim()
@@ -204,6 +354,7 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
       const data = await response.json();
       if (data.success) {
         setComments(prev => [data.comment, ...prev]);
+        setCommentsCount(prev => prev + 1);
         setNewComment('');
       }
     } catch (error) {
@@ -211,6 +362,11 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
     } finally {
       setCommentLoading(false);
     }
+  };
+
+  const handleCommentChange = (e) => {
+    setNewComment(e.target.value);
+    setIsTyping(e.target.value.length > 0);
   };
 
   const handleDelete = async () => {
@@ -354,7 +510,7 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
             <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-            <span className="text-sm font-medium">{comments.length}</span>
+            <span className="text-sm font-medium">{commentsCount || comments.length}</span>
           </button>
         </div>
       </div>
@@ -370,15 +526,22 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
                   {userId ? String(userId).charAt(0) : 'U'}
                 </div>
               </div>
-              <div className="flex-1">
+              <div className="flex-1 relative">
                 <input
                   type="text"
                   value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
+                  onChange={handleCommentChange}
                   placeholder="Escribe un comentario..."
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-smooth"
                   disabled={commentLoading}
                 />
+                {isTyping && !commentLoading && (
+                  <div className="absolute -bottom-5 left-0 text-xs text-indigo-500 flex items-center space-x-1 animate-pulse-subtle">
+                    <span className="inline-block w-1 h-1 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></span>
+                    <span className="inline-block w-1 h-1 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
+                    <span className="inline-block w-1 h-1 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></span>
+                  </div>
+                )}
               </div>
               <button
                 type="submit"

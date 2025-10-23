@@ -120,42 +120,57 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
           {uploading ? (
             <div className="uploading-spinner">
               <div className="spinner"></div>
-              <span>Subiendo...</span>
+              <span className="uploading-text">Subiendo...</span>
+              <div className="upload-progress"></div>
             </div>
           ) : (
             <div className="upload-content">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span>Subir imagen/video</span>
+              <div className="upload-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <polyline points="17 8 12 3 7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <span className="upload-text">Subir imagen/video</span>
+              <span className="upload-hint">o arrastra aquí</span>
             </div>
           )}
         </label>
       </div>
 
       {preview && (
-        <div className="image-preview">
-          {preview.startsWith('data:video') ? (
-            <video src={preview} controls className="preview-video" />
-          ) : (
-            <img src={preview} alt="Preview" />
-          )}
-          <button 
-            type="button" 
-            onClick={removePreview}
-            className="remove-preview"
-            disabled={uploading}
-          >
-            ✕
-          </button>
+        <div className="image-preview animate-scale-in">
+          <div className="preview-container">
+            {preview.startsWith('data:video') ? (
+              <video src={preview} controls className="preview-video" />
+            ) : (
+              <img src={preview} alt="Preview" className="preview-image" />
+            )}
+            <button 
+              type="button" 
+              onClick={removePreview}
+              className="remove-preview"
+              disabled={uploading}
+              title="Eliminar"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
         </div>
       )}
 
       {error && (
-        <div className="error-message">
-          {error}
+        <div className="error-message animate-notification-slide">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{error}</span>
         </div>
       )}
 
@@ -174,23 +189,28 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 12px 24px;
-          border: 2px dashed #4a5568;
-          border-radius: 8px;
-          background: transparent;
+          padding: 16px 32px;
+          border: 2px dashed #cbd5e1;
+          border-radius: 12px;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
           cursor: pointer;
-          transition: all 0.3s ease;
-          min-width: 150px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          min-width: 200px;
+          position: relative;
+          overflow: hidden;
         }
 
         .upload-button:hover {
-          border-color: #3182ce;
-          background: #f7fafc;
+          border-color: #6366f1;
+          background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
         }
 
         .upload-button.uploading {
           cursor: not-allowed;
-          opacity: 0.7;
+          opacity: 0.8;
+          background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
         }
 
         .upload-content {
@@ -198,22 +218,65 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
           flex-direction: column;
           align-items: center;
           gap: 8px;
+          color: #64748b;
+        }
+
+        .upload-icon {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          border-radius: 10px;
+          color: white;
+          transition: transform 0.3s ease;
+        }
+
+        .upload-button:hover .upload-icon {
+          transform: translateY(-4px);
+        }
+
+        .upload-text {
+          font-weight: 600;
+          color: #334155;
+        }
+
+        .upload-hint {
+          font-size: 12px;
+          color: #94a3b8;
         }
 
         .uploading-spinner {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 8px;
+          gap: 12px;
+          position: relative;
         }
 
         .spinner {
-          width: 20px;
-          height: 20px;
-          border: 2px solid #e2e8f0;
-          border-top: 2px solid #3182ce;
+          width: 32px;
+          height: 32px;
+          border: 3px solid #e0e7ff;
+          border-top: 3px solid #6366f1;
           border-radius: 50%;
-          animation: spin 1s linear infinite;
+          animation: spin 0.8s linear infinite;
+        }
+
+        .uploading-text {
+          font-weight: 600;
+          color: #6366f1;
+        }
+
+        .upload-progress {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+          animation: progress 1.5s ease-in-out infinite;
         }
 
         @keyframes spin {
@@ -221,46 +284,84 @@ const ImageUpload = ({ onImageUploaded, postId, userId }) => {
           100% { transform: rotate(360deg); }
         }
 
+        @keyframes progress {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+
         .image-preview {
           position: relative;
           display: inline-block;
-          margin: 10px 0;
+          margin: 16px 0;
         }
 
-        .image-preview img,
+        .preview-container {
+          position: relative;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .preview-container:hover {
+          transform: scale(1.02);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .preview-image,
         .preview-video {
-          max-width: 200px;
-          max-height: 200px;
-          border-radius: 8px;
+          max-width: 300px;
+          max-height: 300px;
+          border-radius: 12px;
           object-fit: cover;
+          display: block;
         }
 
         .remove-preview {
           position: absolute;
-          top: -8px;
-          right: -8px;
-          width: 24px;
-          height: 24px;
+          top: 8px;
+          right: 8px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
-          background: #e53e3e;
+          background: rgba(239, 68, 68, 0.95);
           color: white;
-          border: none;
+          border: 2px solid white;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(4px);
         }
 
         .remove-preview:hover {
-          background: #c53030;
+          background: #dc2626;
+          transform: scale(1.1) rotate(90deg);
+        }
+
+        .remove-preview:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none;
         }
 
         .error-message {
-          color: #e53e3e;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 16px;
+          background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+          color: #991b1b;
           font-size: 14px;
-          margin-top: 8px;
-          text-align: center;
+          margin-top: 12px;
+          border-radius: 8px;
+          border-left: 4px solid #dc2626;
+          font-weight: 500;
+        }
+
+        .error-message svg {
+          flex-shrink: 0;
         }
       `}</style>
     </div>

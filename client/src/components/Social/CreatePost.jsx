@@ -52,38 +52,52 @@ export default function CreatePost({ userId, onPostCreated, defaultGame = '' }) 
   };
 
   return (
-    <div className="card mb-8 animate-slide-up">
+    <div className="card mb-8 animate-slide-up hover:shadow-2xl transition-all duration-300">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="flex items-center space-x-3 mb-4">
-          <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+          <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg">
             {userId ? String(userId).charAt(0) : 'U'}
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white">Crear publicación</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Comparte tu experiencia gaming</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white text-lg">Crear publicación</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Comparte tu experiencia gaming con la comunidad</p>
           </div>
         </div>
 
-        <div>
+        <div className="relative">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="¿Qué estás jugando? Comparte tu experiencia..."
-            className="w-full px-4 py-4 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            placeholder="¿Qué estás jugando? Comparte tu experiencia, logros o encuentra compañeros de juego..."
+            className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none transition-smooth placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             rows="4"
             maxLength="500"
           />
-          <div className="flex justify-between items-center mt-2">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              {content.length}/500 caracteres
+          <div className="flex justify-between items-center mt-3">
+            <div className="flex items-center space-x-2">
+              <div className="relative">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden" style={{ width: '120px' }}>
+                  <div 
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      content.length > 450 ? 'bg-red-500' : 
+                      content.length > 400 ? 'bg-yellow-500' : 'bg-indigo-500'
+                    }`}
+                    style={{ width: `${(content.length / 500) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                {content.length}/500
+              </div>
             </div>
-            <div className={`text-sm font-medium ${
-              content.length > 450 ? 'text-red-500' : 
-              content.length > 400 ? 'text-yellow-500' : 'text-gray-500'
-            }`}>
-              {content.length > 450 ? 'Casi al límite' : 
-               content.length > 400 ? 'Quedan pocos caracteres' : ''}
-            </div>
+            {content.length > 400 && (
+              <div className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                content.length > 450 ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 animate-pulse-subtle' : 
+                'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+              }`}>
+                {content.length > 450 ? '⚠️ Casi al límite' : '⚡ Quedan pocos caracteres'}
+              </div>
+            )}
           </div>
         </div>
 
@@ -158,25 +172,35 @@ export default function CreatePost({ userId, onPostCreated, defaultGame = '' }) 
         )}
 
         <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
-          <div className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex items-center space-x-2">
             {gameTag && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                {gameTag}
+              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 dark:from-indigo-900/30 dark:to-purple-900/30 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                🎮 {gameTag}
+              </span>
+            )}
+            {uploadedImage && (
+              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                📷 Imagen adjunta
               </span>
             )}
           </div>
           <button
             type="submit"
             disabled={loading || !content.trim()}
-            className="btn-primary px-8 py-2.5 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="relative overflow-hidden btn-primary px-8 py-3 text-base font-bold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg hover:shadow-xl"
           >
             {loading ? (
-              <div className="flex items-center">
-                <div className="loading-spinner mr-2"></div>
-                Publicando...
+              <div className="flex items-center space-x-2">
+                <div className="loading-spinner mr-2 border-white"></div>
+                <span>Publicando...</span>
               </div>
             ) : (
-              'Publicar'
+              <div className="flex items-center space-x-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                <span>Publicar</span>
+              </div>
             )}
           </button>
         </div>
