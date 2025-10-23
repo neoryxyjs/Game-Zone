@@ -202,34 +202,45 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16">
-      {/* Banner del perfil */}
-      <div className="relative">
-        {profileUser.banner_url ? (
-          <div className="w-full h-64 md:h-80 lg:h-96 relative overflow-hidden bg-gray-900">
-            <img
-              src={profileUser.banner_url}
-              alt="Banner"
-              className="absolute"
-              style={{
-                transform: `translate(${profileUser.banner_position_x || 0}%, ${profileUser.banner_position_y || 0}%) scale(${profileUser.banner_scale || 1})`,
-                transformOrigin: 'top left',
-                width: '100%',
-                height: 'auto',
-                minHeight: '100%',
-                objectFit: 'cover'
-              }}
-            />
-            {/* Overlay mejorado para legibilidad */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70"></div>
-            {/* Overlay adicional en la parte inferior para el avatar */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-900 to-transparent"></div>
-          </div>
-        ) : (
-          <div 
-            className="w-full h-64 md:h-80 lg:h-96 relative overflow-hidden"
-            style={{ background: `linear-gradient(135deg, ${profileUser.profile_color || '#6366f1'} 0%, #8b5cf6 100%)` }}
-          >
+    <>
+      {/* Espacio para header con color del banner para evitar espacio blanco */}
+      <div 
+        className="h-16 w-full" 
+        style={{ 
+          background: profileUser.banner_url 
+            ? '#111827' 
+            : `linear-gradient(135deg, ${profileUser.profile_color || '#6366f1'} 0%, #8b5cf6 100%)`
+        }}
+      />
+      
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        {/* Banner del perfil */}
+        <div className="relative">
+          {profileUser.banner_url ? (
+            <div className="w-full h-64 md:h-80 lg:h-96 relative overflow-hidden bg-gray-900">
+              <img
+                src={profileUser.banner_url}
+                alt="Banner"
+                className="absolute"
+                style={{
+                  transform: `translate(${profileUser.banner_position_x || 0}%, ${profileUser.banner_position_y || 0}%) scale(${profileUser.banner_scale || 1})`,
+                  transformOrigin: 'top left',
+                  width: '100%',
+                  height: 'auto',
+                  minHeight: '100%',
+                  objectFit: 'cover'
+                }}
+              />
+              {/* Overlay mejorado para legibilidad */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70"></div>
+              {/* Overlay adicional en la parte inferior para el avatar */}
+              <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-900 to-transparent"></div>
+            </div>
+          ) : (
+            <div 
+              className="w-full h-64 md:h-80 lg:h-96 relative overflow-hidden"
+              style={{ background: `linear-gradient(135deg, ${profileUser.profile_color || '#6366f1'} 0%, #8b5cf6 100%)` }}
+            >
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-0 left-0 w-full h-full">
                 <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
@@ -241,9 +252,9 @@ export default function UserProfile() {
             <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
           </div>
         )}
-      </div>
+        </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Avatar y header */}
         <div className="relative -mt-20 sm:-mt-24 mb-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-end space-y-4 sm:space-y-0 sm:space-x-6">
@@ -493,7 +504,8 @@ export default function UserProfile() {
             customEndpoint={`/api/social/user-posts/${userId}`}
           />
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
