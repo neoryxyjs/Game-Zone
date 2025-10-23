@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="mainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glowGrad" cx="50%" cy="30%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:0" />
+    </radialGradient>
+    <filter id="bigShadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <!-- Fondo circular con gradiente -->
+  <circle cx="256" cy="256" r="240" fill="url(#mainGrad)" filter="url(#bigShadow)"/>
+  
+  <!-- Círculos decorativos -->
+  <circle cx="256" cy="256" r="220" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="3"/>
+  <circle cx="256" cy="256" r="200" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+  
+  <!-- Efecto de brillo grande -->
+  <ellipse cx="256" cy="140" rx="180" ry="100" fill="url(#glowGrad)"/>
+  
+  <!-- Letra G - más grande y con mejor proporción -->
+  <path d="M 120 180 L 120 332 Q 120 352 140 352 L 200 352 L 200 332 L 140 332 L 140 180 L 220 180 L 220 244 L 170 244 L 170 264 L 240 264 L 240 160 L 140 160 Q 120 160 120 180 Z" 
+        fill="white" 
+        stroke="white" 
+        stroke-width="4"
+        stroke-linejoin="round"
+        filter="url(#bigShadow)"/>
+  
+  <!-- Letra Z - más grande y con mejor proporción -->
+  <path d="M 272 160 L 272 180 L 352 312 L 272 312 L 272 332 L 392 332 L 392 312 L 312 180 L 392 180 L 392 160 Z" 
+        fill="white" 
+        stroke="white" 
+        stroke-width="4"
+        stroke-linejoin="round"
+        filter="url(#bigShadow)"/>
+  
+  <!-- Barra de carga estilo gaming -->
+  <rect x="80" y="390" width="80" height="16" rx="8" fill="rgba(255,255,255,0.25)"/>
+  <rect x="180" y="390" width="152" height="16" rx="8" fill="rgba(255,255,255,0.4)"/>
+  <rect x="352" y="390" width="80" height="16" rx="8" fill="rgba(255,255,255,0.25)"/>
+  
+  <!-- Puntos decorativos en las esquinas -->
+  <circle cx="80" cy="80" r="6" fill="rgba(255,255,255,0.5)"/>
+  <circle cx="432" cy="80" r="6" fill="rgba(255,255,255,0.5)"/>
+  <circle cx="80" cy="432" r="6" fill="rgba(255,255,255,0.5)"/>
+  <circle cx="432" cy="432" r="6" fill="rgba(255,255,255,0.5)"/>
+  
+  <!-- Detalles adicionales tipo gaming -->
+  <path d="M 100 420 L 110 440 L 120 420" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+  <path d="M 392 420 L 402 440 L 412 420" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+</svg>
+

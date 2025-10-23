@@ -1,6 +1,7 @@
 {
   "short_name": "GameZone",
-  "name": "GameZone Social",
+  "name": "GameZone Social - Red Social para Gamers",
+  "description": "La red social definitiva para gamers. Conecta con jugadores, comparte tus logros y forma equipos.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,8 @@
   ],
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#6366f1",
+  "background_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "categories": ["social", "games", "entertainment"]
 }
