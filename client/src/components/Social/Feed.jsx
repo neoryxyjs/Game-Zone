@@ -79,17 +79,17 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
             postElement.classList.remove('ring-2', 'ring-indigo-500', 'ring-opacity-50');
           }, 2000);
 
-          // Si hay commentId, abrir comentarios
-          if (commentId) {
-            console.log('💬 Buscando botón de comentarios...');
-            const toggleButton = postElement.querySelector('[data-toggle-comments]');
-            console.log('🔘 Botón encontrado:', !!toggleButton, 'abierto:', toggleButton?.classList.contains('comments-open'));
+          // SIEMPRE abrir comentarios si viene de una notificación (independiente de commentId)
+          console.log('💬 Buscando botón de comentarios...');
+          const toggleButton = postElement.querySelector('[data-toggle-comments]');
+          console.log('🔘 Botón encontrado:', !!toggleButton, 'abierto:', toggleButton?.classList.contains('comments-open'));
+          
+          if (toggleButton && !toggleButton.classList.contains('comments-open')) {
+            console.log('🖱️ Haciendo click en comentarios...');
+            toggleButton.click();
             
-            if (toggleButton && !toggleButton.classList.contains('comments-open')) {
-              console.log('🖱️ Haciendo click en comentarios...');
-              toggleButton.click();
-              
-              // Esperar a que los comentarios se carguen y hacer scroll
+            // Si hay commentId específico, hacer scroll a ese comentario
+            if (commentId) {
               setTimeout(() => {
                 const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
                 console.log('💬 Comentario encontrado:', !!commentElement);
@@ -102,11 +102,17 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
                   setTimeout(() => {
                     commentElement.classList.remove('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
                   }, 3000);
+                } else {
+                  console.log('⚠️ Comentario no encontrado, pero comentarios abiertos');
                 }
               }, 1500);
-            } else if (toggleButton?.classList.contains('comments-open')) {
-              // Si ya están abiertos, solo hacer scroll
-              console.log('✅ Comentarios ya abiertos, haciendo scroll...');
+            } else {
+              console.log('ℹ️ Sin comment_id específico, solo abriendo comentarios');
+            }
+          } else if (toggleButton?.classList.contains('comments-open')) {
+            // Si ya están abiertos y hay commentId, hacer scroll
+            console.log('✅ Comentarios ya abiertos');
+            if (commentId) {
               setTimeout(() => {
                 const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
                 if (commentElement) {
