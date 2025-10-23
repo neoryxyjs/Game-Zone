@@ -202,22 +202,11 @@ export default function UserProfile() {
   }
 
   return (
-    <>
-      {/* Espacio para header con color del banner para evitar espacio blanco */}
-      <div 
-        className="h-16 w-full" 
-        style={{ 
-          background: profileUser.banner_url 
-            ? '#111827' 
-            : `linear-gradient(135deg, ${profileUser.profile_color || '#6366f1'} 0%, #8b5cf6 100%)`
-        }}
-      />
-      
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        {/* Banner del perfil */}
-        <div className="relative">
-          {profileUser.banner_url ? (
-            <div className="w-full h-64 md:h-80 lg:h-96 relative overflow-hidden bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Banner del perfil extendido hasta el header */}
+      <div className="relative pt-16">
+        {profileUser.banner_url ? (
+          <div className="w-full h-80 md:h-96 lg:h-[28rem] relative overflow-hidden bg-gray-900">
               <img
                 src={profileUser.banner_url}
                 alt="Banner"
@@ -238,7 +227,7 @@ export default function UserProfile() {
             </div>
           ) : (
             <div 
-              className="w-full h-64 md:h-80 lg:h-96 relative overflow-hidden"
+              className="w-full h-80 md:h-96 lg:h-[28rem] relative overflow-hidden"
               style={{ background: `linear-gradient(135deg, ${profileUser.profile_color || '#6366f1'} 0%, #8b5cf6 100%)` }}
             >
             <div className="absolute inset-0 opacity-20">
@@ -252,9 +241,9 @@ export default function UserProfile() {
             <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
           </div>
         )}
-        </div>
+      </div>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Avatar y header */}
         <div className="relative -mt-20 sm:-mt-24 mb-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-end space-y-4 sm:space-y-0 sm:space-x-6">
@@ -504,8 +493,7 @@ export default function UserProfile() {
             customEndpoint={`/api/social/user-posts/${userId}`}
           />
         </div>
-        </div>
       </div>
-    </>
+    </div>
   );
 }
