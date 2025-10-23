@@ -46,24 +46,24 @@ const OnlineUsers = ({ currentUserId }) => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <h3 className="font-semibold text-gray-800 mb-3">Usuarios en línea</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+        <h3 className="font-semibold text-gray-800 dark:text-white mb-3">Usuarios en línea</h3>
         <div className="text-center py-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600 mx-auto"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
-      <h3 className="font-semibold text-gray-800 mb-3">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+      <h3 className="font-semibold text-gray-800 dark:text-white mb-3">
         Usuarios en línea ({onlineUsers.length})
       </h3>
       
       <div className="space-y-3 max-h-64 overflow-y-auto">
         {onlineUsers.map(user => (
-          <div key={user.id} className="flex items-center space-x-3">
+          <div key={user.id} className="flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors">
             <div className="relative">
               {user.avatar ? (
                 <img 
@@ -72,17 +72,17 @@ const OnlineUsers = ({ currentUserId }) => {
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-                  <span className="text-gray-600 font-bold text-sm">{user.username?.[0]?.toUpperCase()}</span>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">{user.username?.[0]?.toUpperCase()}</span>
                 </div>
               )}
-              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(user.status)}`}></div>
+              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 ${getStatusColor(user.status)}`}></div>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 truncate">
+              <p className="font-medium text-gray-900 dark:text-white truncate">
                 {user.username}
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {getStatusText(user.status)}
               </p>
             </div>
@@ -90,7 +90,7 @@ const OnlineUsers = ({ currentUserId }) => {
         ))}
         
         {onlineUsers.length === 0 && (
-          <div className="text-center py-4 text-gray-500">
+          <div className="text-center py-4 text-gray-500 dark:text-gray-400">
             No hay usuarios en línea
           </div>
         )}

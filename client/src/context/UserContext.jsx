@@ -77,6 +77,31 @@ export const UserProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
 
+  // Actualizar estado en línea cada minuto
+  useEffect(() => {
+    if (user?.id) {
+      const updateOnlineStatus = async () => {
+        try {
+          await fetch(`${API_ENDPOINTS.BASE || 'http://localhost:8080'}/api/online/${user.id}/online`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            }
+          });
+        } catch (error) {
+          console.error('Error actualizando estado en línea:', error);
+        }
+      };
+
+      // Actualizar inmediatamente y luego cada minuto
+      updateOnlineStatus();
+      const interval = setInterval(updateOnlineStatus, 60000); // 60 segundos
+
+      return () => clearInterval(interval);
+    }
+  }, [user?.id]);
+
   const [notifications, setNotifications] = useState([]);
 
   const [friends, setFriends] = useState([]);
