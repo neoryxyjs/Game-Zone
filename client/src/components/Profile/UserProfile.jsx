@@ -275,28 +275,28 @@ export default function UserProfile() {
               </div>
             </div>
 
-            {/* Info y acciones */}
-            <div className="flex-1 text-center sm:text-left">
-              <div className="mb-2">
-                <h1 className="text-3xl md:text-4xl font-bold text-white inline-block drop-shadow-lg">
-                  {profileUser.username}
-                </h1>
-              </div>
-              
-              {/* Badges */}
-              {profileUser.badges && profileUser.badges.length > 0 && (
-                <div className="flex flex-wrap gap-2 justify-center sm:justify-start mb-3">
-                  {profileUser.badges.map((badge, index) => (
-                    <Badge key={index} type={badge} />
-                  ))}
-                </div>
-              )}
+                    {/* Info y acciones */}
+                    <div className="flex-1 text-center sm:text-left">
+                      <div className="mb-2">
+                        <h1 className="text-3xl md:text-4xl font-bold text-white inline-block" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6)' }}>
+                          {profileUser.username}
+                        </h1>
+                      </div>
+                      
+                      {/* Badges */}
+                      {profileUser.badges && profileUser.badges.length > 0 && (
+                        <div className="flex flex-wrap gap-2 justify-center sm:justify-start mb-3">
+                          {profileUser.badges.map((badge, index) => (
+                            <Badge key={index} type={badge} />
+                          ))}
+                        </div>
+                      )}
 
-              <p className="text-gray-100 dark:text-gray-200 mb-3 max-w-2xl font-medium drop-shadow-md">
-                {profileUser.bio || 'Sin biografía'}
-              </p>
+                      <p className="text-white mb-3 max-w-2xl font-medium" style={{ textShadow: '1px 1px 6px rgba(0,0,0,0.8), 0 0 15px rgba(0,0,0,0.5)' }}>
+                        {profileUser.bio || 'Sin biografía'}
+                      </p>
 
-              <div className="flex flex-wrap gap-4 justify-center sm:justify-start text-sm text-gray-200 dark:text-gray-300 mb-4 drop-shadow-md">
+                      <div className="flex flex-wrap gap-4 justify-center sm:justify-start text-sm text-white mb-4" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>
                 {profileUser.location && (
                   <span className="flex items-center">
                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -432,35 +432,35 @@ export default function UserProfile() {
 
         {/* Stats mejoradas */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform border border-gray-200 dark:border-gray-700">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               {profileUser.posts_count || 0}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 font-medium mt-1">Posts</div>
+            <div className="text-sm text-gray-700 dark:text-gray-400 font-medium mt-1">Posts</div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform border border-gray-200 dark:border-gray-700">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
               {profileUser.followers_count || 0}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 font-medium mt-1">Seguidores</div>
+            <div className="text-sm text-gray-700 dark:text-gray-400 font-medium mt-1">Seguidores</div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform border border-gray-200 dark:border-gray-700">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               {profileUser.following_count || 0}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 font-medium mt-1">Siguiendo</div>
+            <div className="text-sm text-gray-700 dark:text-gray-400 font-medium mt-1">Siguiendo</div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform border border-gray-200 dark:border-gray-700">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
               {profileUser.likes_received || 0}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 font-medium mt-1">Likes</div>
+            <div className="text-sm text-gray-700 dark:text-gray-400 font-medium mt-1">Likes</div>
           </div>
         </div>
 
         {/* Juegos favoritos */}
         {profileUser.favorite_games && profileUser.favorite_games.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
               <svg className="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -482,7 +482,7 @@ export default function UserProfile() {
         )}
 
         {/* Posts del usuario */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
             <svg className="w-7 h-7 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />

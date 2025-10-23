@@ -129,11 +129,25 @@ export default function Header() {
               <UserSearch />
             </div>
 
+            {/* Friends */}
+            {isAuthenticated && (
+              <Link
+                to="/friends"
+                className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
+                title="Amigos"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a5 5 0 015 5v1H4v-1a5 5 0 015-5z" />
+                </svg>
+              </Link>
+            )}
+
             {/* Messages */}
             {isAuthenticated && (
               <Link
                 to="/messages"
                 className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
+                title="Mensajes"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -181,48 +195,13 @@ export default function Header() {
                       <Menu.Item>
                         {({ active }) => (
                           <Link
-                            to="/profile"
+                            to={`/user/${user?.id}`}
                             className={`${
                               active ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'
                             } flex items-center px-4 py-2.5 text-sm font-medium rounded-lg mx-2 transition-all duration-200`}
                           >
                             <UserCircleIcon className="w-4 h-4 mr-3" />
                             Mi Perfil
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to="/messages"
-                            className={`${
-                              active ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'
-                            } flex items-center px-4 py-2.5 text-sm font-medium rounded-lg mx-2 transition-all duration-200`}
-                          >
-                            <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                            </svg>
-                            Mensajes
-                            {unreadMessages > 0 && (
-                              <span className="ml-auto bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                                {unreadMessages > 9 ? '9+' : unreadMessages}
-                              </span>
-                            )}
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to="/friends"
-                            className={`${
-                              active ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'
-                            } flex items-center px-4 py-2.5 text-sm font-medium rounded-lg mx-2 transition-all duration-200`}
-                          >
-                            <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a5 5 0 015 5v1H4v-1a5 5 0 015-5z" />
-                            </svg>
-                            Amigos
                           </Link>
                         )}
                       </Menu.Item>
@@ -347,8 +326,9 @@ export default function Header() {
                   {isAuthenticated ? (
                     <>
                       <Link
-                        to="/profile"
-                        className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                        to={`/user/${user?.id}`}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                       >
                         Mi Perfil
                       </Link>
