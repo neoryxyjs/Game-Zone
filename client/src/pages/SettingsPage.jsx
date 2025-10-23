@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchAuth, putAuth, uploadFileAuth } from '../utils/api';
 import { useUser } from '../context/UserContext';
 import { useTheme } from '../context/ThemeContext';
+import ProfileEditor from '../components/Profile/ProfileEditor';
 
 const SettingsPage = () => {
   const { user, isAuthenticated, updateUser } = useUser();
@@ -174,13 +175,13 @@ const SettingsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 pt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Configuración
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">Personaliza tu experiencia en GameZone</p>
+          <p className="text-base text-gray-600 dark:text-gray-400">Personaliza tu experiencia en GameZone</p>
         </div>
         
         {loading ? (
@@ -214,8 +215,13 @@ const SettingsPage = () => {
 
             {/* Contenido principal */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Avatar Section */}
-              <div id="profile" className="card">
+              {/* ProfileEditor Completo */}
+              <div id="profile">
+                <ProfileEditor />
+              </div>
+
+              {/* Cuenta Section */}
+              <div id="account" className="card">
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
                     👤
