@@ -290,7 +290,7 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [commentsCount, setCommentsCount] = useState(0);
+  const [commentsCount, setCommentsCount] = useState(parseInt(post.comments_count) || 0);
   const [replyingTo, setReplyingTo] = useState(null); // ID del comentario al que se está respondiendo
   const [replyContent, setReplyContent] = useState('');
   const [replyLoading, setReplyLoading] = useState(false);
