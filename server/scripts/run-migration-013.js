@@ -14,8 +14,15 @@ async function runMigration() {
     console.log('✅ Migración 013 completada exitosamente');
     console.log('   - Columna comment_id agregada a notifications');
   } catch (error) {
-    console.error('❌ Error ejecutando migración 013:', error);
-    throw error;
+    // Si la columna ya existe (código 42701), no es un error
+    if (error.code === '42701') {
+      console.log('ℹ️ Migración 013: La columna comment_id ya existe (OK)');
+    } else {
+      console.error('❌ Error ejecutando migración 013:', error);
+      throw error;
+    }
+  } finally {
+    await pool.end();
   }
 }
 
