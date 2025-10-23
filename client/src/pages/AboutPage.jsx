@@ -46,8 +46,8 @@ const AboutPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-20 pb-8">
+      <div className="max-w-6xl mx-auto px-4">
         {/* Hero Section */}
         <div className="text-center mb-16 animate-fade-in">
           <div className="w-32 h-32 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl animate-bounce-in">
