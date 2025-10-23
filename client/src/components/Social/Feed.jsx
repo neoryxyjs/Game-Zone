@@ -367,6 +367,7 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
           key={post.id} 
           post={post} 
           userId={userId}
+          currentUser={currentUser}
           onLike={handleLike}
           onDelete={handleDeletePost}
           index={index}
@@ -435,7 +436,7 @@ function SkeletonPost() {
   );
 }
 
-function PostCard({ post, userId, onLike, onDelete, index }) {
+function PostCard({ post, userId, currentUser, onLike, onDelete, index }) {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
