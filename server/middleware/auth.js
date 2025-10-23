@@ -23,6 +23,7 @@ const authMiddleware = (req, res, next) => {
     const authHeader = req.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('❌ No se proporcionó token de autorización');
       return res.status(401).json({ 
         success: false, 
         message: 'Token de autenticación no proporcionado' 
@@ -31,9 +32,13 @@ const authMiddleware = (req, res, next) => {
     
     // Extraer el token (remover 'Bearer ')
     const token = authHeader.substring(7);
+    console.log('🔑 Token recibido (primeros 20 chars):', token.substring(0, 20) + '...');
+    console.log('🔐 JWT_SECRET configurado:', JWT_SECRET ? 'SÍ' : 'NO (usando fallback)');
     
     // Verificar y decodificar el token
     const decoded = jwt.verify(token, JWT_SECRET || 'tu-clave-secreta-super-segura-2024');
+    
+    console.log('✅ Token válido para usuario:', decoded.userId, decoded.username);
     
     // Agregar información del usuario a la request
     req.userId = decoded.userId;
@@ -44,6 +49,7 @@ const authMiddleware = (req, res, next) => {
     next();
   } catch (error) {
     console.error('❌ Error en autenticación:', error.message);
+    console.error('❌ Tipo de error:', error.name);
     
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({ 
