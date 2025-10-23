@@ -203,10 +203,10 @@ export default function UserProfile() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Banner del perfil extendido hasta el header */}
-      <div className="relative pt-16">
+      {/* Banner del perfil que se extiende naturalmente hasta el navbar */}
+      <div className="relative -mt-16 pt-16">
         {profileUser.banner_url ? (
-          <div className="w-full h-80 md:h-96 lg:h-[28rem] relative overflow-hidden bg-gray-900">
+          <div className="w-full h-96 md:h-[28rem] lg:h-[32rem] relative overflow-hidden bg-gray-900">
               <img
                 src={profileUser.banner_url}
                 alt="Banner"
@@ -227,7 +227,7 @@ export default function UserProfile() {
             </div>
           ) : (
             <div 
-              className="w-full h-80 md:h-96 lg:h-[28rem] relative overflow-hidden"
+              className="w-full h-96 md:h-[28rem] lg:h-[32rem] relative overflow-hidden"
               style={{ background: `linear-gradient(135deg, ${profileUser.profile_color || '#6366f1'} 0%, #8b5cf6 100%)` }}
             >
             <div className="absolute inset-0 opacity-20">
