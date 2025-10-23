@@ -159,28 +159,28 @@ const SettingsPage = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Acceso requerido</h2>
-          <p className="text-gray-600">Necesitas iniciar sesión para acceder a la configuración</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Acceso requerido</h2>
+          <p className="text-gray-600 dark:text-gray-400">Necesitas iniciar sesión para acceder a la configuración</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Configuración
           </h1>
-          <p className="text-gray-600">Personaliza tu experiencia en GameZone</p>
+          <p className="text-gray-600 dark:text-gray-400">Personaliza tu experiencia en GameZone</p>
         </div>
         
         {loading ? (
@@ -193,19 +193,19 @@ const SettingsPage = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Sidebar de navegación */}
-            <div className="lg:col-span-1">
+              <div className="lg:col-span-1">
               <div className="card sticky top-8">
                 <nav className="space-y-2">
-                  <a href="#profile" className="block px-4 py-3 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg">
+                  <a href="#profile" className="block px-4 py-3 text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
                     Perfil
                   </a>
-                  <a href="#account" className="block px-4 py-3 text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                  <a href="#account" className="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors">
                     Cuenta
                   </a>
-                  <a href="#privacy" className="block px-4 py-3 text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                  <a href="#privacy" className="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors">
                     Privacidad
                   </a>
-                  <a href="#notifications" className="block px-4 py-3 text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                  <a href="#notifications" className="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors">
                     Notificaciones
                   </a>
                 </nav>
@@ -221,8 +221,8 @@ const SettingsPage = () => {
                     👤
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Foto de Perfil</h2>
-                    <p className="text-sm text-gray-500">Actualiza tu foto de perfil</p>
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Foto de Perfil</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Actualiza tu foto de perfil</p>
                   </div>
                 </div>
                 
@@ -245,9 +245,9 @@ const SettingsPage = () => {
                       type="file"
                       accept="image/*"
                       onChange={handleAvatarChange}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-colors"
+                      className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/20 file:text-indigo-700 dark:file:text-indigo-400 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-900/40 transition-colors"
                     />
-                    <p className="text-sm text-gray-500 mt-2">JPG, PNG o GIF. Máximo 5MB.</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">JPG, PNG o GIF. Máximo 5MB.</p>
                     {avatarPreview && (
                       <div className="mt-3">
                         <img 
@@ -268,14 +268,14 @@ const SettingsPage = () => {
                     📝
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Información Personal</h2>
-                    <p className="text-sm text-gray-500">Actualiza tu información personal</p>
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Información Personal</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Actualiza tu información personal</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Nombre de usuario
                     </label>
                     <input
@@ -288,7 +288,7 @@ const SettingsPage = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Ubicación
                     </label>
                     <input
@@ -301,7 +301,7 @@ const SettingsPage = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Sitio web
                     </label>
                     <input
@@ -314,7 +314,7 @@ const SettingsPage = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Estilo de juego
                     </label>
                     <select
@@ -331,7 +331,7 @@ const SettingsPage = () => {
                 </div>
 
                 <div className="mt-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Biografía
                   </label>
                   <textarea
@@ -352,27 +352,27 @@ const SettingsPage = () => {
                       📊
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900">Estadísticas</h2>
-                      <p className="text-sm text-gray-500">Tu actividad en GameZone</p>
+                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Estadísticas</h2>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Tu actividad en GameZone</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center p-4 bg-gray-50 rounded-xl">
-                      <div className="text-2xl font-bold text-indigo-600">{stats.posts_count || 0}</div>
-                      <div className="text-sm text-gray-500">Publicaciones</div>
+                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                      <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{stats.posts_count || 0}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Publicaciones</div>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-xl">
-                      <div className="text-2xl font-bold text-green-600">{stats.followers_count || 0}</div>
-                      <div className="text-sm text-gray-500">Seguidores</div>
+                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                      <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.followers_count || 0}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Seguidores</div>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-xl">
-                      <div className="text-2xl font-bold text-purple-600">{stats.following_count || 0}</div>
-                      <div className="text-sm text-gray-500">Siguiendo</div>
+                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                      <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.following_count || 0}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Siguiendo</div>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-xl">
-                      <div className="text-2xl font-bold text-red-600">{stats.likes_received || 0}</div>
-                      <div className="text-sm text-gray-500">Likes recibidos</div>
+                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                      <div className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.likes_received || 0}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Likes recibidos</div>
                     </div>
                   </div>
                 </div>
@@ -385,8 +385,8 @@ const SettingsPage = () => {
                     🎨
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Apariencia</h2>
-                    <p className="text-sm text-gray-500">Personaliza la apariencia de GameZone</p>
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Apariencia</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Personaliza la apariencia de GameZone</p>
                   </div>
                 </div>
 
@@ -450,8 +450,8 @@ const SettingsPage = () => {
                     🔔
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Notificaciones</h2>
-                    <p className="text-sm text-gray-500">Administra tus preferencias de notificaciones</p>
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Notificaciones</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Administra tus preferencias de notificaciones</p>
                   </div>
                 </div>
 
@@ -500,8 +500,8 @@ const SettingsPage = () => {
               <div className="card">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Guardar cambios</h3>
-                    <p className="text-sm text-gray-500">Guarda todos los cambios realizados</p>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Guardar cambios</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Guarda todos los cambios realizados</p>
                   </div>
                   <div className="flex items-center space-x-4">
                     {message && (

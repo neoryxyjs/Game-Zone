@@ -62,7 +62,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-t border-gray-200/50 dark:border-gray-700/50">
+    <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
       <div className="mx-auto max-w-7xl overflow-hidden px-6 py-16 sm:py-20 lg:px-8">
         {/* Main footer content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
@@ -115,15 +115,15 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center space-x-2">
                 <EnvelopeIcon className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">info@gamezone.com</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">neoryxy@gmail.com</span>
               </li>
               <li className="flex items-center space-x-2">
                 <PhoneIcon className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">+1 (555) 123-4567</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">+569 9999999</span>
               </li>
               <li className="flex items-center space-x-2">
                 <MapPinIcon className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">Madrid, España</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Metropolitana, Chile</span>
               </li>
             </ul>
           </div>
