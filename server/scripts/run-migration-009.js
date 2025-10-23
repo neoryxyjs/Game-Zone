@@ -15,13 +15,14 @@ async function runMigration() {
     console.log('✅ Tablas creadas:');
     console.log('   - friend_requests');
     console.log('   - friendships');
-    
-    process.exit(0);
   } catch (error) {
-    console.error('❌ Error ejecutando migración:', error);
-    process.exit(1);
+    console.error('❌ Error ejecutando migración 009:', error);
+    throw error;
   }
 }
 
-runMigration();
+runMigration().catch(err => {
+  console.error('❌ Migración 009 falló:', err);
+  process.exit(1);
+});
 

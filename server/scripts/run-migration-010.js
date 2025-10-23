@@ -17,13 +17,14 @@ async function runMigration() {
     console.log('   - user_follows');
     console.log('   - user_settings');
     console.log('   - user_stats');
-    
-    process.exit(0);
   } catch (error) {
-    console.error('❌ Error ejecutando migración:', error);
-    process.exit(1);
+    console.error('❌ Error ejecutando migración 010:', error);
+    throw error;
   }
 }
 
-runMigration();
+runMigration().catch(err => {
+  console.error('❌ Migración 010 falló:', err);
+  process.exit(1);
+});
 

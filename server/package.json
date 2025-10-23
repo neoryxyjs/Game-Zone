@@ -8,7 +8,7 @@
     "migrate": "node scripts/migrate.js",
     "migrate:009": "node scripts/run-migration-009.js",
     "migrate:010": "node scripts/run-migration-010.js",
-    "migrate:all": "node scripts/run-migration-009.js && node scripts/run-migration-010.js",
+    "migrate:all": "node scripts/run-all-migrations.js",
     "export-data": "node scripts/export-data.js",
     "create-tables": "node scripts/create-tables.js"
   },
