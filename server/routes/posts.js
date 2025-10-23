@@ -197,6 +197,29 @@ router.post('/:postId/like', authMiddleware, async (req, res) => {
         'INSERT INTO post_likes (post_id, user_id) VALUES ($1, $2)',
         [postId, user_id]
       );
+      
+      // Crear notificación para el autor del post (si no es el mismo usuario)
+      try {
+        const postResult = await pool.query('SELECT user_id FROM posts WHERE id = $1', [postId]);
+        const userResult = await pool.query('SELECT username FROM users WHERE id = $1', [user_id]);
+        
+        if (postResult.rows[0] && postResult.rows[0].user_id !== user_id) {
+          await pool.query(`
+            INSERT INTO notifications (user_id, from_user_id, type, message, post_id, is_read)
+            VALUES ($1, $2, $3, $4, $5, $6)
+          `, [
+            postResult.rows[0].user_id, // Autor del post
+            user_id, // Usuario que da like
+            'like',
+            `${userResult.rows[0].username} le dio me gusta a tu post`,
+            postId,
+            false
+          ]);
+        }
+      } catch (notifError) {
+        console.error('Error creando notificación de like:', notifError);
+      }
+      
       res.json({ success: true, liked: true });
     }
   } catch (err) {
@@ -396,6 +419,27 @@ router.post('/:postId/comments/:commentId/reply', authMiddleware, async (req, re
       ...result.rows[0],
       user: userResult.rows[0]
     };
+    
+    // Crear notificación para el autor del comentario original (si no es el mismo usuario)
+    try {
+      const commentResult = await pool.query('SELECT user_id, post_id FROM post_comments WHERE id = $1', [commentId]);
+      
+      if (commentResult.rows[0] && commentResult.rows[0].user_id !== user_id) {
+        await pool.query(`
+          INSERT INTO notifications (user_id, from_user_id, type, message, post_id, is_read)
+          VALUES ($1, $2, $3, $4, $5, $6)
+        `, [
+          commentResult.rows[0].user_id, // Autor del comentario
+          user_id, // Usuario que responde
+          'comment',
+          `${userResult.rows[0].username} respondió a tu comentario`,
+          commentResult.rows[0].post_id,
+          false
+        ]);
+      }
+    } catch (notifError) {
+      console.error('Error creando notificación de respuesta:', notifError);
+    }
     
     res.status(201).json({ success: true, reply });
   } catch (err) {

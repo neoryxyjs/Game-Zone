@@ -95,11 +95,23 @@ export default function RealTimeNotifications() {
         );
         setUnreadCount(prev => Math.max(0, prev - 1));
         
-        // Navegar al post si existe post_id
+        // Navegar al home (donde está el feed) - El post aparecerá ahí
         if (notification.post_id) {
           setShowNotifications(false);
-          // Aquí podrías navegar a la página del post específico
-          // navigate(`/post/${notification.post_id}`);
+          navigate('/');
+          
+          // Scroll suave al post si existe (después de navegar)
+          setTimeout(() => {
+            const postElement = document.querySelector(`[data-post-id="${notification.post_id}"]`);
+            if (postElement) {
+              postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              // Highlight temporal del post
+              postElement.classList.add('ring-2', 'ring-indigo-500', 'ring-opacity-50');
+              setTimeout(() => {
+                postElement.classList.remove('ring-2', 'ring-indigo-500', 'ring-opacity-50');
+              }, 2000);
+            }
+          }, 500);
         }
       }
     } catch (error) {

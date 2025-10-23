@@ -453,7 +453,11 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
   };
 
   return (
-    <article className="card animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+    <article 
+      className="card animate-slide-up" 
+      style={{ animationDelay: `${index * 0.1}s` }}
+      data-post-id={post.id}
+    >
       {/* Header del post */}
       <div className="flex items-start space-x-3 mb-4">
         <Link to={`/user/${post.user_id}`} className="flex-shrink-0">
