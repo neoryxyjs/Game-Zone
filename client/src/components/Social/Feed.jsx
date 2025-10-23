@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { API_BASE_URL } from '../../config/api';
 import { postAuth, deleteAuth } from '../../utils/api';
 import Lightbox from '../Common/Lightbox';
 
 export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFilter = null, customEndpoint = null }) {
+  const location = useLocation();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -13,6 +14,7 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
   const [lastPostId, setLastPostId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const pollingIntervalRef = useRef(null);
+  const navigationHandledRef = useRef(false);
 
   useEffect(() => {
     loadPosts();
@@ -37,6 +39,56 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
       };
     }
   }, [posts.length, isPersonalFeed, lastPostId]);
+
+  // Manejar navegación desde notificaciones
+  useEffect(() => {
+    if (loading || posts.length === 0 || navigationHandledRef.current) return;
+
+    const params = new URLSearchParams(location.search);
+    const postId = params.get('post');
+    const commentId = params.get('comment');
+
+    if (postId) {
+      navigationHandledRef.current = true;
+
+      // Esperar a que el DOM esté listo
+      setTimeout(() => {
+        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+        if (postElement) {
+          // Scroll al post
+          postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // Highlight del post
+          postElement.classList.add('ring-2', 'ring-indigo-500', 'ring-opacity-50');
+          setTimeout(() => {
+            postElement.classList.remove('ring-2', 'ring-indigo-500', 'ring-opacity-50');
+          }, 2000);
+
+          // Si hay commentId, abrir comentarios
+          if (commentId) {
+            const toggleButton = postElement.querySelector('[data-toggle-comments]');
+            if (toggleButton && !toggleButton.classList.contains('comments-open')) {
+              toggleButton.click();
+              
+              // Esperar a que los comentarios se carguen y hacer scroll
+              setTimeout(() => {
+                const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+                if (commentElement) {
+                  commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  
+                  // Highlight del comentario
+                  commentElement.classList.add('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
+                  setTimeout(() => {
+                    commentElement.classList.remove('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
+                  }, 3000);
+                }
+              }, 1000);
+            }
+          }
+        }
+      }, 500);
+    }
+  }, [loading, posts, location.search]);
 
   const checkForNewPosts = async () => {
     if (!lastPostId) return;

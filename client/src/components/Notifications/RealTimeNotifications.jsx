@@ -95,51 +95,16 @@ export default function RealTimeNotifications() {
         );
         setUnreadCount(prev => Math.max(0, prev - 1));
         
-        // Navegar al home (donde está el feed) - El post aparecerá ahí
+        // Navegar al home con query params - Feed se encargará del resto
         if (notification.post_id) {
           setShowNotifications(false);
           
-          // Si es un comentario o respuesta, incluir el comment_id en la URL
+          // Construir URL con query params
           if (notification.comment_id) {
             navigate(`/?post=${notification.post_id}&comment=${notification.comment_id}`);
           } else {
             navigate(`/?post=${notification.post_id}`);
           }
-          
-          // Scroll suave al post y abrir comentarios si es necesario (después de navegar)
-          setTimeout(() => {
-            const postElement = document.querySelector(`[data-post-id="${notification.post_id}"]`);
-            if (postElement) {
-              postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              
-              // Highlight temporal del post
-              postElement.classList.add('ring-2', 'ring-indigo-500', 'ring-opacity-50');
-              setTimeout(() => {
-                postElement.classList.remove('ring-2', 'ring-indigo-500', 'ring-opacity-50');
-              }, 2000);
-              
-              // Si hay comment_id, abrir los comentarios automáticamente
-              if (notification.comment_id) {
-                const toggleButton = postElement.querySelector('[data-toggle-comments]');
-                if (toggleButton && !toggleButton.classList.contains('comments-open')) {
-                  toggleButton.click();
-                  
-                  // Después de abrir comentarios, hacer scroll al comentario específico
-                  setTimeout(() => {
-                    const commentElement = document.querySelector(`[data-comment-id="${notification.comment_id}"]`);
-                    if (commentElement) {
-                      commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                      // Highlight temporal del comentario
-                      commentElement.classList.add('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
-                      setTimeout(() => {
-                        commentElement.classList.remove('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
-                      }, 3000);
-                    }
-                  }, 500);
-                }
-              }
-            }
-          }, 500);
         }
       }
     } catch (error) {
