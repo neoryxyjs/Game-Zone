@@ -9,7 +9,7 @@ const handleHttpError = (response) => {
   if (!response.ok) {
     // Limpiar token solo en errores de autenticación
     if (response.status === 401) {
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('token');
       console.warn('Sesión expirada o inválida');
     }
     
@@ -23,7 +23,7 @@ const handleHttpError = (response) => {
  * Obtener el token JWT del localStorage
  */
 export const getAuthToken = () => {
-  return localStorage.getItem('authToken');
+  return localStorage.getItem('token');
 };
 
 /**
