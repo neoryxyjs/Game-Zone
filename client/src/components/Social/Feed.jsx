@@ -291,6 +291,9 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [commentsCount, setCommentsCount] = useState(0);
+  const [replyingTo, setReplyingTo] = useState(null); // ID del comentario al que se está respondiendo
+  const [replyContent, setReplyContent] = useState('');
+  const [replyLoading, setReplyLoading] = useState(false);
   const pollingCommentsRef = useRef(null);
 
   // Auto-actualización de comentarios cuando están abiertos
@@ -369,6 +372,40 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
   const handleCommentChange = (e) => {
     setNewComment(e.target.value);
     setIsTyping(e.target.value.length > 0);
+  };
+
+  const handleReply = async (e, commentId) => {
+    e.preventDefault();
+    if (!replyContent.trim() || replyLoading) return;
+
+    try {
+      setReplyLoading(true);
+      const response = await postAuth(`/api/posts/${post.id}/comments/${commentId}/reply`, {
+        user_id: userId,
+        content: replyContent.trim()
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        // Actualizar el comentario con la nueva respuesta
+        setComments(prev => prev.map(comment => {
+          if (comment.id === commentId) {
+            return {
+              ...comment,
+              replies: [...(comment.replies || []), data.reply],
+              replies_count: (comment.replies_count || 0) + 1
+            };
+          }
+          return comment;
+        }));
+        setReplyContent('');
+        setReplyingTo(null);
+      }
+    } catch (error) {
+      console.error('Error respondiendo:', error);
+    } finally {
+      setReplyLoading(false);
+    }
   };
 
   const handleDelete = async () => {
@@ -565,30 +602,112 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
               <div className="loading-spinner"></div>
             </div>
           ) : comments.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {comments.map((comment) => (
-                <div key={comment.id} className="flex space-x-3">
-                  <Link to={`/user/${comment.user_id}`} className="flex-shrink-0">
-                    {comment.user?.avatar ? (
-                      <img 
-                        src={comment.user.avatar} 
-                        alt={comment.user.username} 
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
-                        {comment.user?.username?.charAt(0)?.toUpperCase() || 'U'}
+                <div key={comment.id} className="space-y-3">
+                  {/* Comentario principal */}
+                  <div className="flex space-x-3">
+                    <Link to={`/user/${comment.user_id}`} className="flex-shrink-0">
+                      {comment.user?.avatar ? (
+                        <img 
+                          src={comment.user.avatar} 
+                          alt={comment.user.username} 
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                          {comment.user?.username?.charAt(0)?.toUpperCase() || 'U'}
+                        </div>
+                      )}
+                    </Link>
+                    <div className="flex-1">
+                      <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-2">
+                        <Link to={`/user/${comment.user_id}`} className="font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-sm">
+                          {comment.user?.username || 'Usuario'}
+                        </Link>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 mt-0.5">{comment.content}</p>
                       </div>
-                    )}
-                  </Link>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <Link to={`/user/${comment.user_id}`} className="font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-sm">
-                        {comment.user?.username || 'Usuario'}
-                      </Link>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(comment.created_at)}</span>
+                      <div className="flex items-center space-x-4 mt-1 ml-4">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(comment.created_at)}</span>
+                        <button
+                          onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                          className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+                        >
+                          Responder
+                        </button>
+                        {comment.replies_count > 0 && (
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {comment.replies_count} {comment.replies_count === 1 ? 'respuesta' : 'respuestas'}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Formulario de respuesta */}
+                      {replyingTo === comment.id && (
+                        <form onSubmit={(e) => handleReply(e, comment.id)} className="mt-3 ml-4">
+                          <div className="flex space-x-2">
+                            <input
+                              type="text"
+                              value={replyContent}
+                              onChange={(e) => setReplyContent(e.target.value)}
+                              placeholder={`Responder a ${comment.user?.username}...`}
+                              className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                              autoFocus
+                              disabled={replyLoading}
+                            />
+                            <button
+                              type="submit"
+                              disabled={!replyContent.trim() || replyLoading}
+                              className="btn-primary px-3 py-2 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {replyLoading ? '...' : 'Enviar'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setReplyingTo(null);
+                                setReplyContent('');
+                              }}
+                              className="px-3 py-2 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                            >
+                              Cancelar
+                            </button>
+                          </div>
+                        </form>
+                      )}
+
+                      {/* Respuestas anidadas */}
+                      {comment.replies && comment.replies.length > 0 && (
+                        <div className="mt-3 ml-4 space-y-3 border-l-2 border-gray-200 dark:border-gray-700 pl-4">
+                          {comment.replies.map((reply) => (
+                            <div key={reply.id} className="flex space-x-2">
+                              <Link to={`/user/${reply.user_id}`} className="flex-shrink-0">
+                                {reply.user?.avatar ? (
+                                  <img 
+                                    src={reply.user.avatar} 
+                                    alt={reply.user.username} 
+                                    className="w-7 h-7 rounded-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-7 h-7 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                    {reply.user?.username?.charAt(0)?.toUpperCase() || 'U'}
+                                  </div>
+                                )}
+                              </Link>
+                              <div className="flex-1">
+                                <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl px-3 py-2">
+                                  <Link to={`/user/${reply.user_id}`} className="font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-xs">
+                                    {reply.user?.username || 'Usuario'}
+                                  </Link>
+                                  <p className="text-xs text-gray-700 dark:text-gray-300 mt-0.5">{reply.content}</p>
+                                </div>
+                                <span className="text-xs text-gray-500 dark:text-gray-400 ml-3 mt-1 inline-block">{formatDate(reply.created_at)}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">{comment.content}</p>
                   </div>
                 </div>
               ))}
