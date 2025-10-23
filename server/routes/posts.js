@@ -263,57 +263,98 @@ router.get('/:postId/comments', async (req, res) => {
   const { postId } = req.params;
   
   try {
-    // Obtener comentarios principales
-    const result = await pool.query(`
-      SELECT 
-        pc.*,
-        u.username,
-        u.avatar,
-        COUNT(DISTINCT cr.id) as replies_count
-      FROM post_comments pc
-      JOIN users u ON pc.user_id = u.id
-      LEFT JOIN comment_replies cr ON pc.id = cr.comment_id
-      WHERE pc.post_id = $1
-      GROUP BY pc.id, u.username, u.avatar
-      ORDER BY pc.created_at ASC
-    `, [postId]);
+    // Intentar obtener comentarios con respuestas (si la tabla existe)
+    let result;
+    let withReplies = true;
     
-    // Para cada comentario, obtener sus respuestas
-    const comments = await Promise.all(result.rows.map(async row => {
-      const repliesResult = await pool.query(`
+    try {
+      result = await pool.query(`
         SELECT 
-          cr.*,
+          pc.*,
+          u.username,
+          u.avatar,
+          COUNT(DISTINCT cr.id) as replies_count
+        FROM post_comments pc
+        JOIN users u ON pc.user_id = u.id
+        LEFT JOIN comment_replies cr ON pc.id = cr.comment_id
+        WHERE pc.post_id = $1
+        GROUP BY pc.id, u.username, u.avatar
+        ORDER BY pc.created_at ASC
+      `, [postId]);
+    } catch (joinErr) {
+      // Si falla (tabla comment_replies no existe), usar consulta simple
+      console.log('Tabla comment_replies no existe, usando consulta simple');
+      withReplies = false;
+      result = await pool.query(`
+        SELECT 
+          pc.*,
           u.username,
           u.avatar
-        FROM comment_replies cr
-        JOIN users u ON cr.user_id = u.id
-        WHERE cr.comment_id = $1
-        ORDER BY cr.created_at ASC
-      `, [row.id]);
-      
-      const replies = repliesResult.rows.map(reply => ({
-        ...reply,
-        user: {
-          id: reply.user_id,
-          username: reply.username,
-          avatar: reply.avatar
+        FROM post_comments pc
+        JOIN users u ON pc.user_id = u.id
+        WHERE pc.post_id = $1
+        ORDER BY pc.created_at ASC
+      `, [postId]);
+    }
+    
+    // Si tenemos soporte de respuestas, obtenerlas
+    if (withReplies) {
+      const comments = await Promise.all(result.rows.map(async row => {
+        let replies = [];
+        try {
+          const repliesResult = await pool.query(`
+            SELECT 
+              cr.*,
+              u.username,
+              u.avatar
+            FROM comment_replies cr
+            JOIN users u ON cr.user_id = u.id
+            WHERE cr.comment_id = $1
+            ORDER BY cr.created_at ASC
+          `, [row.id]);
+          
+          replies = repliesResult.rows.map(reply => ({
+            ...reply,
+            user: {
+              id: reply.user_id,
+              username: reply.username,
+              avatar: reply.avatar
+            }
+          }));
+        } catch (repliesErr) {
+          console.log('Error obteniendo respuestas:', repliesErr.message);
         }
+        
+        return {
+          ...row,
+          replies_count: parseInt(row.replies_count) || 0,
+          replies: replies,
+          user: {
+            id: row.user_id,
+            username: row.username,
+            avatar: row.avatar
+          }
+        };
       }));
       
-      return {
+      res.json({ success: true, comments });
+    } else {
+      // Sin soporte de respuestas, retornar comentarios simples
+      const comments = result.rows.map(row => ({
         ...row,
-        replies_count: parseInt(row.replies_count) || 0,
-        replies: replies,
+        replies_count: 0,
+        replies: [],
         user: {
           id: row.user_id,
           username: row.username,
           avatar: row.avatar
         }
-      };
-    }));
-    
-    res.json({ success: true, comments });
+      }));
+      
+      res.json({ success: true, comments });
+    }
   } catch (err) {
+    console.error('Error obteniendo comentarios:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -324,6 +365,7 @@ router.post('/:postId/comments/:commentId/reply', authMiddleware, async (req, re
   const { user_id, content } = req.body;
   
   try {
+    // Verificar si la tabla comment_replies existe
     const result = await pool.query(
       'INSERT INTO comment_replies (comment_id, user_id, content) VALUES ($1, $2, $3) RETURNING *',
       [commentId, user_id, content]
@@ -342,7 +384,16 @@ router.post('/:postId/comments/:commentId/reply', authMiddleware, async (req, re
     
     res.status(201).json({ success: true, reply });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error('Error creando respuesta:', err);
+    // Si la tabla no existe, retornar un mensaje más amigable
+    if (err.code === '42P01') { // tabla no existe
+      res.status(503).json({ 
+        success: false, 
+        error: 'La función de respuestas aún no está disponible. Por favor, intenta más tarde.' 
+      });
+    } else {
+      res.status(500).json({ success: false, error: err.message });
+    }
   }
 });
 
