@@ -68,8 +68,18 @@ export default function MessagesPage() {
   };
 
   const handleMessagesRead = () => {
-    // Recargar conversaciones para actualizar contadores
-    loadConversations();
+    // Actualizar contador localmente de inmediato
+    if (selectedConversation) {
+      setConversations(prev => 
+        prev.map(conv => 
+          conv.other_user_id === selectedConversation.other_user_id
+            ? { ...conv, unread_count: 0 }
+            : conv
+        )
+      );
+    }
+    // Recargar conversaciones para sincronizar con el servidor
+    setTimeout(loadConversations, 500);
   };
 
   const formatTime = (dateString) => {
