@@ -202,11 +202,11 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Banner del perfil que se extiende hasta arriba */}
+    <div className="min-h-screen">
+      {/* Banner del perfil */}
       <div className="relative">
         {profileUser.banner_url ? (
-          <div className="w-full h-96 md:h-[28rem] lg:h-[32rem] relative overflow-hidden bg-gray-900" style={{ marginTop: '-64px', paddingTop: '64px' }}>
+          <div className="w-full h-80 md:h-96 lg:h-[28rem] relative overflow-hidden bg-gray-900 pt-16">
               <img
                 src={profileUser.banner_url}
                 alt="Banner"
@@ -226,10 +226,8 @@ export default function UserProfile() {
             </div>
           ) : (
             <div 
-              className="w-full h-96 md:h-[28rem] lg:h-[32rem] relative overflow-hidden"
+              className="w-full h-80 md:h-96 lg:h-[28rem] relative overflow-hidden pt-16"
               style={{ 
-                marginTop: '-64px', 
-                paddingTop: '64px',
                 background: `linear-gradient(135deg, ${profileUser.profile_color || '#6366f1'} 0%, #8b5cf6 100%)` 
               }}
             >
@@ -246,7 +244,8 @@ export default function UserProfile() {
         )}
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Avatar y header */}
         <div className="relative -mt-20 sm:-mt-24 mb-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-end space-y-4 sm:space-y-0 sm:space-x-6">
@@ -495,6 +494,7 @@ export default function UserProfile() {
             userId={userId}
             customEndpoint={`/api/social/user-posts/${userId}`}
           />
+        </div>
         </div>
       </div>
     </div>
