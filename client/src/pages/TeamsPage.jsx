@@ -40,7 +40,7 @@ const TeamsPage = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center animate-fade-in">
           <div className="w-24 h-24 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl animate-bounce-in">
             <span className="text-white font-bold text-3xl">👥</span>
@@ -48,11 +48,11 @@ const TeamsPage = () => {
           <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
             Equipos
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
             Encuentra tu equipo perfecto y compite en torneos
           </p>
-          <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
-            <p className="text-gray-600 mb-4">Inicia sesión para ver los equipos</p>
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">Inicia sesión para ver los equipos</p>
             <a href="/login" className="btn-primary px-8 py-3 text-lg font-semibold">
               Iniciar Sesión
             </a>
@@ -63,7 +63,7 @@ const TeamsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8 animate-slide-up">
@@ -75,20 +75,20 @@ const TeamsPage = () => {
               <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 Equipos
               </h1>
-              <p className="text-gray-600 text-lg">Encuentra tu equipo perfecto</p>
+              <p className="text-gray-600 dark:text-gray-400 text-lg">Encuentra tu equipo perfecto</p>
             </div>
           </div>
         </div>
 
         {/* Tabs de navegación */}
         <div className="mb-8">
-          <nav className="flex space-x-1 bg-white/50 backdrop-blur-sm rounded-xl p-1 shadow-lg">
+          <nav className="flex space-x-1 bg-white dark:bg-gray-800 rounded-xl p-1 shadow-lg">
             <button
               onClick={() => setActiveTab('all')}
               className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'all'
                   ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'
               }`}
             >
               Todos los Equipos
@@ -98,7 +98,7 @@ const TeamsPage = () => {
               className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'create'
                   ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'
               }`}
             >
               Crear Equipo
@@ -108,7 +108,7 @@ const TeamsPage = () => {
               className={`px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === 'my'
                   ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'
               }`}
             >
               Mis Equipos
@@ -126,19 +126,19 @@ const TeamsPage = () => {
                     <span className="text-white text-xl">{team.game_icon}</span>
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">{team.name}</h3>
-                    <p className="text-sm text-gray-500">{team.game}</p>
+                    <h3 className="font-bold text-gray-900 dark:text-white">{team.name}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{team.game}</p>
                   </div>
                 </div>
                 
-                <p className="text-gray-600 mb-4">{team.description}</p>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">{team.description}</p>
                 
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
                     <span className="font-semibold">{team.members}</span> miembros
                   </div>
-                  <div className="text-sm text-gray-500">
-                    Rank: <span className="font-semibold text-indigo-600">{team.rank}</span>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Rank: <span className="font-semibold text-indigo-600 dark:text-indigo-400">{team.rank}</span>
                   </div>
                 </div>
                 
@@ -153,10 +153,10 @@ const TeamsPage = () => {
         {activeTab === 'create' && (
           <div className="max-w-2xl mx-auto">
             <div className="card">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Crear Nuevo Equipo</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Crear Nuevo Equipo</h2>
               <form className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Nombre del Equipo
                   </label>
                   <input
@@ -167,7 +167,7 @@ const TeamsPage = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Juego
                   </label>
                   <select className="input-field">
@@ -180,7 +180,7 @@ const TeamsPage = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Descripción
                   </label>
                   <textarea
@@ -191,7 +191,7 @@ const TeamsPage = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Rango Mínimo Requerido
                   </label>
                   <select className="input-field">
@@ -216,11 +216,11 @@ const TeamsPage = () => {
 
         {activeTab === 'my' && (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">👥</span>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No tienes equipos aún</h3>
-            <p className="text-gray-500 mb-6">Únete a un equipo o crea el tuyo propio</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No tienes equipos aún</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">Únete a un equipo o crea el tuyo propio</p>
             <button
               onClick={() => setActiveTab('create')}
               className="btn-primary px-6 py-3"
@@ -233,16 +233,16 @@ const TeamsPage = () => {
         {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
           <div className="card text-center">
-            <div className="text-3xl font-bold text-indigo-600 mb-2">24</div>
-            <div className="text-gray-600">Equipos Activos</div>
+            <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">24</div>
+            <div className="text-gray-600 dark:text-gray-400">Equipos Activos</div>
           </div>
           <div className="card text-center">
-            <div className="text-3xl font-bold text-green-600 mb-2">156</div>
-            <div className="text-gray-600">Miembros Totales</div>
+            <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">156</div>
+            <div className="text-gray-600 dark:text-gray-400">Miembros Totales</div>
           </div>
           <div className="card text-center">
-            <div className="text-3xl font-bold text-purple-600 mb-2">8</div>
-            <div className="text-gray-600">Torneos Activos</div>
+            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">8</div>
+            <div className="text-gray-600 dark:text-gray-400">Torneos Activos</div>
           </div>
         </div>
       </div>

@@ -32,7 +32,7 @@ const RankingsPage = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center animate-fade-in">
           <div className="w-24 h-24 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl animate-bounce-in">
             <span className="text-white font-bold text-3xl">🏆</span>
@@ -40,11 +40,11 @@ const RankingsPage = () => {
           <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
             Rankings
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
             Descubre los mejores jugadores de la comunidad
           </p>
-          <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
-            <p className="text-gray-600 mb-4">Inicia sesión para ver los rankings</p>
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">Inicia sesión para ver los rankings</p>
             <a href="/login" className="btn-primary px-8 py-3 text-lg font-semibold">
               Iniciar Sesión
             </a>
@@ -55,7 +55,7 @@ const RankingsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8 animate-slide-up">
@@ -67,7 +67,7 @@ const RankingsPage = () => {
               <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 Rankings
               </h1>
-              <p className="text-gray-600 text-lg">Los mejores jugadores de la comunidad</p>
+              <p className="text-gray-600 dark:text-gray-400 text-lg">Los mejores jugadores de la comunidad</p>
             </div>
           </div>
         </div>
@@ -82,7 +82,7 @@ const RankingsPage = () => {
                 className={`p-4 rounded-xl transition-all duration-200 ${
                   selectedGame === game.id
                     ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'bg-white/50 backdrop-blur-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
                 }`}
               >
                 <div className="text-2xl mb-2">{game.icon}</div>
@@ -95,10 +95,10 @@ const RankingsPage = () => {
         {/* Rankings */}
         <div className="card">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               Top Jugadores - {games.find(g => g.id === selectedGame)?.name}
             </h2>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               Actualizado hace 5 minutos
             </div>
           </div>
@@ -107,13 +107,13 @@ const RankingsPage = () => {
             <div className="flex justify-center items-center py-12">
               <div className="text-center">
                 <div className="loading-spinner mx-auto mb-4"></div>
-                <p className="text-gray-500">Cargando rankings...</p>
+                <p className="text-gray-500 dark:text-gray-400">Cargando rankings...</p>
               </div>
             </div>
           ) : (
             <div className="space-y-4">
               {rankings.map((player, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                   <div className="flex items-center space-x-4">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
                       player.rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' :
@@ -124,13 +124,13 @@ const RankingsPage = () => {
                       {player.rank}
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900">{player.username}</div>
-                      <div className="text-sm text-gray-500">{player.rank_name}</div>
+                      <div className="font-semibold text-gray-900 dark:text-white">{player.username}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{player.rank_name}</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-indigo-600">{player.points} pts</div>
-                    <div className="text-sm text-gray-500">Puntos</div>
+                    <div className="font-bold text-indigo-600 dark:text-indigo-400">{player.points} pts</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Puntos</div>
                   </div>
                 </div>
               ))}
@@ -141,16 +141,16 @@ const RankingsPage = () => {
         {/* Estadísticas adicionales */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
           <div className="card text-center">
-            <div className="text-3xl font-bold text-indigo-600 mb-2">1,234</div>
-            <div className="text-gray-600">Jugadores activos</div>
+            <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">1,234</div>
+            <div className="text-gray-600 dark:text-gray-400">Jugadores activos</div>
           </div>
           <div className="card text-center">
-            <div className="text-3xl font-bold text-green-600 mb-2">567</div>
-            <div className="text-gray-600">Partidas jugadas hoy</div>
+            <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">567</div>
+            <div className="text-gray-600 dark:text-gray-400">Partidas jugadas hoy</div>
           </div>
           <div className="card text-center">
-            <div className="text-3xl font-bold text-purple-600 mb-2">89</div>
-            <div className="text-gray-600">Nuevos jugadores</div>
+            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">89</div>
+            <div className="text-gray-600 dark:text-gray-400">Nuevos jugadores</div>
           </div>
         </div>
       </div>

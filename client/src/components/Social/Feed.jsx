@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { API_BASE_URL } from '../../config/api';
 import { postAuth, deleteAuth } from '../../utils/api';
+import { useUser } from '../../context/UserContext';
 import Lightbox from '../Common/Lightbox';
 
 export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFilter = null, customEndpoint = null }) {
+  const { user: currentUser } = useUser();
   const location = useLocation();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -498,13 +500,13 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
 
   const handleComment = async (e) => {
     e.preventDefault();
-    if (!newComment.trim() || commentLoading) return;
+    if (!newComment.trim() || commentLoading || !currentUser) return;
 
     try {
       setCommentLoading(true);
       setIsTyping(false);
       const response = await postAuth(`/api/posts/${post.id}/comment`, {
-        user_id: userId,
+        user_id: currentUser.id,
         content: newComment.trim()
       });
 
@@ -528,12 +530,12 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
 
   const handleReply = async (e, commentId, replyToReplyId = null, replyToUsername = null) => {
     e.preventDefault();
-    if (!replyContent.trim() || replyLoading) return;
+    if (!replyContent.trim() || replyLoading || !currentUser) return;
 
     try {
       setReplyLoading(true);
       const response = await postAuth(`/api/posts/${post.id}/comments/${commentId}/reply`, {
-        user_id: userId,
+        user_id: currentUser.id,
         content: replyContent.trim(),
         reply_to_reply_id: replyToReplyId,
         reply_to_username: replyToUsername
@@ -747,9 +749,17 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
           <form onSubmit={handleComment} className="mb-4">
             <div className="flex space-x-3">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                  {userId ? String(userId).charAt(0) : 'U'}
-                </div>
+                {currentUser?.avatar ? (
+                  <img 
+                    src={currentUser.avatar} 
+                    alt={currentUser.username}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                    {currentUser?.username?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                )}
               </div>
               <div className="flex-1 relative">
                 <input
