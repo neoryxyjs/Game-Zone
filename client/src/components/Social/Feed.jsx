@@ -47,88 +47,74 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
 
   // Manejar navegación desde notificaciones
   useEffect(() => {
-    console.log('🔍 Navegación: loading=', loading, 'posts=', posts.length, 'location=', location.search);
-    
-    if (loading || posts.length === 0) {
-      console.log('⏳ Esperando... loading o posts vacíos');
-      return;
-    }
+    if (loading || posts.length === 0) return;
 
     const params = new URLSearchParams(location.search);
     const postId = params.get('post');
     const commentId = params.get('comment');
 
-    console.log('📍 Query params:', { postId, commentId });
-
     if (postId && !navigationHandledRef.current) {
-      console.log('✅ Navegando al post:', postId);
       navigationHandledRef.current = true;
 
       // Esperar a que el DOM esté listo
       setTimeout(() => {
         const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        console.log('🎯 Post encontrado:', !!postElement);
         
         if (postElement) {
-          // Scroll al post
+          // Scroll suave al post
           postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
           
-          // Highlight del post
-          postElement.classList.add('ring-2', 'ring-indigo-500', 'ring-opacity-50');
+          // Highlight elegante del post con transición
+          postElement.style.transition = 'all 0.3s ease-in-out';
+          postElement.classList.add('ring-4', 'ring-indigo-400', 'shadow-2xl', 'scale-[1.02]');
+          
           setTimeout(() => {
-            postElement.classList.remove('ring-2', 'ring-indigo-500', 'ring-opacity-50');
-          }, 2000);
+            postElement.classList.remove('ring-4', 'ring-indigo-400', 'shadow-2xl', 'scale-[1.02]');
+          }, 2500);
 
-          // SIEMPRE abrir comentarios si viene de una notificación (independiente de commentId)
-          console.log('💬 Buscando botón de comentarios...');
+          // Abrir comentarios automáticamente
           const toggleButton = postElement.querySelector('[data-toggle-comments]');
-          console.log('🔘 Botón encontrado:', !!toggleButton, 'abierto:', toggleButton?.classList.contains('comments-open'));
           
           if (toggleButton && !toggleButton.classList.contains('comments-open')) {
-            console.log('🖱️ Haciendo click en comentarios...');
-            toggleButton.click();
-            
-            // Si hay commentId específico, hacer scroll a ese comentario
-            if (commentId) {
-              setTimeout(() => {
-                const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
-                console.log('💬 Comentario encontrado:', !!commentElement);
-                
-                if (commentElement) {
-                  commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => {
+              toggleButton.click();
+              
+              // Si hay commentId específico, hacer scroll a ese comentario
+              if (commentId) {
+                setTimeout(() => {
+                  const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
                   
-                  // Highlight del comentario
-                  commentElement.classList.add('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
-                  setTimeout(() => {
-                    commentElement.classList.remove('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
-                  }, 3000);
-                } else {
-                  console.log('⚠️ Comentario no encontrado, pero comentarios abiertos');
-                }
-              }, 1500);
-            } else {
-              console.log('ℹ️ Sin comment_id específico, solo abriendo comentarios');
-            }
-          } else if (toggleButton?.classList.contains('comments-open')) {
-            // Si ya están abiertos y hay commentId, hacer scroll
-            console.log('✅ Comentarios ya abiertos');
-            if (commentId) {
-              setTimeout(() => {
-                const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
-                if (commentElement) {
-                  commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  commentElement.classList.add('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
-                  setTimeout(() => {
-                    commentElement.classList.remove('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
-                  }, 3000);
-                }
-              }, 500);
-            }
+                  if (commentElement) {
+                    commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Highlight elegante del comentario
+                    commentElement.style.transition = 'all 0.3s ease-in-out';
+                    commentElement.classList.add('ring-4', 'ring-yellow-400', 'bg-yellow-50', 'dark:bg-yellow-900/30', 'scale-[1.02]', 'shadow-lg');
+                    
+                    setTimeout(() => {
+                      commentElement.classList.remove('ring-4', 'ring-yellow-400', 'bg-yellow-50', 'dark:bg-yellow-900/30', 'scale-[1.02]', 'shadow-lg');
+                    }, 3500);
+                  }
+                }, 1200);
+              }
+            }, 400);
+          } else if (toggleButton?.classList.contains('comments-open') && commentId) {
+            // Si ya están abiertos, solo hacer scroll al comentario
+            setTimeout(() => {
+              const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+              if (commentElement) {
+                commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                commentElement.style.transition = 'all 0.3s ease-in-out';
+                commentElement.classList.add('ring-4', 'ring-yellow-400', 'bg-yellow-50', 'dark:bg-yellow-900/30', 'scale-[1.02]', 'shadow-lg');
+                
+                setTimeout(() => {
+                  commentElement.classList.remove('ring-4', 'ring-yellow-400', 'bg-yellow-50', 'dark:bg-yellow-900/30', 'scale-[1.02]', 'shadow-lg');
+                }, 3500);
+              }
+            }, 400);
           }
-        } else {
-          console.log('❌ Post no encontrado en el DOM');
         }
-      }, 500);
+      }, 600);
     }
   }, [loading, posts, location.search]);
 
