@@ -7,12 +7,21 @@ const { authMiddleware } = require('../middleware/auth');
 router.post('/request', authMiddleware, async (req, res) => {
   const { sender_id, receiver_id } = req.body;
   
+  console.log('📨 Solicitud de amistad:', { sender_id, receiver_id });
+  
   try {
+    // Validar que ambos IDs sean números
+    if (!sender_id || !receiver_id || isNaN(sender_id) || isNaN(receiver_id)) {
+      console.error('❌ IDs inválidos:', { sender_id, receiver_id });
+      return res.status(400).json({ success: false, message: 'IDs de usuario inválidos' });
+    }
+
     // Verificar que no estén intentando enviarse a sí mismos
-    if (sender_id === receiver_id) {
+    if (parseInt(sender_id) === parseInt(receiver_id)) {
       return res.status(400).json({ success: false, message: 'No puedes enviarte solicitud a ti mismo' });
     }
 
+    console.log('🔍 Verificando solicitud existente...');
     // Verificar si ya existe una solicitud pendiente
     const existingRequest = await pool.query(
       'SELECT id, status FROM friend_requests WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1)',
@@ -20,6 +29,7 @@ router.post('/request', authMiddleware, async (req, res) => {
     );
     
     if (existingRequest.rows.length > 0) {
+      console.log('ℹ️  Solicitud existente encontrada:', existingRequest.rows[0]);
       if (existingRequest.rows[0].status === 'pending') {
         return res.status(400).json({ success: false, message: 'Ya existe una solicitud pendiente' });
       }
@@ -33,22 +43,28 @@ router.post('/request', authMiddleware, async (req, res) => {
       }
     }
 
-    // Verificar si ya son amigos
+    console.log('🔍 Verificando si ya son amigos...');
+    // Verificar si ya son amigos - Simplificado para evitar problemas con LEAST/GREATEST
+    const userId1 = Math.min(parseInt(sender_id), parseInt(receiver_id));
+    const userId2 = Math.max(parseInt(sender_id), parseInt(receiver_id));
+    
     const areFriends = await pool.query(
-      'SELECT id FROM friendships WHERE (user_id_1 = LEAST($1, $2) AND user_id_2 = GREATEST($1, $2))',
-      [sender_id, receiver_id]
+      'SELECT id FROM friendships WHERE user_id_1 = $1 AND user_id_2 = $2',
+      [userId1, userId2]
     );
 
     if (areFriends.rows.length > 0) {
       return res.status(400).json({ success: false, message: 'Ya son amigos' });
     }
     
+    console.log('✅ Creando solicitud de amistad...');
     // Crear solicitud de amistad
     const result = await pool.query(
       'INSERT INTO friend_requests (sender_id, receiver_id) VALUES ($1, $2) RETURNING *',
       [sender_id, receiver_id]
     );
 
+    console.log('✅ Creando notificación...');
     // Crear notificación para el receptor
     await pool.query(`
       INSERT INTO notifications (user_id, from_user_id, type, message, is_read)
@@ -61,10 +77,12 @@ router.post('/request', authMiddleware, async (req, res) => {
       false
     ]);
     
+    console.log('✅ Solicitud de amistad enviada exitosamente');
     res.json({ success: true, request: result.rows[0] });
   } catch (err) {
-    console.error('Error enviando solicitud de amistad:', err);
-    res.status(500).json({ success: false, error: err.message });
+    console.error('❌ Error enviando solicitud de amistad:', err);
+    console.error('Stack:', err.stack);
+    res.status(500).json({ success: false, error: err.message, details: process.env.NODE_ENV === 'production' ? undefined : err.stack });
   }
 });
 
