@@ -210,14 +210,12 @@ export default function UserProfile() {
               <img
                 src={profileUser.banner_url}
                 alt="Banner"
-                className="absolute"
+                className="absolute top-0 left-0 w-full h-full"
                 style={{
                   transform: `translate(${profileUser.banner_position_x || 0}%, ${profileUser.banner_position_y || 0}%) scale(${profileUser.banner_scale || 1})`,
                   transformOrigin: 'top left',
-                  width: '100%',
-                  height: 'auto',
-                  minHeight: '100%',
-                  objectFit: 'cover'
+                  objectFit: 'cover',
+                  objectPosition: 'center'
                 }}
               />
               {/* Overlay mejorado para legibilidad */}
