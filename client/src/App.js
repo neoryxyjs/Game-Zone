@@ -10,6 +10,7 @@ import RankingsPage from './pages/RankingsPage';
 import TeamsPage from './pages/TeamsPage';
 import AboutPage from './pages/AboutPage';
 import MessagesPage from './pages/MessagesPage';
+import FriendsPage from './pages/FriendsPage';
 import UserProfile from './components/Profile/UserProfile';
 import Error404 from './pages/Error404';
 import Error403 from './pages/Error403';
@@ -39,6 +40,7 @@ const AppContent = () => {
           <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/friends" element={<FriendsPage />} />
           
           {/* Páginas de error */}
           <Route path="/error/403" element={<Error403 />} />
