@@ -3,7 +3,7 @@ import { API_BASE_URL } from '../../config/api';
 import { postAuth } from '../../utils/api';
 import { useUser } from '../../context/UserContext';
 
-export default function ChatWindow({ conversation, onClose }) {
+export default function ChatWindow({ conversation, onClose, onMessagesRead }) {
   const { user: currentUser } = useUser();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -70,6 +70,14 @@ export default function ChatWindow({ conversation, onClose }) {
             message_ids: unreadIds,
             user_id: currentUser.id
           });
+          
+          // Notificar al padre que se leyeron mensajes
+          if (onMessagesRead) {
+            onMessagesRead();
+          }
+          
+          // Emitir evento global para actualizar contador del header
+          window.dispatchEvent(new Event('messages-read'));
         }
       }
     } catch (error) {

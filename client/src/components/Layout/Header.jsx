@@ -24,7 +24,17 @@ export default function Header() {
       loadUnreadMessages();
       // Actualizar cada 15 segundos
       const interval = setInterval(loadUnreadMessages, 15000);
-      return () => clearInterval(interval);
+      
+      // Escuchar evento de mensajes leídos
+      const handleMessagesRead = () => {
+        loadUnreadMessages();
+      };
+      window.addEventListener('messages-read', handleMessagesRead);
+      
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener('messages-read', handleMessagesRead);
+      };
     }
   }, [isAuthenticated, user]);
 

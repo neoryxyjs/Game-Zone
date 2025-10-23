@@ -67,6 +67,11 @@ export default function MessagesPage() {
     setShowChat(true);
   };
 
+  const handleMessagesRead = () => {
+    // Recargar conversaciones para actualizar contadores
+    loadConversations();
+  };
+
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -253,6 +258,7 @@ export default function MessagesPage() {
               <ChatWindow 
                 conversation={selectedConversation} 
                 onClose={() => setShowChat(false)}
+                onMessagesRead={handleMessagesRead}
               />
             </div>
           </div>
