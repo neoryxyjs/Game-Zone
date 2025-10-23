@@ -687,19 +687,30 @@ function PostCard({ post, userId, currentUser, onLike, onDelete, index }) {
                 </button>
               </div>
             ) : (
-              <img 
-                src={post.image_url} 
-                alt="Publicación" 
-                className="w-full max-w-md rounded-xl shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+              <div 
+                className="relative cursor-pointer group"
                 onClick={() => {
                   setLightboxMedia(post.image_url);
                   setLightboxType('image');
                 }}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.style.display = 'none';
-                }}
-              />
+              >
+                <img 
+                  src={post.image_url} 
+                  alt="Publicación" 
+                  className="w-full max-w-md rounded-xl shadow-md group-hover:shadow-xl group-hover:opacity-95 transition-all duration-300"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = 'none';
+                  }}
+                />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                  <div className="bg-black/60 backdrop-blur-sm p-3 rounded-full">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         )}
