@@ -113,7 +113,7 @@ router.post('/send', authMiddleware, async (req, res) => {
 });
 
 // Marcar mensaje(s) como leído(s)
-router.put('/mark-read', authMiddleware, async (req, res) => {
+router.post('/mark-read', authMiddleware, async (req, res) => {
   const { message_ids, user_id, sender_id } = req.body;
   
   try {
