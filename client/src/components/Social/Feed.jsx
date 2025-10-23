@@ -64,12 +64,36 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
           // Scroll suave al post
           postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
           
-          // Highlight elegante del post con transición
-          postElement.style.transition = 'all 0.3s ease-in-out';
-          postElement.classList.add('ring-4', 'ring-indigo-400', 'shadow-2xl', 'scale-[1.02]');
+          // Highlight elegante del post con gradiente de marca
+          postElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+          postElement.classList.add(
+            'ring-4', 
+            'ring-indigo-500/50',
+            'shadow-2xl', 
+            'shadow-indigo-500/20',
+            'dark:shadow-indigo-500/40',
+            'scale-[1.01]',
+            'bg-gradient-to-r',
+            'from-indigo-50/50',
+            'to-purple-50/50',
+            'dark:from-indigo-900/20',
+            'dark:to-purple-900/20'
+          );
           
           setTimeout(() => {
-            postElement.classList.remove('ring-4', 'ring-indigo-400', 'shadow-2xl', 'scale-[1.02]');
+            postElement.classList.remove(
+              'ring-4', 
+              'ring-indigo-500/50',
+              'shadow-2xl', 
+              'shadow-indigo-500/20',
+              'dark:shadow-indigo-500/40',
+              'scale-[1.01]',
+              'bg-gradient-to-r',
+              'from-indigo-50/50',
+              'to-purple-50/50',
+              'dark:from-indigo-900/20',
+              'dark:to-purple-900/20'
+            );
           }, 2500);
 
           // Abrir comentarios automáticamente
@@ -87,12 +111,36 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
                   if (commentElement) {
                     commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
-                    // Highlight elegante del comentario
-                    commentElement.style.transition = 'all 0.3s ease-in-out';
-                    commentElement.classList.add('ring-4', 'ring-yellow-400', 'bg-yellow-50', 'dark:bg-yellow-900/30', 'scale-[1.02]', 'shadow-lg');
+                    // Highlight elegante del comentario con gradiente púrpura-rosa
+                    commentElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    commentElement.classList.add(
+                      'ring-4',
+                      'ring-purple-500/50',
+                      'shadow-xl',
+                      'shadow-purple-500/30',
+                      'dark:shadow-purple-500/40',
+                      'scale-[1.01]',
+                      'bg-gradient-to-r',
+                      'from-purple-50',
+                      'to-pink-50',
+                      'dark:from-purple-900/30',
+                      'dark:to-pink-900/30'
+                    );
                     
                     setTimeout(() => {
-                      commentElement.classList.remove('ring-4', 'ring-yellow-400', 'bg-yellow-50', 'dark:bg-yellow-900/30', 'scale-[1.02]', 'shadow-lg');
+                      commentElement.classList.remove(
+                        'ring-4',
+                        'ring-purple-500/50',
+                        'shadow-xl',
+                        'shadow-purple-500/30',
+                        'dark:shadow-purple-500/40',
+                        'scale-[1.01]',
+                        'bg-gradient-to-r',
+                        'from-purple-50',
+                        'to-pink-50',
+                        'dark:from-purple-900/30',
+                        'dark:to-pink-900/30'
+                      );
                     }, 3500);
                   }
                 }, 1200);
@@ -104,11 +152,35 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
               const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
               if (commentElement) {
                 commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                commentElement.style.transition = 'all 0.3s ease-in-out';
-                commentElement.classList.add('ring-4', 'ring-yellow-400', 'bg-yellow-50', 'dark:bg-yellow-900/30', 'scale-[1.02]', 'shadow-lg');
+                commentElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                commentElement.classList.add(
+                  'ring-4',
+                  'ring-purple-500/50',
+                  'shadow-xl',
+                  'shadow-purple-500/30',
+                  'dark:shadow-purple-500/40',
+                  'scale-[1.01]',
+                  'bg-gradient-to-r',
+                  'from-purple-50',
+                  'to-pink-50',
+                  'dark:from-purple-900/30',
+                  'dark:to-pink-900/30'
+                );
                 
                 setTimeout(() => {
-                  commentElement.classList.remove('ring-4', 'ring-yellow-400', 'bg-yellow-50', 'dark:bg-yellow-900/30', 'scale-[1.02]', 'shadow-lg');
+                  commentElement.classList.remove(
+                    'ring-4',
+                    'ring-purple-500/50',
+                    'shadow-xl',
+                    'shadow-purple-500/30',
+                    'dark:shadow-purple-500/40',
+                    'scale-[1.01]',
+                    'bg-gradient-to-r',
+                    'from-purple-50',
+                    'to-pink-50',
+                    'dark:from-purple-900/30',
+                    'dark:to-pink-900/30'
+                  );
                 }, 3500);
               }
             }, 400);
