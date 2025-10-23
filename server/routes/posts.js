@@ -365,16 +365,26 @@ router.post('/:postId/comments/:commentId/reply', authMiddleware, async (req, re
   const { user_id, content, reply_to_reply_id, reply_to_username } = req.body;
   
   try {
-    // Insertar la respuesta
-    const query = reply_to_reply_id 
-      ? 'INSERT INTO comment_replies (comment_id, user_id, content, reply_to_reply_id, reply_to_username) VALUES ($1, $2, $3, $4, $5) RETURNING *'
-      : 'INSERT INTO comment_replies (comment_id, user_id, content) VALUES ($1, $2, $3) RETURNING *';
-    
-    const params = reply_to_reply_id
-      ? [commentId, user_id, content, reply_to_reply_id, reply_to_username]
-      : [commentId, user_id, content];
-    
-    const result = await pool.query(query, params);
+    // Intentar insertar con las nuevas columnas, si fallan usar las básicas
+    let result;
+    try {
+      const query = reply_to_reply_id 
+        ? 'INSERT INTO comment_replies (comment_id, user_id, content, reply_to_reply_id, reply_to_username) VALUES ($1, $2, $3, $4, $5) RETURNING *'
+        : 'INSERT INTO comment_replies (comment_id, user_id, content) VALUES ($1, $2, $3) RETURNING *';
+      
+      const params = reply_to_reply_id
+        ? [commentId, user_id, content, reply_to_reply_id, reply_to_username]
+        : [commentId, user_id, content];
+      
+      result = await pool.query(query, params);
+    } catch (columnErr) {
+      // Si las columnas no existen, usar query básico
+      console.log('Columnas reply_to no disponibles, usando query básico');
+      result = await pool.query(
+        'INSERT INTO comment_replies (comment_id, user_id, content) VALUES ($1, $2, $3) RETURNING *',
+        [commentId, user_id, content]
+      );
+    }
     
     // Obtener información del usuario
     const userResult = await pool.query(
