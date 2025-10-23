@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { API_ENDPOINTS } from '../config/api';
+import { API_ENDPOINTS, API_BASE_URL } from '../config/api';
 
 const UserContext = createContext();
 
@@ -82,7 +82,7 @@ export const UserProvider = ({ children }) => {
     if (user?.id) {
       const updateOnlineStatus = async () => {
         try {
-          await fetch(`${API_ENDPOINTS.BASE || 'http://localhost:8080'}/api/online/${user.id}/online`, {
+          await fetch(`${API_BASE_URL}/api/online/${user.id}/online`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -90,7 +90,8 @@ export const UserProvider = ({ children }) => {
             }
           });
         } catch (error) {
-          console.error('Error actualizando estado en línea:', error);
+          // Silenciar error para no molestar al usuario
+          console.log('Estado en línea no disponible');
         }
       };
 

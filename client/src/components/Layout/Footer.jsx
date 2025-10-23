@@ -83,7 +83,7 @@ export default function Footer() {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="text-gray-400 hover:text-gray-500"
+                  className="text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors"
                 >
                   <span className="sr-only">{item.name}</span>
                   <item.icon className="h-5 w-5" aria-hidden="true" />
@@ -100,7 +100,7 @@ export default function Footer() {
                 <li key={item.name}>
                   <Link
                     to={item.href}
-                    className="text-sm leading-6 text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                    className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
                   >
                     {item.name}
                   </Link>
