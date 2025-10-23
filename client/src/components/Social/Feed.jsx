@@ -139,7 +139,7 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
                         'dark:from-purple-900/20',
                         'dark:to-pink-900/20'
                       );
-                    }, 1800);
+                    }, 1200);
                   }
                 }, 250);
               }
@@ -178,7 +178,7 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
                     'dark:from-purple-900/20',
                     'dark:to-pink-900/20'
                   );
-                }, 1800);
+                }, 1200);
               }
             }, 250);
           }
