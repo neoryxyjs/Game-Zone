@@ -20,6 +20,7 @@ const profilesRoutes = require('./routes/profiles');
 const onlineRoutes = require('./routes/online');
 const notificationsRoutes = require('./routes/notifications');
 const friendsRoutes = require('./routes/friends');
+const messagesRoutes = require('./routes/messages');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -66,6 +67,7 @@ app.use('/api/profiles', profilesRoutes);
 app.use('/api/online', onlineRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/friends', friendsRoutes);
+app.use('/api/messages', messagesRoutes);
 
 app.get('/', (req, res) => {
   res.send('API de GameZone Social funcionando');
