@@ -9,6 +9,7 @@ import GamePage from './pages/GamePage';
 import RankingsPage from './pages/RankingsPage';
 import TeamsPage from './pages/TeamsPage';
 import AboutPage from './pages/AboutPage';
+import MessagesPage from './pages/MessagesPage';
 import UserProfile from './components/Profile/UserProfile';
 import Error404 from './pages/Error404';
 import Error403 from './pages/Error403';
@@ -37,6 +38,7 @@ const AppContent = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/messages" element={<MessagesPage />} />
           
           {/* Páginas de error */}
           <Route path="/error/403" element={<Error403 />} />

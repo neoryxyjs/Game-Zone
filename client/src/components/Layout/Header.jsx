@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { 
@@ -9,12 +9,43 @@ import {
 import RealTimeNotifications from '../Notifications/RealTimeNotifications';
 import { Menu, Transition } from '@headlessui/react';
 import UserSearch from '../Search/UserSearch';
+import { API_BASE_URL } from '../../config/api';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
+  const [unreadMessages, setUnreadMessages] = useState(0);
+
+  // Cargar mensajes no leídos
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      loadUnreadMessages();
+      // Actualizar cada 15 segundos
+      const interval = setInterval(loadUnreadMessages, 15000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated, user]);
+
+  const loadUnreadMessages = async () => {
+    if (!user) return;
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/messages/unread/${user.id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setUnreadMessages(data.unread_count);
+      }
+    } catch (error) {
+      console.error('Error cargando mensajes no leídos:', error);
+    }
+  };
 
   const navigation = [
     { name: 'Inicio', href: '/' },
@@ -88,6 +119,23 @@ export default function Header() {
               <UserSearch />
             </div>
 
+            {/* Messages */}
+            {isAuthenticated && (
+              <Link
+                to="/messages"
+                className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                {unreadMessages > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs text-white font-bold">
+                    {unreadMessages > 9 ? '9+' : unreadMessages}
+                  </span>
+                )}
+              </Link>
+            )}
+
             {/* Notifications */}
             {isAuthenticated && <RealTimeNotifications />}
 
@@ -130,6 +178,26 @@ export default function Header() {
                           >
                             <UserCircleIcon className="w-4 h-4 mr-3" />
                             Mi Perfil
+                          </Link>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/messages"
+                            className={`${
+                              active ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'
+                            } flex items-center px-4 py-2.5 text-sm font-medium rounded-lg mx-2 transition-all duration-200`}
+                          >
+                            <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            Mensajes
+                            {unreadMessages > 0 && (
+                              <span className="ml-auto bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                {unreadMessages > 9 ? '9+' : unreadMessages}
+                              </span>
+                            )}
                           </Link>
                         )}
                       </Menu.Item>
