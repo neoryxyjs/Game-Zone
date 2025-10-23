@@ -200,6 +200,8 @@ router.get('/requests/pending/:userId', authMiddleware, async (req, res) => {
 router.get('/requests/received/:userId', authMiddleware, async (req, res) => {
   const { userId } = req.params;
   
+  console.log('📥 Solicitudes recibidas para usuario:', userId);
+  
   try {
     const result = await pool.query(`
       SELECT 
@@ -215,9 +217,10 @@ router.get('/requests/received/:userId', authMiddleware, async (req, res) => {
       ORDER BY fr.created_at DESC
     `, [userId]);
     
+    console.log(`✅ Encontradas ${result.rows.length} solicitudes recibidas:`, result.rows);
     res.json({ success: true, requests: result.rows });
   } catch (err) {
-    console.error('Error obteniendo solicitudes recibidas:', err);
+    console.error('❌ Error obteniendo solicitudes recibidas:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

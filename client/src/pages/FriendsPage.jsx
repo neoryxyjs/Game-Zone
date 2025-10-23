@@ -25,35 +25,41 @@ export default function FriendsPage() {
     
     setLoading(true);
     try {
+      console.log('🔍 Cargando datos para user ID:', user.id);
+      
       // Cargar amigos
       const friendsResponse = await fetch(`${API_BASE_URL}/api/friends/list/${user.id}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const friendsData = await friendsResponse.json();
+      console.log('👥 Amigos:', friendsData);
 
       // Cargar solicitudes recibidas
       const receivedResponse = await fetch(`${API_BASE_URL}/api/friends/requests/received/${user.id}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const receivedData = await receivedResponse.json();
+      console.log('📥 Solicitudes recibidas:', receivedData);
 
       // Cargar solicitudes enviadas
       const sentResponse = await fetch(`${API_BASE_URL}/api/friends/requests/sent/${user.id}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const sentData = await sentResponse.json();
+      console.log('📤 Solicitudes enviadas:', sentData);
 
       if (friendsData.success) {
         setFriends(friendsData.friends || []);
       }
       if (receivedData.success) {
         setPendingRequests(receivedData.requests || []);
+        console.log('✅ Solicitudes pendientes seteadas:', receivedData.requests);
       }
       if (sentData.success) {
         setSentRequests(sentData.requests || []);
       }
     } catch (error) {
-      console.error('Error cargando datos de amigos:', error);
+      console.error('❌ Error cargando datos de amigos:', error);
     } finally {
       setLoading(false);
     }
