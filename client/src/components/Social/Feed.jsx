@@ -17,6 +17,8 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
   const [refreshing, setRefreshing] = useState(false);
   const pollingIntervalRef = useRef(null);
   const navigationHandledRef = useRef(false);
+  const [lightboxMedia, setLightboxMedia] = useState(null);
+  const [lightboxType, setLightboxType] = useState('image');
 
   useEffect(() => {
     loadPosts();
@@ -370,6 +372,10 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
           currentUser={currentUser}
           onLike={handleLike}
           onDelete={handleDeletePost}
+          onOpenLightbox={(media, type) => {
+            setLightboxMedia(media);
+            setLightboxType(type);
+          }}
           index={index}
         />
       ))}
@@ -408,6 +414,15 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
           </p>
         </div>
       )}
+
+      {/* Lightbox para ver imágenes/videos en grande */}
+      {lightboxMedia && (
+        <Lightbox
+          src={lightboxMedia}
+          type={lightboxType}
+          onClose={() => setLightboxMedia(null)}
+        />
+      )}
     </div>
   );
 }
@@ -436,7 +451,7 @@ function SkeletonPost() {
   );
 }
 
-function PostCard({ post, userId, currentUser, onLike, onDelete, index }) {
+function PostCard({ post, userId, currentUser, onLike, onDelete, onOpenLightbox, index }) {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
@@ -447,8 +462,6 @@ function PostCard({ post, userId, currentUser, onLike, onDelete, index }) {
   const [replyingTo, setReplyingTo] = useState(null); // ID del comentario al que se está respondiendo
   const [replyContent, setReplyContent] = useState('');
   const [replyLoading, setReplyLoading] = useState(false);
-  const [lightboxMedia, setLightboxMedia] = useState(null); // Para el lightbox
-  const [lightboxType, setLightboxType] = useState('image'); // 'image' o 'video'
   const pollingCommentsRef = useRef(null);
 
   // Auto-actualización de comentarios cuando están abiertos
@@ -674,10 +687,7 @@ function PostCard({ post, userId, currentUser, onLike, onDelete, index }) {
                   Tu navegador no soporta el tag de video.
                 </video>
                 <button
-                  onClick={() => {
-                    setLightboxMedia(post.image_url);
-                    setLightboxType('video');
-                  }}
+                  onClick={() => onOpenLightbox(post.image_url, 'video')}
                   className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
                   title="Ver en pantalla completa"
                 >
@@ -694,8 +704,7 @@ function PostCard({ post, userId, currentUser, onLike, onDelete, index }) {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setLightboxMedia(post.image_url);
-                  setLightboxType('image');
+                  onOpenLightbox(post.image_url, 'image');
                 }}
                 onError={(e) => {
                   e.target.onerror = null;
@@ -956,14 +965,6 @@ function PostCard({ post, userId, currentUser, onLike, onDelete, index }) {
             <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No hay comentarios aún</p>
           )}
         </div>
-      )}
-      {/* Lightbox para ver imágenes/videos en grande */}
-      {lightboxMedia && (
-        <Lightbox
-          src={lightboxMedia}
-          type={lightboxType}
-          onClose={() => setLightboxMedia(null)}
-        />
       )}
     </article>
   );
