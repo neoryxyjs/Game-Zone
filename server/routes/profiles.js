@@ -67,7 +67,7 @@ const postUpload = multer({
   }
 });
 
-// Obtener perfil completo de un usuario
+// Obtener perfil completo de un usuario (PÚBLICO)
 router.get('/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -88,23 +88,30 @@ router.get('/:userId', async (req, res) => {
       [userId]
     );
     
-    // Obtener configuraciones del usuario
-    const settingsResult = await pool.query(
-      'SELECT * FROM user_settings WHERE user_id = $1',
-      [userId]
-    );
+    // Obtener estadísticas REALES del usuario
+    const statsResult = await pool.query(`
+      SELECT 
+        (SELECT COUNT(*) FROM posts WHERE user_id = $1) as posts_count,
+        (SELECT COUNT(*) FROM user_follows WHERE following_id = $1) as followers_count,
+        (SELECT COUNT(*) FROM user_follows WHERE follower_id = $1) as following_count,
+        (SELECT COUNT(*) FROM post_likes WHERE user_id = $1) as likes_given_count,
+        (SELECT COUNT(*) FROM post_likes pl JOIN posts p ON pl.post_id = p.id WHERE p.user_id = $1) as likes_received_count
+    `, [userId]);
     
-    // Obtener estadísticas del usuario
-    const statsResult = await pool.query(
-      'SELECT * FROM user_stats WHERE user_id = $1',
-      [userId]
-    );
+    const user = userResult.rows[0];
+    const profileData = profileResult.rows[0];
+    const stats = statsResult.rows[0];
     
     const profile = {
-      user: userResult.rows[0],
-      profile: profileResult.rows[0] || null,
-      settings: settingsResult.rows[0] || null,
-      stats: statsResult.rows[0] || null
+      ...user,
+      bio: profileData?.bio || '',
+      location: profileData?.location || '',
+      gaming_style: profileData?.gaming_style || '',
+      followers_count: parseInt(stats.followers_count) || 0,
+      following_count: parseInt(stats.following_count) || 0,
+      posts_count: parseInt(stats.posts_count) || 0,
+      likes_given: parseInt(stats.likes_given_count) || 0,
+      likes_received: parseInt(stats.likes_received_count) || 0
     };
     
     res.json({ success: true, profile });

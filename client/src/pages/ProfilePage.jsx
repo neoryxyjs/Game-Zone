@@ -114,10 +114,10 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header del Perfil */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
           <GamerProfileHeader user={user} />
           <div className="px-6 pb-6">
             {/* Enlazar/Desenlazar Riot */}
@@ -129,12 +129,12 @@ export default function ProfilePage() {
                 />
               ) : (
                 <div className="flex flex-col sm:flex-row gap-2 items-center">
-                  <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+                  <span className="inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
                     Cuenta Riot enlazada: {user.riotSummonerName}
                   </span>
                   <button
                     onClick={handleUnlinkRiot}
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-medium text-xs"
+                    className="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white px-4 py-2 rounded font-medium text-xs transition-colors"
                   >
                     Desenlazar
                   </button>
@@ -192,20 +192,20 @@ export default function ProfilePage() {
             {/* Estadísticas rápidas */}
             <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{user.followers}</div>
-                <div className="text-gray-600">Seguidores</div>
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{user.followers || 0}</div>
+                <div className="text-gray-600 dark:text-gray-400">Seguidores</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">{user.following}</div>
-                <div className="text-gray-600">Siguiendo</div>
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{user.following || 0}</div>
+                <div className="text-gray-600 dark:text-gray-400">Siguiendo</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{user.posts}</div>
-                <div className="text-gray-600">Posts</div>
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">{user.posts || 0}</div>
+                <div className="text-gray-600 dark:text-gray-400">Posts</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">{user.notifications}</div>
-                <div className="text-gray-600">Notificaciones</div>
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{user.notifications || 0}</div>
+                <div className="text-gray-600 dark:text-gray-400">Notificaciones</div>
               </div>
             </div>
           </div>
@@ -213,7 +213,7 @@ export default function ProfilePage() {
 
         {/* Tabs de navegación */}
         <div className="mt-8">
-          <div className="border-b border-gray-200">
+          <div className="border-b border-gray-200 dark:border-gray-700">
             <nav className="-mb-px flex space-x-8">
               {[
                 { id: 'overview', name: 'Resumen', icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z' },
@@ -224,10 +224,10 @@ export default function ProfilePage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                  className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,30 +246,30 @@ export default function ProfilePage() {
             {activeTab === 'overview' && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Actividad reciente */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Actividad Reciente</h3>
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Actividad Reciente</h3>
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm text-gray-600">Publicaste un nuevo post sobre League of Legends</span>
-                      <span className="text-xs text-gray-400">2h</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">Publicaste un nuevo post sobre League of Legends</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">2h</span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm text-gray-600">Comentaste en el post de ValorantPro</span>
-                      <span className="text-xs text-gray-400">4h</span>
+                      <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full"></div>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">Comentaste en el post de ValorantPro</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">4h</span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span className="text-sm text-gray-600">Ganaste una partida en Diamond II</span>
-                      <span className="text-xs text-gray-400">6h</span>
+                      <div className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full"></div>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">Ganaste una partida en Diamond II</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">6h</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Logros recientes */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Logros Recientes</h3>
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Logros Recientes</h3>
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -278,19 +278,19 @@ export default function ProfilePage() {
                         </svg>
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">Diamond Master</div>
-                        <div className="text-sm text-gray-600">Alcanzaste Diamond II</div>
+                        <div className="font-medium text-gray-900 dark:text-white">Diamond Master</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">Alcanzaste Diamond II</div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">Win Streak</div>
-                        <div className="text-sm text-gray-600">5 victorias consecutivas</div>
+                        <div className="font-medium text-gray-900 dark:text-white">Win Streak</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">5 victorias consecutivas</div>
                       </div>
                     </div>
                   </div>

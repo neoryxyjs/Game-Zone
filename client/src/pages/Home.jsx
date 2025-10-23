@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import { API_BASE_URL } from '../config/api';
 import CreatePost from '../components/Social/CreatePost';
 import Feed from '../components/Social/Feed';
 import UserSearch from '../components/Social/UserSearch';
@@ -12,10 +13,49 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('feed');
   const [newPost, setNewPost] = useState(null);
   const [error, setError] = useState(null);
+  const [userStats, setUserStats] = useState({
+    posts_count: 0,
+    followers_count: 0,
+    following_count: 0,
+    likes_received: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  // Cargar estadísticas reales del usuario
+  useEffect(() => {
+    if (user?.id) {
+      loadUserStats();
+    }
+  }, [user?.id, newPost]); // Recargar cuando hay un nuevo post
+
+  const loadUserStats = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/profiles/${user.id}`);
+      const data = await response.json();
+      
+      if (data.success && data.profile) {
+        setUserStats({
+          posts_count: data.profile.posts_count || 0,
+          followers_count: data.profile.followers_count || 0,
+          following_count: data.profile.following_count || 0,
+          likes_received: data.profile.likes_received || 0
+        });
+      }
+    } catch (error) {
+      console.error('Error cargando estadísticas:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePostCreated = (post) => {
     setNewPost(post);
     setError(null);
+    // Actualizar contador de posts inmediatamente
+    setUserStats(prev => ({
+      ...prev,
+      posts_count: prev.posts_count + 1
+    }));
   };
 
   const handleError = (errorMessage) => {
@@ -110,23 +150,23 @@ export default function Home() {
               </div>
             </div>
             
-            {/* Stats rápidas */}
+            {/* Stats rápidas - REALES */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-8">
-              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
-                <div className="text-2xl font-bold text-indigo-600">12</div>
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-shadow">
+                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{userStats.posts_count}</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Posts</div>
               </div>
-              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
-                <div className="text-2xl font-bold text-green-600">45</div>
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-shadow">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">{userStats.followers_count}</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Seguidores</div>
               </div>
-              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
-                <div className="text-2xl font-bold text-purple-600">23</div>
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-shadow">
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{userStats.following_count}</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Siguiendo</div>
               </div>
-              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
-                <div className="text-2xl font-bold text-orange-600">156</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Likes</div>
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-shadow">
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{userStats.likes_received}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Likes Recibidos</div>
               </div>
             </div>
           </div>
