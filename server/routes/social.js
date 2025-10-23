@@ -104,21 +104,42 @@ router.get('/feed/:userId', async (req, res) => {
         p.*,
         u.username,
         u.avatar,
+        ui.file_path as image_file_path,
         COUNT(DISTINCT pl.id) as likes_count,
         COUNT(DISTINCT pc.id) as comments_count
       FROM posts p
       JOIN users u ON p.user_id = u.id
+      LEFT JOIN user_images ui ON p.image_id = ui.id
       LEFT JOIN user_follows uf ON p.user_id = uf.following_id AND uf.follower_id = $1
       LEFT JOIN post_likes pl ON p.id = pl.post_id
       LEFT JOIN post_comments pc ON p.id = pc.post_id
       WHERE uf.follower_id = $1 OR p.user_id = $1
-      GROUP BY p.id, u.username, u.avatar
+      GROUP BY p.id, u.username, u.avatar, ui.file_path
       ORDER BY p.created_at DESC
       LIMIT $2 OFFSET $3
     `, [userId, limit, offset]);
     
-    res.json({ success: true, posts: result.rows });
+    // Transformar los datos para incluir la URL de imagen correcta
+    const posts = result.rows.map(row => {
+      let imageUrl = row.image_url;
+      if (row.image_id && row.image_file_path) {
+        imageUrl = row.image_file_path;
+      }
+      
+      return {
+        ...row,
+        image_url: imageUrl,
+        user: {
+          id: row.user_id,
+          username: row.username,
+          avatar: row.avatar
+        }
+      };
+    });
+    
+    res.json({ success: true, posts });
   } catch (err) {
+    console.error('Error en feed:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
