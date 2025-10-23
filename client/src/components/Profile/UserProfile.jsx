@@ -206,15 +206,19 @@ export default function UserProfile() {
       {/* Banner del perfil */}
       <div className="relative">
         {profileUser.banner_url ? (
-          <div className="w-full h-64 md:h-80 lg:h-96 relative overflow-hidden">
+          <div className="w-full h-64 md:h-80 lg:h-96 relative overflow-hidden bg-gray-900">
             <img
               src={profileUser.banner_url}
               alt="Banner"
-              className={`w-full h-full ${
-                profileUser.banner_position === 'top' ? 'object-top' :
-                profileUser.banner_position === 'bottom' ? 'object-bottom' :
-                'object-center'
-              } object-cover`}
+              className="absolute"
+              style={{
+                transform: `translate(${profileUser.banner_position_x || 0}%, ${profileUser.banner_position_y || 0}%) scale(${profileUser.banner_scale || 1})`,
+                transformOrigin: 'top left',
+                width: '100%',
+                height: 'auto',
+                minHeight: '100%',
+                objectFit: 'cover'
+              }}
             />
             {/* Overlay mejorado para legibilidad */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70"></div>

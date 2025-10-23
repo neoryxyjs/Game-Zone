@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../../config/api';
 import { putAuth, uploadFileAuth } from '../../utils/api';
 import { useUser } from '../../context/UserContext';
+import BannerEditor from './BannerEditor';
 
 export default function ProfileEditor() {
   const { user, updateUser } = useUser();
@@ -15,13 +16,16 @@ export default function ProfileEditor() {
     twitter_url: '',
     favorite_games: [],
     profile_color: '#6366f1',
-    banner_position: 'center' // center, top, bottom
+    banner_position_x: 0,
+    banner_position_y: 0,
+    banner_scale: 1
   });
   const [newGame, setNewGame] = useState('');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [bannerFile, setBannerFile] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
+  const [showBannerEditor, setShowBannerEditor] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -45,7 +49,9 @@ export default function ProfileEditor() {
           twitter_url: data.profile.twitter_url || '',
           favorite_games: data.profile.favorite_games || [],
           profile_color: data.profile.profile_color || '#6366f1',
-          banner_position: data.profile.banner_position || 'center'
+          banner_position_x: data.profile.banner_position_x || 0,
+          banner_position_y: data.profile.banner_position_y || 0,
+          banner_scale: data.profile.banner_scale || 1
         });
       }
     } catch (error) {
@@ -58,9 +64,22 @@ export default function ProfileEditor() {
     if (file) {
       setBannerFile(file);
       const reader = new FileReader();
-      reader.onload = (e) => setBannerPreview(e.target.result);
+      reader.onload = (e) => {
+        setBannerPreview(e.target.result);
+        setShowBannerEditor(true); // Abrir editor automáticamente
+      };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleBannerSave = (position) => {
+    setProfile(prev => ({
+      ...prev,
+      banner_position_x: position.x,
+      banner_position_y: position.y,
+      banner_scale: position.scale
+    }));
+    setShowBannerEditor(false);
   };
 
   const handleChange = (field, value) => {
@@ -137,6 +156,15 @@ export default function ProfileEditor() {
 
   return (
     <div className="space-y-6">
+      {/* Editor de Banner Modal */}
+      {showBannerEditor && (bannerPreview || profile.banner_url) && (
+        <BannerEditor
+          imageSrc={bannerPreview || profile.banner_url}
+          onSave={handleBannerSave}
+          onCancel={() => setShowBannerEditor(false)}
+        />
+      )}
+
       {/* Banner */}
       <div className="card">
         <div className="flex items-center space-x-4 mb-6">
@@ -152,56 +180,41 @@ export default function ProfileEditor() {
         <div className="space-y-4">
           {(bannerPreview || profile.banner_url) && (
             <div className="space-y-4">
-              <div className="relative overflow-hidden rounded-xl">
-                <img
-                  src={bannerPreview || profile.banner_url}
-                  alt="Banner"
-                  className={`w-full h-48 rounded-xl ${
-                    profile.banner_position === 'top' ? 'object-top' :
-                    profile.banner_position === 'bottom' ? 'object-bottom' :
-                    'object-center'
-                  } object-cover`}
-                  style={{ objectFit: 'cover' }}
-                />
-                {/* Overlay para preview */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70 rounded-xl"></div>
-                {/* Texto de ejemplo para ver contraste */}
-                <div className="absolute top-4 left-4">
-                  <h3 className="text-2xl font-bold text-white drop-shadow-lg">Preview</h3>
-                  <p className="text-gray-100 drop-shadow-md">Así se verá tu banner</p>
+              <div className="relative overflow-hidden rounded-xl bg-gray-900">
+                <div className="relative w-full h-48 overflow-hidden">
+                  <img
+                    src={bannerPreview || profile.banner_url}
+                    alt="Banner"
+                    className="absolute"
+                    style={{
+                      transform: `translate(${profile.banner_position_x}%, ${profile.banner_position_y}%) scale(${profile.banner_scale})`,
+                      transformOrigin: 'top left',
+                      width: '100%',
+                      height: 'auto',
+                      minHeight: '100%',
+                      objectFit: 'cover'
+                    }}
+                  />
+                  {/* Overlay para preview */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70"></div>
+                  {/* Texto de ejemplo para ver contraste */}
+                  <div className="absolute top-4 left-4">
+                    <h3 className="text-2xl font-bold text-white drop-shadow-lg">Preview</h3>
+                    <p className="text-gray-100 drop-shadow-md">Así se verá tu banner</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Controles de posición */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                  📐 Posición del Banner
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { value: 'top', label: '⬆️ Arriba', desc: 'Enfocar parte superior' },
-                    { value: 'center', label: '🎯 Centro', desc: 'Enfocar centro' },
-                    { value: 'bottom', label: '⬇️ Abajo', desc: 'Enfocar parte inferior' }
-                  ].map((pos) => (
-                    <button
-                      key={pos.value}
-                      type="button"
-                      onClick={() => handleChange('banner_position', pos.value)}
-                      className={`p-4 rounded-xl border-2 transition-all text-left ${
-                        profile.banner_position === pos.value
-                          ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 shadow-lg'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700'
-                      }`}
-                    >
-                      <div className="text-lg mb-1">{pos.label}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">{pos.desc}</div>
-                    </button>
-                  ))}
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                  💡 Ajusta qué parte de tu imagen se muestra como banner
-                </p>
-              </div>
+              {/* Botón para ajustar */}
+              <button
+                onClick={() => setShowBannerEditor(true)}
+                className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 font-semibold transition-all shadow-lg"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+                <span>✨ Ajustar Posición y Zoom</span>
+              </button>
             </div>
           )}
           
@@ -213,7 +226,7 @@ export default function ProfileEditor() {
           />
           <p className="text-sm text-gray-500 dark:text-gray-400">
             JPG, PNG o GIF. Recomendado 1500x500px. 
-            <span className="block text-xs mt-1">✨ Después de subir, usa los controles para ajustar la posición</span>
+            <span className="block text-xs mt-1 font-medium text-purple-600 dark:text-purple-400">✨ Se abrirá el editor automáticamente para ajustar posición y zoom</span>
           </p>
         </div>
       </div>

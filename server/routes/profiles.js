@@ -142,7 +142,9 @@ router.get('/:userId', async (req, res) => {
       location: profileData?.location || '',
       gaming_style: profileData?.gaming_style || '',
       banner_url: profileData?.banner_url || null,
-      banner_position: profileData?.banner_position || 'center',
+      banner_position_x: profileData?.banner_position_x || 0,
+      banner_position_y: profileData?.banner_position_y || 0,
+      banner_scale: profileData?.banner_scale || 1,
       discord_url: profileData?.discord_url || null,
       twitch_url: profileData?.twitch_url || null,
       youtube_url: profileData?.youtube_url || null,
@@ -215,7 +217,9 @@ router.put('/:userId/customization', authMiddleware, async (req, res) => {
       profile_color,
       bio,
       location,
-      banner_position
+      banner_position_x,
+      banner_position_y,
+      banner_scale
     } = req.body;
     
     // Verificar si existe el perfil
@@ -230,11 +234,13 @@ router.put('/:userId/customization', authMiddleware, async (req, res) => {
       result = await pool.query(`
         INSERT INTO user_profiles (
           user_id, bio, location, banner_url, discord_url, twitch_url, 
-          youtube_url, twitter_url, favorite_games, profile_color, banner_position
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *
+          youtube_url, twitter_url, favorite_games, profile_color, 
+          banner_position_x, banner_position_y, banner_scale
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *
       `, [
         userId, bio, location, banner_url, discord_url, twitch_url, 
-        youtube_url, twitter_url, favorite_games, profile_color, banner_position || 'center'
+        youtube_url, twitter_url, favorite_games, profile_color,
+        banner_position_x || 0, banner_position_y || 0, banner_scale || 1
       ]);
     } else {
       // Actualizar perfil existente solo con los campos proporcionados
@@ -278,9 +284,17 @@ router.put('/:userId/customization', authMiddleware, async (req, res) => {
         updates.push(`profile_color = $${paramCounter++}`);
         values.push(profile_color);
       }
-      if (banner_position !== undefined) {
-        updates.push(`banner_position = $${paramCounter++}`);
-        values.push(banner_position);
+      if (banner_position_x !== undefined) {
+        updates.push(`banner_position_x = $${paramCounter++}`);
+        values.push(banner_position_x);
+      }
+      if (banner_position_y !== undefined) {
+        updates.push(`banner_position_y = $${paramCounter++}`);
+        values.push(banner_position_y);
+      }
+      if (banner_scale !== undefined) {
+        updates.push(`banner_scale = $${paramCounter++}`);
+        values.push(banner_scale);
       }
       
       updates.push(`updated_at = CURRENT_TIMESTAMP`);

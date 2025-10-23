@@ -11,7 +11,9 @@ ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1,
 ADD COLUMN IF NOT EXISTS experience_points INTEGER DEFAULT 0,
 ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE,
 ADD COLUMN IF NOT EXISTS profile_color VARCHAR(7) DEFAULT '#6366f1', -- Color personalizado del perfil
-ADD COLUMN IF NOT EXISTS banner_position VARCHAR(10) DEFAULT 'center'; -- Posición del banner: top, center, bottom
+ADD COLUMN IF NOT EXISTS banner_position_x DECIMAL(5,2) DEFAULT 0, -- Posición X del banner en porcentaje
+ADD COLUMN IF NOT EXISTS banner_position_y DECIMAL(5,2) DEFAULT 0, -- Posición Y del banner en porcentaje
+ADD COLUMN IF NOT EXISTS banner_scale DECIMAL(3,2) DEFAULT 1; -- Escala/zoom del banner (1.0 - 3.0)
 
 -- Crear índice para búsquedas de badges
 CREATE INDEX IF NOT EXISTS idx_user_profiles_badges ON user_profiles USING GIN (badges);
