@@ -37,7 +37,7 @@ export const UserProvider = ({ children }) => {
     const checkAuthStatus = async () => {
       try {
         // Verificar si hay un token en localStorage
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('token');
         if (token) {
           console.log('🔍 Verificando sesión persistente...');
           
@@ -59,18 +59,18 @@ export const UserProvider = ({ children }) => {
               login(data.user);
             } else {
               console.log('❌ Token inválido, limpiando...');
-              localStorage.removeItem('authToken');
+              localStorage.removeItem('token');
             }
           } else {
             console.log('❌ Error verificando sesión, limpiando token...');
-            localStorage.removeItem('authToken');
+            localStorage.removeItem('token');
           }
         } else {
           console.log('ℹ️ No hay token de autenticación');
         }
       } catch (error) {
         console.error('❌ Error verificando autenticación:', error);
-        localStorage.removeItem('authToken');
+        localStorage.removeItem('token');
       }
     };
     
@@ -86,7 +86,7 @@ export const UserProvider = ({ children }) => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
           });
         } catch (error) {
@@ -167,7 +167,7 @@ export const UserProvider = ({ children }) => {
       setUser(null);
       
       // Limpiar token del localStorage
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('token');
       
       // Mostrar notificación de logout
       if (window.showNotification) {
@@ -178,7 +178,7 @@ export const UserProvider = ({ children }) => {
       // Forzar limpieza de estados en caso de error
       setIsAuthenticated(false);
       setUser(null);
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('token');
     }
   };
 
@@ -234,7 +234,7 @@ export const UserProvider = ({ children }) => {
       if (response.ok && data.success) {
         // Guardar token en localStorage
         if (data.token) {
-          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('token', data.token);
           console.log('✅ Token guardado en localStorage');
         }
         
@@ -267,7 +267,7 @@ export const UserProvider = ({ children }) => {
       if (response.ok && data.success) {
         // Guardar token en localStorage
         if (data.token) {
-          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('token', data.token);
           console.log('✅ Token guardado en localStorage');
         }
         
