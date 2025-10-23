@@ -10,7 +10,8 @@ ADD COLUMN IF NOT EXISTS badges TEXT[], -- Array de badges: verified, pro, strea
 ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1,
 ADD COLUMN IF NOT EXISTS experience_points INTEGER DEFAULT 0,
 ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE,
-ADD COLUMN IF NOT EXISTS profile_color VARCHAR(7) DEFAULT '#6366f1'; -- Color personalizado del perfil
+ADD COLUMN IF NOT EXISTS profile_color VARCHAR(7) DEFAULT '#6366f1', -- Color personalizado del perfil
+ADD COLUMN IF NOT EXISTS banner_position VARCHAR(10) DEFAULT 'center'; -- Posición del banner: top, center, bottom
 
 -- Crear índice para búsquedas de badges
 CREATE INDEX IF NOT EXISTS idx_user_profiles_badges ON user_profiles USING GIN (badges);

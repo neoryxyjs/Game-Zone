@@ -142,6 +142,7 @@ router.get('/:userId', async (req, res) => {
       location: profileData?.location || '',
       gaming_style: profileData?.gaming_style || '',
       banner_url: profileData?.banner_url || null,
+      banner_position: profileData?.banner_position || 'center',
       discord_url: profileData?.discord_url || null,
       twitch_url: profileData?.twitch_url || null,
       youtube_url: profileData?.youtube_url || null,
@@ -213,7 +214,8 @@ router.put('/:userId/customization', authMiddleware, async (req, res) => {
       favorite_games,
       profile_color,
       bio,
-      location
+      location,
+      banner_position
     } = req.body;
     
     // Verificar si existe el perfil
@@ -228,11 +230,11 @@ router.put('/:userId/customization', authMiddleware, async (req, res) => {
       result = await pool.query(`
         INSERT INTO user_profiles (
           user_id, bio, location, banner_url, discord_url, twitch_url, 
-          youtube_url, twitter_url, favorite_games, profile_color
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *
+          youtube_url, twitter_url, favorite_games, profile_color, banner_position
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *
       `, [
         userId, bio, location, banner_url, discord_url, twitch_url, 
-        youtube_url, twitter_url, favorite_games, profile_color
+        youtube_url, twitter_url, favorite_games, profile_color, banner_position || 'center'
       ]);
     } else {
       // Actualizar perfil existente solo con los campos proporcionados
@@ -275,6 +277,10 @@ router.put('/:userId/customization', authMiddleware, async (req, res) => {
       if (profile_color !== undefined) {
         updates.push(`profile_color = $${paramCounter++}`);
         values.push(profile_color);
+      }
+      if (banner_position !== undefined) {
+        updates.push(`banner_position = $${paramCounter++}`);
+        values.push(banner_position);
       }
       
       updates.push(`updated_at = CURRENT_TIMESTAMP`);

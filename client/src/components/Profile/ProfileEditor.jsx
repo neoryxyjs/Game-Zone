@@ -14,7 +14,8 @@ export default function ProfileEditor() {
     youtube_url: '',
     twitter_url: '',
     favorite_games: [],
-    profile_color: '#6366f1'
+    profile_color: '#6366f1',
+    banner_position: 'center' // center, top, bottom
   });
   const [newGame, setNewGame] = useState('');
   const [saving, setSaving] = useState(false);
@@ -43,7 +44,8 @@ export default function ProfileEditor() {
           youtube_url: data.profile.youtube_url || '',
           twitter_url: data.profile.twitter_url || '',
           favorite_games: data.profile.favorite_games || [],
-          profile_color: data.profile.profile_color || '#6366f1'
+          profile_color: data.profile.profile_color || '#6366f1',
+          banner_position: data.profile.banner_position || 'center'
         });
       }
     } catch (error) {
@@ -149,13 +151,57 @@ export default function ProfileEditor() {
 
         <div className="space-y-4">
           {(bannerPreview || profile.banner_url) && (
-            <div className="relative">
-              <img
-                src={bannerPreview || profile.banner_url}
-                alt="Banner"
-                className="w-full h-48 object-cover rounded-xl"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-xl"></div>
+            <div className="space-y-4">
+              <div className="relative overflow-hidden rounded-xl">
+                <img
+                  src={bannerPreview || profile.banner_url}
+                  alt="Banner"
+                  className={`w-full h-48 rounded-xl ${
+                    profile.banner_position === 'top' ? 'object-top' :
+                    profile.banner_position === 'bottom' ? 'object-bottom' :
+                    'object-center'
+                  } object-cover`}
+                  style={{ objectFit: 'cover' }}
+                />
+                {/* Overlay para preview */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70 rounded-xl"></div>
+                {/* Texto de ejemplo para ver contraste */}
+                <div className="absolute top-4 left-4">
+                  <h3 className="text-2xl font-bold text-white drop-shadow-lg">Preview</h3>
+                  <p className="text-gray-100 drop-shadow-md">Así se verá tu banner</p>
+                </div>
+              </div>
+
+              {/* Controles de posición */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  📐 Posición del Banner
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { value: 'top', label: '⬆️ Arriba', desc: 'Enfocar parte superior' },
+                    { value: 'center', label: '🎯 Centro', desc: 'Enfocar centro' },
+                    { value: 'bottom', label: '⬇️ Abajo', desc: 'Enfocar parte inferior' }
+                  ].map((pos) => (
+                    <button
+                      key={pos.value}
+                      type="button"
+                      onClick={() => handleChange('banner_position', pos.value)}
+                      className={`p-4 rounded-xl border-2 transition-all text-left ${
+                        profile.banner_position === pos.value
+                          ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 shadow-lg'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700'
+                      }`}
+                    >
+                      <div className="text-lg mb-1">{pos.label}</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">{pos.desc}</div>
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  💡 Ajusta qué parte de tu imagen se muestra como banner
+                </p>
+              </div>
             </div>
           )}
           
@@ -165,7 +211,10 @@ export default function ProfileEditor() {
             onChange={handleBannerChange}
             className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-purple-50 dark:file:bg-purple-900/20 file:text-purple-700 dark:file:text-purple-400 hover:file:bg-purple-100 dark:hover:file:bg-purple-900/40 transition-colors"
           />
-          <p className="text-sm text-gray-500 dark:text-gray-400">JPG, PNG o GIF. Recomendado 1500x500px.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            JPG, PNG o GIF. Recomendado 1500x500px. 
+            <span className="block text-xs mt-1">✨ Después de subir, usa los controles para ajustar la posición</span>
+          </p>
         </div>
       </div>
 

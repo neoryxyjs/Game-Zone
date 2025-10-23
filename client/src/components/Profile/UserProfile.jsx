@@ -206,13 +206,20 @@ export default function UserProfile() {
       {/* Banner del perfil */}
       <div className="relative">
         {profileUser.banner_url ? (
-          <div className="w-full h-64 md:h-80 lg:h-96">
+          <div className="w-full h-64 md:h-80 lg:h-96 relative overflow-hidden">
             <img
               src={profileUser.banner_url}
               alt="Banner"
-              className="w-full h-full object-cover"
+              className={`w-full h-full ${
+                profileUser.banner_position === 'top' ? 'object-top' :
+                profileUser.banner_position === 'bottom' ? 'object-bottom' :
+                'object-center'
+              } object-cover`}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/50"></div>
+            {/* Overlay mejorado para legibilidad */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70"></div>
+            {/* Overlay adicional en la parte inferior para el avatar */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-900 to-transparent"></div>
           </div>
         ) : (
           <div 
@@ -226,6 +233,8 @@ export default function UserProfile() {
                 <div className="absolute top-1/2 left-1/2 w-48 h-48 bg-white rounded-full blur-3xl"></div>
               </div>
             </div>
+            {/* Overlay para gradiente */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
           </div>
         )}
       </div>
@@ -263,7 +272,7 @@ export default function UserProfile() {
             {/* Info y acciones */}
             <div className="flex-1 text-center sm:text-left">
               <div className="mb-2">
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white inline-block">
+                <h1 className="text-3xl md:text-4xl font-bold text-white inline-block drop-shadow-lg">
                   {profileUser.username}
                 </h1>
               </div>
@@ -277,11 +286,11 @@ export default function UserProfile() {
                 </div>
               )}
 
-              <p className="text-gray-600 dark:text-gray-400 mb-3 max-w-2xl">
+              <p className="text-gray-100 dark:text-gray-200 mb-3 max-w-2xl font-medium drop-shadow-md">
                 {profileUser.bio || 'Sin biografía'}
               </p>
 
-              <div className="flex flex-wrap gap-4 justify-center sm:justify-start text-sm text-gray-500 dark:text-gray-400 mb-4">
+              <div className="flex flex-wrap gap-4 justify-center sm:justify-start text-sm text-gray-200 dark:text-gray-300 mb-4 drop-shadow-md">
                 {profileUser.location && (
                   <span className="flex items-center">
                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
