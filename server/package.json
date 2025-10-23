@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node scripts/run-all-migrations.js && node index.js",
-    "start:no-migrate": "node index.js",
+    "start": "node index.js",
     "dev": "node index.js",
     "migrate": "node scripts/migrate.js",
     "migrate:009": "node scripts/run-migration-009.js",
