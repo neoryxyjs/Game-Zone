@@ -39,7 +39,13 @@ export default function ChatWindow({ conversation, onClose }) {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/messages/conversation/${currentUser.id}/${conversation.other_user_id}`
+        `${API_BASE_URL}/api/messages/conversation/${currentUser.id}/${conversation.other_user_id}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        }
       );
       const data = await response.json();
 
