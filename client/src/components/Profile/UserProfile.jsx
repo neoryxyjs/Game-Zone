@@ -11,6 +11,9 @@ export default function UserProfile() {
   const [profileUser, setProfileUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isFriend, setIsFriend] = useState(false);
+  const [friendRequestStatus, setFriendRequestStatus] = useState(null); // pending, sent, received, null
+  const [friendRequestId, setFriendRequestId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -43,13 +46,34 @@ export default function UserProfile() {
       }
 
       // Verificar si el usuario actual sigue a este usuario (PÚBLICO)
-      if (currentUser && currentUser.id !== userId) {
+      if (currentUser && currentUser.id !== parseInt(userId)) {
         const followResponse = await fetch(`${API_BASE_URL}/api/social/following/${currentUser.id}`);
         const followData = await followResponse.json();
         
         if (followData.success) {
           const isFollowingUser = followData.following.some(follow => follow.id === parseInt(userId));
           setIsFollowing(isFollowingUser);
+        }
+
+        // Verificar estado de amistad (PÚBLICO)
+        const friendResponse = await fetch(`${API_BASE_URL}/api/friends/check/${currentUser.id}/${userId}`);
+        const friendData = await friendResponse.json();
+        
+        if (friendData.success) {
+          setIsFriend(friendData.areFriends);
+          
+          if (friendData.pendingRequest) {
+            setFriendRequestId(friendData.pendingRequest.id);
+            // Determinar si la solicitud fue enviada o recibida
+            if (friendData.pendingRequest.sender_id === parseInt(currentUser.id)) {
+              setFriendRequestStatus('sent');
+            } else {
+              setFriendRequestStatus('received');
+            }
+          } else {
+            setFriendRequestStatus(null);
+            setFriendRequestId(null);
+          }
         }
       }
     } catch (error) {
@@ -82,6 +106,56 @@ export default function UserProfile() {
       }
     } catch (error) {
       console.error('Error siguiendo/dejando de seguir usuario:', error);
+    }
+  };
+
+  const handleAddFriend = async () => {
+    if (!currentUser) return;
+
+    try {
+      const response = await postAuth('/api/friends/request', {
+        sender_id: currentUser.id,
+        receiver_id: parseInt(userId)
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setFriendRequestStatus('sent');
+      }
+    } catch (error) {
+      console.error('Error enviando solicitud de amistad:', error);
+    }
+  };
+
+  const handleAcceptFriend = async (requestId) => {
+    if (!currentUser) return;
+
+    try {
+      const response = await postAuth(`/api/friends/accept/${requestId}`, {});
+      const data = await response.json();
+      
+      if (data.success) {
+        setIsFriend(true);
+        setFriendRequestStatus(null);
+      }
+    } catch (error) {
+      console.error('Error aceptando solicitud de amistad:', error);
+    }
+  };
+
+  const handleRejectFriend = async (requestId) => {
+    if (!currentUser) return;
+
+    try {
+      const response = await postAuth(`/api/friends/reject/${requestId}`, {});
+      const data = await response.json();
+      
+      if (data.success) {
+        setFriendRequestStatus(null);
+      }
+    } catch (error) {
+      console.error('Error rechazando solicitud de amistad:', error);
     }
   };
 
@@ -141,17 +215,62 @@ export default function UserProfile() {
               </div>
             </div>
             
-            {currentUser && currentUser.id !== userId && (
-              <button
-                onClick={handleFollow}
-                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                  isFollowing
-                    ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                }`}
-              >
-                {isFollowing ? 'Siguiendo' : 'Seguir'}
-              </button>
+            {currentUser && currentUser.id !== parseInt(userId) && (
+              <div className="flex items-center space-x-3">
+                {/* Botón de seguir */}
+                <button
+                  onClick={handleFollow}
+                  className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                    isFollowing
+                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  {isFollowing ? 'Siguiendo' : 'Seguir'}
+                </button>
+
+                {/* Botón de amistad */}
+                {isFriend ? (
+                  <div className="flex items-center space-x-2 px-4 py-2 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg border border-green-200 dark:border-green-800">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                    </svg>
+                    <span className="font-medium">Amigos</span>
+                  </div>
+                ) : friendRequestStatus === 'sent' ? (
+                  <button
+                    disabled
+                    className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-lg border border-gray-300 dark:border-gray-700 font-medium cursor-not-allowed"
+                  >
+                    Solicitud enviada
+                  </button>
+                ) : friendRequestStatus === 'received' ? (
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => handleAcceptFriend(friendRequestId)}
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors"
+                    >
+                      Aceptar solicitud
+                    </button>
+                    <button
+                      onClick={() => handleRejectFriend(friendRequestId)}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"
+                    >
+                      Rechazar
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleAddFriend}
+                    className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                    <span>Agregar amigo</span>
+                  </button>
+                )}
+              </div>
             )}
           </div>
         </div>

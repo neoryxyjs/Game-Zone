@@ -4,19 +4,17 @@ import { useUser } from '../../context/UserContext';
 import { 
   Bars3Icon, 
   XMarkIcon, 
-  UserCircleIcon,
-  MagnifyingGlassIcon
+  UserCircleIcon
 } from '@heroicons/react/24/outline';
 import RealTimeNotifications from '../Notifications/RealTimeNotifications';
 import { Menu, Transition } from '@headlessui/react';
-import SummonerSearch from '../Profile/SummonerSearch';
+import UserSearch from '../Search/UserSearch';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showSummonerSearch, setShowSummonerSearch] = useState(false);
 
   const navigation = [
     { name: 'Inicio', href: '/' },
@@ -86,15 +84,8 @@ export default function Header() {
           {/* Desktop actions */}
           <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-3">
             {/* Search */}
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MagnifyingGlassIcon className="h-4 w-4 text-gray-400" aria-hidden="true" />
-              </div>
-              <input
-                type="text"
-                placeholder="Buscar jugadores, posts..."
-                className="block w-56 pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl leading-5 bg-gray-50/50 dark:bg-gray-800/50 backdrop-blur-sm placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:text-white transition-all duration-200 hover:bg-white dark:hover:bg-gray-800"
-              />
+            <div className="w-56">
+              <UserSearch />
             </div>
 
             {/* Notifications */}
@@ -305,12 +296,6 @@ export default function Header() {
               </div>
             </div>
           </div>
-        </div>
-      )}
-
-      {showSummonerSearch && (
-        <div className="absolute left-0 right-0 top-16 z-50 bg-white shadow-lg border-b">
-          <SummonerSearch showLinkButton={false} />
         </div>
       )}
     </>

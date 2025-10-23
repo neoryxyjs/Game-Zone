@@ -67,6 +67,40 @@ const postUpload = multer({
   }
 });
 
+// Buscar usuarios por nombre (PÚBLICO)
+router.get('/search', async (req, res) => {
+  try {
+    const { q } = req.query;
+    
+    if (!q || q.trim().length < 2) {
+      return res.json({ success: true, users: [] });
+    }
+    
+    const searchTerm = `%${q.trim()}%`;
+    const result = await pool.query(`
+      SELECT 
+        u.id, 
+        u.username, 
+        u.avatar, 
+        up.bio,
+        (SELECT COUNT(*) FROM posts WHERE user_id = u.id) as posts_count,
+        (SELECT COUNT(*) FROM user_follows WHERE following_id = u.id) as followers_count
+      FROM users u
+      LEFT JOIN user_profiles up ON u.id = up.user_id
+      WHERE LOWER(u.username) LIKE LOWER($1)
+      ORDER BY 
+        (SELECT COUNT(*) FROM user_follows WHERE following_id = u.id) DESC,
+        u.username ASC
+      LIMIT 10
+    `, [searchTerm]);
+    
+    res.json({ success: true, users: result.rows });
+  } catch (error) {
+    console.error('Error buscando usuarios:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Obtener perfil completo de un usuario (PÚBLICO)
 router.get('/:userId', async (req, res) => {
   try {
