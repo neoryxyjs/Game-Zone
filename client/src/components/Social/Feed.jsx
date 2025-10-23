@@ -377,7 +377,7 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
     setIsTyping(e.target.value.length > 0);
   };
 
-  const handleReply = async (e, commentId) => {
+  const handleReply = async (e, commentId, replyToReplyId = null, replyToUsername = null) => {
     e.preventDefault();
     if (!replyContent.trim() || replyLoading) return;
 
@@ -385,7 +385,9 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
       setReplyLoading(true);
       const response = await postAuth(`/api/posts/${post.id}/comments/${commentId}/reply`, {
         user_id: userId,
-        content: replyContent.trim()
+        content: replyContent.trim(),
+        reply_to_reply_id: replyToReplyId,
+        reply_to_username: replyToUsername
       });
 
       const data = await response.json();
@@ -729,9 +731,59 @@ function PostCard({ post, userId, onLike, onDelete, index }) {
                                   <Link to={`/user/${reply.user_id}`} className="font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-xs">
                                     {reply.user?.username || 'Usuario'}
                                   </Link>
+                                  {reply.reply_to_username && (
+                                    <span className="text-xs text-indigo-600 dark:text-indigo-400 ml-1">
+                                      → {reply.reply_to_username}
+                                    </span>
+                                  )}
                                   <p className="text-xs text-gray-700 dark:text-gray-300 mt-0.5">{reply.content}</p>
                                 </div>
-                                <span className="text-xs text-gray-500 dark:text-gray-400 ml-3 mt-1 inline-block">{formatDate(reply.created_at)}</span>
+                                <div className="flex items-center space-x-3 ml-3 mt-1">
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(reply.created_at)}</span>
+                                  <button
+                                    onClick={() => {
+                                      setReplyingTo(`reply-${reply.id}`);
+                                      setReplyContent('');
+                                    }}
+                                    className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+                                  >
+                                    Responder
+                                  </button>
+                                </div>
+
+                                {/* Formulario para responder a una respuesta */}
+                                {replyingTo === `reply-${reply.id}` && (
+                                  <form onSubmit={(e) => handleReply(e, comment.id, reply.id, reply.user?.username)} className="mt-2 ml-3">
+                                    <div className="flex space-x-2">
+                                      <input
+                                        type="text"
+                                        value={replyContent}
+                                        onChange={(e) => setReplyContent(e.target.value)}
+                                        placeholder={`Responder a ${reply.user?.username}...`}
+                                        className="flex-1 px-2 py-1 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                        autoFocus
+                                        disabled={replyLoading}
+                                      />
+                                      <button
+                                        type="submit"
+                                        disabled={!replyContent.trim() || replyLoading}
+                                        className="btn-primary px-2 py-1 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                                      >
+                                        {replyLoading ? '...' : 'Enviar'}
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setReplyingTo(null);
+                                          setReplyContent('');
+                                        }}
+                                        className="px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  </form>
+                                )}
                               </div>
                             </div>
                           ))}
