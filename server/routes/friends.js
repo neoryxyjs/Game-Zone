@@ -196,6 +196,32 @@ router.get('/requests/pending/:userId', authMiddleware, async (req, res) => {
   }
 });
 
+// Alias para requests/received (mismo que pending)
+router.get('/requests/received/:userId', authMiddleware, async (req, res) => {
+  const { userId } = req.params;
+  
+  try {
+    const result = await pool.query(`
+      SELECT 
+        fr.id,
+        fr.sender_id,
+        fr.receiver_id,
+        fr.created_at,
+        u.username as sender_username,
+        u.avatar as sender_avatar
+      FROM friend_requests fr
+      JOIN users u ON fr.sender_id = u.id
+      WHERE fr.receiver_id = $1 AND fr.status = 'pending'
+      ORDER BY fr.created_at DESC
+    `, [userId]);
+    
+    res.json({ success: true, requests: result.rows });
+  } catch (err) {
+    console.error('Error obteniendo solicitudes recibidas:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Obtener solicitudes enviadas (requiere autenticación)
 router.get('/requests/sent/:userId', authMiddleware, async (req, res) => {
   const { userId } = req.params;
@@ -212,7 +238,7 @@ router.get('/requests/sent/:userId', authMiddleware, async (req, res) => {
         u.avatar as receiver_avatar
       FROM friend_requests fr
       JOIN users u ON fr.receiver_id = u.id
-      WHERE fr.sender_id = $1
+      WHERE fr.sender_id = $1 AND fr.status = 'pending'
       ORDER BY fr.created_at DESC
     `, [userId]);
     

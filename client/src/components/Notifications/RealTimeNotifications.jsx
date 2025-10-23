@@ -95,11 +95,13 @@ export default function RealTimeNotifications() {
         );
         setUnreadCount(prev => Math.max(0, prev - 1));
         
-        // Navegar al home con query params - Feed se encargará del resto
-        if (notification.post_id) {
-          setShowNotifications(false);
-          
-          // Construir URL con query params
+        setShowNotifications(false);
+        
+        // Redirigir según el tipo de notificación
+        if (notification.type === 'friend_request') {
+          navigate('/friends');
+        } else if (notification.post_id) {
+          // Navegar al home con query params - Feed se encargará del resto
           if (notification.comment_id) {
             navigate(`/?post=${notification.post_id}&comment=${notification.comment_id}`);
           } else {
