@@ -94,7 +94,7 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
               'dark:from-indigo-900/20',
               'dark:to-purple-900/20'
             );
-          }, 3500);
+          }, 2200);
 
           // Abrir comentarios automáticamente
           const toggleButton = postElement.querySelector('[data-toggle-comments]');
@@ -141,11 +141,11 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
                         'dark:from-purple-900/30',
                         'dark:to-pink-900/30'
                       );
-                    }, 4500);
+                    }, 2500);
                   }
-                }, 600);
+                }, 400);
               }
-            }, 400);
+            }, 300);
           } else if (toggleButton?.classList.contains('comments-open') && commentId) {
             // Si ya están abiertos, solo hacer scroll al comentario
             setTimeout(() => {
@@ -181,12 +181,12 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
                     'dark:from-purple-900/30',
                     'dark:to-pink-900/30'
                   );
-                }, 4500);
+                }, 2500);
               }
-            }, 600);
+            }, 400);
           }
         }
-      }, 600);
+      }, 400);
     }
   }, [loading, posts, location.search]);
 
