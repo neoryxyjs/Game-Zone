@@ -40,20 +40,35 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
     }
   }, [posts.length, isPersonalFeed, lastPostId]);
 
+  // Resetear flag cuando cambia la URL
+  useEffect(() => {
+    navigationHandledRef.current = false;
+  }, [location.search]);
+
   // Manejar navegación desde notificaciones
   useEffect(() => {
-    if (loading || posts.length === 0 || navigationHandledRef.current) return;
+    console.log('🔍 Navegación: loading=', loading, 'posts=', posts.length, 'location=', location.search);
+    
+    if (loading || posts.length === 0) {
+      console.log('⏳ Esperando... loading o posts vacíos');
+      return;
+    }
 
     const params = new URLSearchParams(location.search);
     const postId = params.get('post');
     const commentId = params.get('comment');
 
-    if (postId) {
+    console.log('📍 Query params:', { postId, commentId });
+
+    if (postId && !navigationHandledRef.current) {
+      console.log('✅ Navegando al post:', postId);
       navigationHandledRef.current = true;
 
       // Esperar a que el DOM esté listo
       setTimeout(() => {
         const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+        console.log('🎯 Post encontrado:', !!postElement);
+        
         if (postElement) {
           // Scroll al post
           postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -66,13 +81,19 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
 
           // Si hay commentId, abrir comentarios
           if (commentId) {
+            console.log('💬 Buscando botón de comentarios...');
             const toggleButton = postElement.querySelector('[data-toggle-comments]');
+            console.log('🔘 Botón encontrado:', !!toggleButton, 'abierto:', toggleButton?.classList.contains('comments-open'));
+            
             if (toggleButton && !toggleButton.classList.contains('comments-open')) {
+              console.log('🖱️ Haciendo click en comentarios...');
               toggleButton.click();
               
               // Esperar a que los comentarios se carguen y hacer scroll
               setTimeout(() => {
                 const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+                console.log('💬 Comentario encontrado:', !!commentElement);
+                
                 if (commentElement) {
                   commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   
@@ -82,9 +103,24 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
                     commentElement.classList.remove('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
                   }, 3000);
                 }
-              }, 1000);
+              }, 1500);
+            } else if (toggleButton?.classList.contains('comments-open')) {
+              // Si ya están abiertos, solo hacer scroll
+              console.log('✅ Comentarios ya abiertos, haciendo scroll...');
+              setTimeout(() => {
+                const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+                if (commentElement) {
+                  commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  commentElement.classList.add('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
+                  setTimeout(() => {
+                    commentElement.classList.remove('ring-2', 'ring-yellow-500', 'ring-opacity-50', 'bg-yellow-50', 'dark:bg-yellow-900/20');
+                  }, 3000);
+                }
+              }, 500);
             }
           }
+        } else {
+          console.log('❌ Post no encontrado en el DOM');
         }
       }, 500);
     }
