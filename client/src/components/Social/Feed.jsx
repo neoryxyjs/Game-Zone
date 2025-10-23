@@ -21,8 +21,10 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
   const [lightboxType, setLightboxType] = useState('image');
 
   useEffect(() => {
+    setPosts([]); // Limpiar posts anteriores al cambiar de usuario
+    setPage(1); // Resetear página
     loadPosts();
-  }, [userId, isPersonalFeed, gameFilter]);
+  }, [userId, isPersonalFeed, gameFilter, customEndpoint]);
 
   // Escuchar nuevos posts
   useEffect(() => {
@@ -32,9 +34,9 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
     }
   }, [onNewPost]);
 
-  // Polling para detectar nuevos posts cada 15 segundos
+  // Polling para detectar nuevos posts cada 15 segundos (solo en feed general, no en perfiles)
   useEffect(() => {
-    if (!isPersonalFeed && posts.length > 0) {
+    if (!isPersonalFeed && !customEndpoint && posts.length > 0) {
       pollingIntervalRef.current = setInterval(checkForNewPosts, 15000);
       return () => {
         if (pollingIntervalRef.current) {
@@ -42,7 +44,7 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
         }
       };
     }
-  }, [posts.length, isPersonalFeed, lastPostId]);
+  }, [posts.length, isPersonalFeed, customEndpoint, lastPostId]);
 
   // Resetear flag cuando cambia la URL
   useEffect(() => {
