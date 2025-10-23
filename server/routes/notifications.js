@@ -79,12 +79,25 @@ router.put('/:notificationId/read', authMiddleware, async (req, res) => {
   try {
     const { notificationId } = req.params;
     
-    const result = await pool.query(`
-      UPDATE notifications 
-      SET is_read = true, read_at = CURRENT_TIMESTAMP
-      WHERE id = $1
-      RETURNING *
-    `, [notificationId]);
+    let result;
+    try {
+      // Intentar actualizar con read_at (si existe la columna)
+      result = await pool.query(`
+        UPDATE notifications 
+        SET is_read = true, read_at = CURRENT_TIMESTAMP
+        WHERE id = $1
+        RETURNING *
+      `, [notificationId]);
+    } catch (colErr) {
+      // Fallback sin read_at si la columna no existe
+      console.log('Columna read_at no existe, usando query simple');
+      result = await pool.query(`
+        UPDATE notifications 
+        SET is_read = true
+        WHERE id = $1
+        RETURNING *
+      `, [notificationId]);
+    }
     
     res.json({ success: true, notification: result.rows[0] });
   } catch (error) {
@@ -98,11 +111,22 @@ router.put('/:userId/read-all', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
     
-    await pool.query(`
-      UPDATE notifications 
-      SET is_read = true, read_at = CURRENT_TIMESTAMP
-      WHERE user_id = $1 AND is_read = false
-    `, [userId]);
+    try {
+      // Intentar actualizar con read_at (si existe la columna)
+      await pool.query(`
+        UPDATE notifications 
+        SET is_read = true, read_at = CURRENT_TIMESTAMP
+        WHERE user_id = $1 AND is_read = false
+      `, [userId]);
+    } catch (colErr) {
+      // Fallback sin read_at si la columna no existe
+      console.log('Columna read_at no existe, usando query simple');
+      await pool.query(`
+        UPDATE notifications 
+        SET is_read = true
+        WHERE user_id = $1 AND is_read = false
+      `, [userId]);
+    }
     
     res.json({ success: true, message: 'Todas las notificaciones marcadas como leídas' });
   } catch (error) {
