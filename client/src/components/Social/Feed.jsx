@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../config/api';
 import { postAuth, deleteAuth } from '../../utils/api';
 
-export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFilter = null }) {
+export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFilter = null, customEndpoint = null }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -88,9 +88,11 @@ export default function Feed({ userId, isPersonalFeed = false, onNewPost, gameFi
   const loadPosts = async () => {
     try {
       setLoading(true);
-      const endpoint = isPersonalFeed 
-        ? `${API_BASE_URL}/api/social/feed/${userId}`
-        : `${API_BASE_URL}/api/posts/feed`;
+      const endpoint = customEndpoint 
+        ? `${API_BASE_URL}${customEndpoint}`
+        : isPersonalFeed 
+          ? `${API_BASE_URL}/api/social/feed/${userId}`
+          : `${API_BASE_URL}/api/posts/feed`;
       
       // Agregar filtro de juego si está presente
       const gameParam = gameFilter ? `&game=${encodeURIComponent(gameFilter)}` : '';

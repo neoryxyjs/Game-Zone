@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../config/api';
 import { postAuth } from '../../utils/api';
 import { useUser } from '../../context/UserContext';
+import Feed from '../Social/Feed';
 
 export default function UserProfile() {
   const { userId } = useParams();
@@ -33,8 +34,8 @@ export default function UserProfile() {
         setError('Usuario no encontrado');
       }
 
-      // Cargar posts del usuario (PÚBLICO - no requiere autenticación)
-      const postsResponse = await fetch(`${API_BASE_URL}/api/social/feed/${userId}`);
+      // Cargar posts del usuario usando el nuevo endpoint
+      const postsResponse = await fetch(`${API_BASE_URL}/api/social/user-posts/${userId}`);
       const postsData = await postsResponse.json();
       
       if (postsData.success) {
@@ -63,18 +64,24 @@ export default function UserProfile() {
     if (!currentUser) return;
 
     try {
-      const response = await postAuth('/api/social/follow', {
-        user_id: currentUser.id,
-        follow_user_id: userId
+      const endpoint = isFollowing ? '/api/social/unfollow' : '/api/social/follow';
+      const response = await postAuth(endpoint, {
+        follower_id: currentUser.id,
+        following_id: parseInt(userId)
       });
 
       const data = await response.json();
       
       if (data.success) {
         setIsFollowing(!isFollowing);
+        // Actualizar el contador de seguidores
+        setProfileUser(prev => ({
+          ...prev,
+          followers_count: isFollowing ? prev.followers_count - 1 : prev.followers_count + 1
+        }));
       }
     } catch (error) {
-      console.error('Error siguiendo usuario:', error);
+      console.error('Error siguiendo/dejando de seguir usuario:', error);
     }
   };
 
@@ -165,60 +172,14 @@ export default function UserProfile() {
           </div>
         </div>
 
-        {/* Posts del usuario */}
+        {/* Posts del usuario con interactividad completa */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Posts de {profileUser.username}</h2>
-          
-          {userPosts.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="text-gray-400 dark:text-gray-600 mb-4">
-                <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <p className="text-gray-500 dark:text-gray-400">Este usuario aún no ha publicado nada</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {userPosts.map((post) => (
-                <div key={post.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900">
-                  <div className="flex items-center space-x-3 mb-3">
-                    {post.user?.avatar ? (
-                      <img
-                        src={post.user.avatar}
-                        alt={post.user.username}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
-                        <span className="text-gray-600 dark:text-gray-300 font-bold text-xs">{post.user?.username?.[0]?.toUpperCase()}</span>
-                      </div>
-                    )}
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{post.user?.username}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{new Date(post.created_at).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-900 dark:text-white mb-3">{post.content}</p>
-                  
-                  {post.image_url && (
-                    <img
-                      src={post.image_url}
-                      alt="Post image"
-                      className="w-full max-w-md rounded-lg mb-3"
-                    />
-                  )}
-                  
-                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                    <span>❤️ {post.likes_count || 0}</span>
-                    <span>💬 {post.comments_count || 0}</span>
-                    {post.game_tag && <span>🎮 {post.game_tag}</span>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <Feed 
+            isPersonalFeed={false} 
+            userId={userId}
+            customEndpoint={`/api/social/user-posts/${userId}`}
+          />
         </div>
       </div>
     </div>

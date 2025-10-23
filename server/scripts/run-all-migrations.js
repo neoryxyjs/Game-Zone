@@ -24,6 +24,14 @@ async function runAllMigrations() {
     console.log('   - user_settings');
     console.log('   - user_stats');
     
+    // Migración 011: comment_replies
+    console.log('\n🚀 Ejecutando migración 011: comment_replies...');
+    const migration011Path = path.join(__dirname, '../migrations/011_create_comment_replies.sql');
+    const sql011 = fs.readFileSync(migration011Path, 'utf8');
+    await pool.query(sql011);
+    console.log('✅ Migración 011 completada exitosamente');
+    console.log('   - comment_replies');
+    
     console.log('\n✅ Todas las migraciones completadas exitosamente!');
     await pool.end();
     process.exit(0);

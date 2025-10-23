@@ -210,4 +210,58 @@ router.get('/profile/:userId', async (req, res) => {
   }
 });
 
+// Obtener posts públicos de un usuario específico
+router.get('/user-posts/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { page = 1, limit = 20 } = req.query;
+  const offset = (page - 1) * limit;
+  
+  try {
+    const result = await pool.query(`
+      SELECT 
+        p.*,
+        u.username,
+        u.avatar,
+        ui.file_path as image_file_path,
+        COUNT(DISTINCT pl.id) as likes_count,
+        COUNT(DISTINCT pc.id) as comments_count,
+        CASE WHEN pl_user.id IS NOT NULL THEN true ELSE false END as user_liked
+      FROM posts p
+      JOIN users u ON p.user_id = u.id
+      LEFT JOIN user_images ui ON p.image_id = ui.id
+      LEFT JOIN post_likes pl ON p.id = pl.post_id
+      LEFT JOIN post_comments pc ON p.id = pc.post_id
+      LEFT JOIN post_likes pl_user ON p.id = pl_user.post_id AND pl_user.user_id = $1
+      WHERE p.user_id = $1
+      GROUP BY p.id, u.username, u.avatar, ui.file_path, pl_user.id
+      ORDER BY p.created_at DESC
+      LIMIT $2 OFFSET $3
+    `, [userId, limit, offset]);
+    
+    const posts = result.rows.map(row => {
+      let imageUrl = row.image_url;
+      if (row.image_id && row.image_file_path) {
+        imageUrl = row.image_file_path;
+      }
+      
+      return {
+        ...row,
+        image_url: imageUrl,
+        likes_count: parseInt(row.likes_count) || 0,
+        comments_count: parseInt(row.comments_count) || 0,
+        user: {
+          id: row.user_id,
+          username: row.username,
+          avatar: row.avatar
+        }
+      };
+    });
+    
+    res.json({ success: true, posts });
+  } catch (err) {
+    console.error('Error obteniendo posts del usuario:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;

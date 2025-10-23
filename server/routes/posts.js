@@ -258,33 +258,89 @@ router.post('/:postId/comment', authMiddleware, async (req, res) => {
   }
 });
 
-// Obtener comentarios de un post
+// Obtener comentarios de un post con sus respuestas
 router.get('/:postId/comments', async (req, res) => {
   const { postId } = req.params;
   
   try {
+    // Obtener comentarios principales
     const result = await pool.query(`
       SELECT 
         pc.*,
         u.username,
-        u.avatar
+        u.avatar,
+        COUNT(DISTINCT cr.id) as replies_count
       FROM post_comments pc
       JOIN users u ON pc.user_id = u.id
+      LEFT JOIN comment_replies cr ON pc.id = cr.comment_id
       WHERE pc.post_id = $1
+      GROUP BY pc.id, u.username, u.avatar
       ORDER BY pc.created_at ASC
     `, [postId]);
     
-    // Transformar los datos para incluir el objeto user
-    const comments = result.rows.map(row => ({
-      ...row,
-      user: {
-        id: row.user_id,
-        username: row.username,
-        avatar: row.avatar
-      }
+    // Para cada comentario, obtener sus respuestas
+    const comments = await Promise.all(result.rows.map(async row => {
+      const repliesResult = await pool.query(`
+        SELECT 
+          cr.*,
+          u.username,
+          u.avatar
+        FROM comment_replies cr
+        JOIN users u ON cr.user_id = u.id
+        WHERE cr.comment_id = $1
+        ORDER BY cr.created_at ASC
+      `, [row.id]);
+      
+      const replies = repliesResult.rows.map(reply => ({
+        ...reply,
+        user: {
+          id: reply.user_id,
+          username: reply.username,
+          avatar: reply.avatar
+        }
+      }));
+      
+      return {
+        ...row,
+        replies_count: parseInt(row.replies_count) || 0,
+        replies: replies,
+        user: {
+          id: row.user_id,
+          username: row.username,
+          avatar: row.avatar
+        }
+      };
     }));
     
     res.json({ success: true, comments });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Responder a un comentario (requiere autenticación)
+router.post('/:postId/comments/:commentId/reply', authMiddleware, async (req, res) => {
+  const { commentId } = req.params;
+  const { user_id, content } = req.body;
+  
+  try {
+    const result = await pool.query(
+      'INSERT INTO comment_replies (comment_id, user_id, content) VALUES ($1, $2, $3) RETURNING *',
+      [commentId, user_id, content]
+    );
+    
+    // Obtener información del usuario
+    const userResult = await pool.query(
+      'SELECT id, username, avatar FROM users WHERE id = $1',
+      [user_id]
+    );
+    
+    const reply = {
+      ...result.rows[0],
+      user: userResult.rows[0]
+    };
+    
+    res.status(201).json({ success: true, reply });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
