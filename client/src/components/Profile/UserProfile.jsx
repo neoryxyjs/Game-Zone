@@ -202,9 +202,9 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16">
       {/* Banner del perfil */}
-      <div className="relative mt-16">
+      <div className="relative">
         {profileUser.banner_url ? (
           <div className="w-full h-64 md:h-80 lg:h-96 relative overflow-hidden bg-gray-900">
             <img

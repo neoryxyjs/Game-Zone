@@ -18,6 +18,7 @@ import Error500 from './pages/Error500';
 import ErrorBoundary from './components/ErrorBoundary';
 import { UserProvider, useUser } from './context/UserContext';
 import { ThemeProvider } from './context/ThemeContext';
+import ScrollToTop from './components/ScrollToTop';
 import './App.css';
 
 // Componente wrapper principal
@@ -25,6 +26,7 @@ const AppContent = () => {
 
   return (
     <Router>
+      <ScrollToTop />
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />

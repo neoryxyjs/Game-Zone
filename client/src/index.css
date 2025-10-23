@@ -5,13 +5,21 @@
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem; /* 80px para el header fijo */
+  scroll-padding-top: 4rem; /* 64px para el header fijo */
 }
 
 /* Evitar saltos visuales al hacer scroll */
 body {
   overflow-x: hidden;
   position: relative;
+  min-height: 100vh;
+}
+
+/* Asegurar que el contenido principal siempre esté debajo del header */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Variables CSS personalizadas */
